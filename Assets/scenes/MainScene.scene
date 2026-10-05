@@ -90,25 +90,19 @@
           "__guid": "2ccac9a4-4081-413f-9f54-2271993ac5c7",
           "__enabled": true,
           "Flags": 0,
-          "BaseNbEnemy": 5,
           "BonusPrefab": {
             "_type": "gameobject",
             "prefab": "prefabs/bonus.prefab"
           },
-          "EnemiesPrefabs": [
-            {
-              "_type": "gameobject",
-              "prefab": "prefabs/enemies/rangeenemy.prefab"
-            },
-            {
-              "_type": "gameobject",
-              "prefab": "prefabs/enemies/meleeenemy.prefab"
-            }
-          ],
+          "EnemySpawner": {
+            "_type": "component",
+            "component_id": "6e12d80f-7825-4df7-bfe5-ddff1ebf0ab9",
+            "go": "5cb72abd-b19c-4e2a-986f-7d8dd9146c2f",
+            "component_type": "EnemySpawner"
+          },
           "ExperienceBase": 200,
           "ExperiencePerRound": 50,
           "ExperienceSpawnDist": 32,
-          "factorEnemyPerRound": 1.4,
           "GameState": {
             "_type": "component",
             "component_id": "40841857-4b79-438c-b036-d1581eeedb17",
@@ -131,24 +125,6 @@
             "go": "ab239e30-6b72-406a-86a3-f8e373631e17",
             "component_type": "PoolManager"
           },
-          "SpawnPoints": [
-            {
-              "_type": "gameobject",
-              "go": "3935d6d2-cfdd-4ffa-8dc8-b5c2876b85e9"
-            },
-            {
-              "_type": "gameobject",
-              "go": "d613af4f-65ca-44c9-af3c-d8bedbbb3191"
-            },
-            {
-              "_type": "gameobject",
-              "go": "87e7835a-c9f6-44c5-a367-09d86863f349"
-            },
-            {
-              "_type": "gameobject",
-              "go": "d27a0c9b-82a4-4748-80f2-e9ddd842eff6"
-            }
-          ],
           "StartZonePoint": {
             "_type": "gameobject",
             "go": "f8e3f4be-b2d6-4bdd-920e-b3be61f28c31"
@@ -165,7 +141,70 @@
           }
         }
       ],
-      "Children": []
+      "Children": [
+        {
+          "__guid": "5cb72abd-b19c-4e2a-986f-7d8dd9146c2f",
+          "__version": 2,
+          "Flags": 0,
+          "Name": "EnemySpawner",
+          "Position": "0,0,0",
+          "Rotation": "0,0,0,1",
+          "Scale": "1,1,1",
+          "Tags": "",
+          "Enabled": true,
+          "NetworkMode": 2,
+          "NetworkFlags": 0,
+          "NetworkOrphaned": 0,
+          "NetworkTransmit": true,
+          "OwnerTransfer": 1,
+          "Components": [
+            {
+              "__type": "EnemySpawner",
+              "__guid": "6e12d80f-7825-4df7-bfe5-ddff1ebf0ab9",
+              "__enabled": true,
+              "Flags": 0,
+              "baseNbEnemy": 5,
+              "enemiesPrefabs": [
+                {
+                  "_type": "gameobject",
+                  "prefab": "prefabs/enemies/rangeenemy.prefab"
+                },
+                {
+                  "_type": "gameobject",
+                  "prefab": "prefabs/enemies/meleeenemy.prefab"
+                }
+              ],
+              "factorEnemyPerRound": 1.4,
+              "OnComponentDestroy": null,
+              "OnComponentDisabled": null,
+              "OnComponentEnabled": null,
+              "OnComponentFixedUpdate": null,
+              "OnComponentStart": null,
+              "OnComponentUpdate": null,
+              "rangeSpawnAirEnemies": 600,
+              "spawnPoints": [
+                {
+                  "_type": "gameobject",
+                  "go": "3935d6d2-cfdd-4ffa-8dc8-b5c2876b85e9"
+                },
+                {
+                  "_type": "gameobject",
+                  "go": "d613af4f-65ca-44c9-af3c-d8bedbbb3191"
+                },
+                {
+                  "_type": "gameobject",
+                  "go": "87e7835a-c9f6-44c5-a367-09d86863f349"
+                },
+                {
+                  "_type": "gameobject",
+                  "go": "d27a0c9b-82a4-4748-80f2-e9ddd842eff6"
+                }
+              ]
+            }
+          ],
+          "Children": []
+        }
+      ]
     },
     {
       "__guid": "ab239e30-6b72-406a-86a3-f8e373631e17",

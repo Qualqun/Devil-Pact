@@ -8,9 +8,18 @@ public struct EnemyStats
 	public float ballSpeed { get; set; }
 }
 
+public enum SpawnType
+{
+	Doors,
+	Air,
+}
+
+
 
 public class BaseEnemyBehaviour : Component
 {
+
+	[Property] public SpawnType spawnType { get; set; } = SpawnType.Doors;
 	[Property, Group( "Stats" )] public float hp { get; set; } = 25f;
 	[Property, Group( "Stats" )] public float meleDamage { get; set; } = 8f;
 
@@ -40,6 +49,12 @@ public class BaseEnemyBehaviour : Component
 	{
 		base.OnUpdate();
 
+		CheckTarget();
+
+	}
+
+	protected void CheckTarget()
+	{
 		if ( players.Count > 0 )
 		{
 			for ( int i = 0; i < players.Count; i++ )
@@ -65,7 +80,7 @@ public class BaseEnemyBehaviour : Component
 						target = players[i];
 						targetDist = dist;
 					}
-					else if ( target == players[i])
+					else if ( target == players[i] )
 					{
 						targetDist = dist;
 					}
@@ -76,8 +91,8 @@ public class BaseEnemyBehaviour : Component
 		{
 			noTarget = true;
 		}
-
 	}
+
 	protected override void OnDestroy()
 	{
 		base.OnDestroy();
@@ -119,7 +134,7 @@ public class BaseEnemyBehaviour : Component
 	{
 		hp -= amount;
 
-		enemyPresentation.TakeHit();
+		enemyPresentation?.TakeHit();
 
 		if ( hp <= 0f )
 		{

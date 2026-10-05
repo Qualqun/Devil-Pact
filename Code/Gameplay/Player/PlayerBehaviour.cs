@@ -1,10 +1,7 @@
-using Sandbox;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static Sandbox.Game;
-using static Sandbox.Sprite;
-using static Sandbox.Volumes.VolumeSystem;
+
 
 public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 {
@@ -34,7 +31,7 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 		if ( State == null )
 			State = Components.Get<PlayerState>();
 
-		
+
 		if ( IsProxy )
 		{
 			cameraPivot.Destroy();
@@ -109,11 +106,11 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 
 	async Task TimerHit()
 	{
-		SetInvulnerability( true );
+		Broadcast_SetInvulnerability( true );
 
 		await Task.DelaySeconds( State.TimeInvulnerability );
 
-		SetInvulnerability( false );
+		Broadcast_SetInvulnerability( false );
 	}
 
 	public void OnCollisionStart( Collision collision )
@@ -125,97 +122,6 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 
 		if ( otherObj.Tags.Has( "enemy" ) )
 			gameManager.PlayerTakeDamageFromEnemy( this, otherObj );
-	}
-
-	public void Server_TakeHit( float amount )
-	{
-		if ( !Networking.IsHost )
-			return;
-
-		if ( isDead || isInvulnerable )
-			return;
-
-		State.Hp = MathF.Max( 0f, State.Hp - amount );
-		Broadcast_RefreshHealth( State.Hp, State.MaxHp );
-
-		if ( State.Hp <= 0f )
-		{
-			Server_Die();
-		}
-		else
-		{
-			SetInvulnerability( true );
-			_ = TimerHit();
-		}
-	}
-
-	[Rpc.Broadcast]
-	public void Broadcast_RefreshHealth( float hp, float maxHp )
-	{
-		playerUI?.SetHealth( hp, maxHp );
-	}
-
-	public void Server_Die()
-	{
-		if ( !Networking.IsHost )
-			return;
-
-		if ( isDead )
-			return;
-
-		isDead = true;
-		State.Hp = 0f;
-
-		State.LoseLife();
-		State.LoseHalfLevels();
-
-		isPermanentlyDead = State.Lives <= 0;
-		mustDevilPact = !isPermanentlyDead;
-
-		cancellation?.Cancel();
-		cancellation?.Dispose();
-		cancellation = null;
-
-		Broadcast_SetDead( isPermanentlyDead );
-		Broadcast_RefreshHealth( State.Hp, State.MaxHp );
-
-		gameManager?.Server_OnPlayerDied( this );
-	}
-
-	public void Server_Revive()
-	{
-		if ( !Networking.IsHost )
-			return;
-
-		if ( isPermanentlyDead )
-			return;
-
-		isDead = false;
-		isInvulnerable = false;
-		State.Hp = State.MaxHp;
-
-		Broadcast_Revive( State.Hp, State.MaxHp );
-	}
-
-	public void Server_FullReset( Vector3 spawnPosition )
-	{
-		if ( !Networking.IsHost )
-			return;
-
-		isDead = false;
-		isPermanentlyDead = false;
-		mustDevilPact = false;
-		isInvulnerable = false;
-		isInStartZone = false;
-
-		State.Broadcast_ResetAll();
-		Broadcast_FullReset( spawnPosition );
-	}
-
-	[Rpc.Broadcast]
-	public void Broadcast_SetDead( bool permanent )
-	{
-		SetDead( permanent );
 	}
 
 	public void Fire()
@@ -289,6 +195,15 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 		canShoot = false;
 	}
 
+
+	#region RPC Broadcast
+
+	[Rpc.Broadcast]
+	public void Broadcast_RefreshHealth( float hp, float maxHp )
+	{
+		playerUI?.SetHealth( hp, maxHp );
+	}
+
 	[Rpc.Broadcast]
 	public void Broadcast_AddExperience( int amount )
 	{
@@ -298,11 +213,11 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	}
 
 	[Rpc.Broadcast]
-	public void Broadcast_ShowLifeUP( )
+	public void Broadcast_ShowLifeUP()
 	{
 		//bool levelUp = State.AddExperience( amount );
 
-		playerUI.ShowLifeNotification( );
+		playerUI.ShowLifeNotification();
 	}
 
 
@@ -345,7 +260,7 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	}
 
 	[Rpc.Broadcast]
-	public void SetInvulnerability( bool mode, bool dash = false )
+	public void Broadcast_SetInvulnerability( bool mode, bool dash = false )
 	{
 		if ( !isDead )
 		{
@@ -363,4 +278,92 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 		}
 	}
 
+	[Rpc.Broadcast]
+	public void Broadcast_SetDead( bool permanent )
+	{
+		SetDead( permanent );
+	}
+
+	#endregion
+
+	#region Server methods
+
+	public void Server_TakeHit( float amount )
+	{
+		if ( !Networking.IsHost )
+			return;
+
+		if ( isDead || isInvulnerable )
+			return;
+
+		State.Hp = MathF.Max( 0f, State.Hp - amount );
+		Broadcast_RefreshHealth( State.Hp, State.MaxHp );
+
+		if ( State.Hp <= 0f )
+		{
+			Server_Die();
+		}
+		else
+		{
+			Broadcast_SetInvulnerability( true );
+			_ = TimerHit();
+		}
+	}
+	public void Server_Die()
+	{
+		if ( !Networking.IsHost )
+			return;
+
+		if ( isDead )
+			return;
+
+		isDead = true;
+		State.Hp = 0f;
+
+		State.LoseLife();
+		State.LoseHalfLevels();
+
+		isPermanentlyDead = State.Lives <= 0;
+		mustDevilPact = !isPermanentlyDead;
+
+		cancellation?.Cancel();
+		cancellation?.Dispose();
+		cancellation = null;
+
+		Broadcast_SetDead( isPermanentlyDead );
+		Broadcast_RefreshHealth( State.Hp, State.MaxHp );
+
+		gameManager?.Server_OnPlayerDied( this );
+	}
+
+	public void Server_Revive()
+	{
+		if ( !Networking.IsHost )
+			return;
+
+		if ( isPermanentlyDead )
+			return;
+
+		isDead = false;
+		isInvulnerable = false;
+		State.Hp = State.MaxHp;
+
+		Broadcast_Revive( State.Hp, State.MaxHp );
+	}
+
+	public void Server_FullReset( Vector3 spawnPosition )
+	{
+		if ( !Networking.IsHost )
+			return;
+
+		isDead = false;
+		isPermanentlyDead = false;
+		mustDevilPact = false;
+		isInvulnerable = false;
+		isInStartZone = false;
+
+		State.Broadcast_ResetAll();
+		Broadcast_FullReset( spawnPosition );
+	}
+	#endregion
 }

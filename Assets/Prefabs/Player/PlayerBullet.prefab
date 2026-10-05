@@ -27,33 +27,17 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
-        "size": 16,
-        "sound": {
-          "_type": "component",
-          "component_id": "f4e85d56-a23b-4402-a734-8fe235bb5416",
-          "go": "7243abd5-9276-4204-abf6-7a8fa64e1add",
-          "component_type": "BulletSound"
-        }
-      },
-      {
-        "__type": "BulletSound",
-        "__guid": "f4e85d56-a23b-4402-a734-8fe235bb5416",
-        "__enabled": true,
-        "Flags": 0,
-        "hit": "sounds/soundboard/hitmarker.sound",
-        "OnComponentDestroy": null,
-        "OnComponentDisabled": null,
-        "OnComponentEnabled": null,
-        "OnComponentFixedUpdate": null,
-        "OnComponentStart": null,
-        "OnComponentUpdate": null
+        "size": 16
       }
     ],
     "Children": [
       {
         "__guid": "1a16bf6c-2685-4bcb-80de-5fb8ffbbe984",
         "__version": 2,
-        "__Prefab": "art/prefabs/map/bullet/bulletplayer.prefab",
+        "__Prefab": {
+          "Id": "26ad6509-54b2-41c0-887f-c6646fbd2a7c",
+          "Path": "art/prefabs/map/bullet/bulletplayer.prefab"
+        },
         "__PrefabInstancePatch": {
           "AddedObjects": [],
           "RemovedObjects": [],
@@ -94,8 +78,6 @@
   "MenuPath": null,
   "MenuIcon": null,
   "DontBreakAsTemplate": false,
-  "__references": [
-    "ipvfour.hitmarker#18969"
-  ],
+  "__references": [],
   "__version": 2
 }

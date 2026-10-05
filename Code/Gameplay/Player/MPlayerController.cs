@@ -99,13 +99,13 @@ public sealed class MPlayerController : Component
 	{
 		rigidbody.Velocity = velocity * dashSpeed;
 		dashEnd = false;
-		playerBehaviour.SetInvulnerability( true , true);
+		playerBehaviour.Broadcast_SetInvulnerability( true , true);
 
 		await Task.DelaySeconds( dashDuration );
 
 		rigidbody.Velocity = Vector3.Zero;
 		dashEnd = true;
-		playerBehaviour.SetInvulnerability( false );
+		playerBehaviour.Broadcast_SetInvulnerability( false );
 
 		await Task.DelaySeconds( cooldown );
 

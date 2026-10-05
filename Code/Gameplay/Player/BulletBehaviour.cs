@@ -57,7 +57,6 @@ public sealed class BulletBehaviour : Component
 {
 	[Property, WideMode] TagSet noCollideTag { get; set; }
 	[Property] float size { get; set; } = 32f;
-	[Property] BulletSound sound { get; set; }
 
 
 	public BulletInfo bulletInfo { get; set; }

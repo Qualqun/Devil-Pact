@@ -1,7 +1,6 @@
 using Sandbox;
 using System.Threading.Tasks;
-using static Sandbox.Services.Stats;
-using static Sandbox.Sprite;
+
 
 public class RangeEnemy : BaseEnemyBehaviour
 {
@@ -151,41 +150,7 @@ public class RangeEnemy : BaseEnemyBehaviour
 		Gizmo.Draw.Color = Color.Green;
 		Gizmo.Draw.LineSphere( WorldPosition, range );
 
-		if ( gunPoint is null || target is null )
-			return;
-
-		var start = gunPoint.WorldPosition;
-		var end = target.WorldPosition + Vector3.Up * 32f;
-
-		using ( Gizmo.Scope() )
-		{
-			// Les positions sont déjà en coordonnées monde.
-			Gizmo.Transform = global::Transform.Zero;
-			Gizmo.Draw.IgnoreDepth = true;
-			Gizmo.Draw.LineThickness = 2f;
-
-			// Volume balayé par le sphere trace.
-			Gizmo.Draw.Color = Color.Yellow;
-			Gizmo.Draw.LineSphere( start, bulletSize );
-			Gizmo.Draw.LineSphere( end, bulletSize );
-			Gizmo.Draw.Line( start, end );
-
-			// Point réellement atteint, seulement pendant le jeu.
-			if ( GameObject.IsValid )
-			{
-				SceneTraceResult hit = Scene.Trace
-					.Sphere( bulletSize, start, end )
-					.WithAnyTags( "enemy" )
-					.IgnoreGameObject( GameObject )
-					.Run();
-
-				if ( hit.Hit )
-				{
-					Gizmo.Draw.Color = Color.Red;
-					Gizmo.Draw.LineSphere( hit.EndPosition, bulletSize * 0.35f );
-				}
-			}
-		}
+		
 	}
 
 	
