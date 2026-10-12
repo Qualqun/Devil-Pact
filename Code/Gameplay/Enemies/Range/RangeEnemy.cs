@@ -136,9 +136,9 @@ public class RangeEnemy : BaseEnemyBehaviour
 
 	}
 
-	public override void InitStats( int roundNb )
+	public override void InitEnemy( int roundNb )
 	{
-		base.InitStats( roundNb );
+		base.InitEnemy( roundNb );
 		bulletDamage += bulletDamagePerRound * roundNb;
 	}
 

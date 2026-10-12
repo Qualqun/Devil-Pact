@@ -23,6 +23,7 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 
 
 	public PoolManager poolManager { get; set; }
+	public DroneInteraction droneInteraction { get; set; }
 	bool canShoot = true;
 	CancellationTokenSource cancellation;
 
@@ -30,6 +31,9 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	{
 		if ( State == null )
 			State = Components.Get<PlayerState>();
+
+
+		droneInteraction = GetComponentInChildren<DroneInteraction>();
 
 
 		if ( IsProxy )

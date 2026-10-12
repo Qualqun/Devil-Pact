@@ -52,8 +52,65 @@ public class BaseEnemyBehaviour : Component
 		CheckTarget();
 
 	}
+	protected override void OnDestroy()
+	{
+		base.OnDestroy();
 
-	protected void CheckTarget()
+		if ( Networking.IsHost )
+		{
+			gameManager?.GameState?.Enemies.Remove( GameObject );
+			gameManager?.SpawnBonus( WorldPosition );
+		}
+	}
+
+	protected void FollowPlayer()
+	{
+		if ( noTarget )
+			return;
+
+		if ( agent.TargetPosition.HasValue )
+		{
+			float targetDistance = Vector3.DistanceBetween( agent.TargetPosition.Value, target.WorldPosition );
+
+			if ( targetDistance > repathDistance )
+			{
+				agent.MoveTo( target.WorldPosition );
+			}
+		}
+		else
+		{
+			agent.MoveTo( target.WorldPosition );
+		}
+	}
+
+	public void SetPlayers( List<PlayerBehaviour> allPlayers )
+	{
+		players = new List<PlayerBehaviour>( allPlayers );
+	}
+
+	#region Virtual Methods
+
+	public virtual void InitEnemy( int roundNb )
+	{
+		roundNb -= 1;
+
+		hp += hpPerRound * roundNb;
+		meleDamage += meleDamagePerRound * roundNb;
+	}
+
+	public virtual void TakeDamage( float amount )
+	{
+		hp -= amount;
+
+		enemyPresentation?.TakeHit();
+
+		if ( hp <= 0f )
+		{
+			GameObject.Destroy();
+		}
+	}
+
+	protected virtual void CheckTarget()
 	{
 		if ( players.Count > 0 )
 		{
@@ -93,57 +150,6 @@ public class BaseEnemyBehaviour : Component
 		}
 	}
 
-	protected override void OnDestroy()
-	{
-		base.OnDestroy();
-
-		if ( Networking.IsHost )
-		{
-			gameManager?.GameState?.Enemies.Remove( GameObject );
-			gameManager?.SpawnBonus( WorldPosition );
-		}
-	}
-
-	protected void FollowPlayer()
-	{
-		if ( agent.TargetPosition.HasValue )
-		{
-			float targetDistance = Vector3.DistanceBetween( agent.TargetPosition.Value, target.WorldPosition );
-
-			if ( targetDistance > repathDistance )
-			{
-				agent.MoveTo( target.WorldPosition );
-			}
-		}
-		else
-		{
-			agent.MoveTo( target.WorldPosition );
-		}
-	}
-
-	public virtual void InitStats( int roundNb )
-	{
-
-		roundNb -= 1;
-
-		hp += hpPerRound * roundNb;
-		meleDamage += meleDamagePerRound * roundNb;
-	}
-
-	public virtual void TakeDamage( float amount )
-	{
-		hp -= amount;
-
-		enemyPresentation?.TakeHit();
-
-		if ( hp <= 0f )
-		{
-			GameObject.Destroy();
-		}
-	}
-	public void SetPlayers( List<PlayerBehaviour> allPlayers )
-	{
-		players = new List<PlayerBehaviour>( allPlayers );
-	}
+	#endregion
 
 }

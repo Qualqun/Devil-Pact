@@ -7,10 +7,9 @@ public class MeleeEnemy : BaseEnemyBehaviour
 	{
 		base.OnUpdate();
 
-		if(!noTarget)
-		{
-			FollowPlayer();
-		}
+
+		FollowPlayer();
+
 	}
 
 

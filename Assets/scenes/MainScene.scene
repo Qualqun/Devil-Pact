@@ -167,14 +167,15 @@
               "enemiesPrefabs": [
                 {
                   "_type": "gameobject",
-                  "prefab": "prefabs/enemies/rangeenemy.prefab"
+                  "prefab": "prefabs/enemies/meleeenemy.prefab"
                 },
                 {
                   "_type": "gameobject",
-                  "prefab": "prefabs/enemies/meleeenemy.prefab"
+                  "prefab": "prefabs/enemies/rangeenemy.prefab"
                 }
               ],
               "factorEnemyPerRound": 1.4,
+              "hightSpawnAirEnemies": 400,
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
               "OnComponentEnabled": null,
@@ -182,6 +183,7 @@
               "OnComponentStart": null,
               "OnComponentUpdate": null,
               "rangeSpawnAirEnemies": 600,
+              "showGizmo": false,
               "spawnPoints": [
                 {
                   "_type": "gameobject",

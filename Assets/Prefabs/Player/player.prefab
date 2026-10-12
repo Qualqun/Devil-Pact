@@ -196,10 +196,7 @@
         "__guid": "2fe5adce-5473-44df-94dd-41d88f6887d2",
         "__enabled": true,
         "Flags": 0,
-        "mainMusic": {
-          "Id": "1aba62bd-04d5-41df-bd99-4eb948d8cd08",
-          "Path": "audio/music/mainmusic.vsnd"
-        },
+        "mainMusic": "audio/music/mainmusic.vsnd",
         "model": {
           "_type": "component",
           "component_id": "e5728d85-77e1-4852-a22c-6cda78821502",
@@ -223,6 +220,42 @@
       }
     ],
     "Children": [
+      {
+        "__guid": "6b170e8b-51fa-49c0-b425-86a0710c59c3",
+        "__version": 2,
+        "Flags": 0,
+        "Name": "EnemyInteractions",
+        "Position": "0,0,0",
+        "Rotation": "0,0,0,1",
+        "Scale": "1,1,1",
+        "Tags": "",
+        "Enabled": true,
+        "NetworkMode": 2,
+        "NetworkFlags": 0,
+        "NetworkOrphaned": 0,
+        "NetworkTransmit": true,
+        "OwnerTransfer": 1,
+        "Components": [
+          {
+            "__type": "DroneInteraction",
+            "__guid": "30c589ad-9f24-4517-8812-fe8c7b489474",
+            "__enabled": true,
+            "Flags": 0,
+            "distance": 150,
+            "height": 40,
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null,
+            "radius": 15,
+            "showGizmo": true,
+            "spacingMultiplier": 1.8
+          }
+        ],
+        "Children": []
+      },
       {
         "__guid": "096b6c54-8ae0-450b-aa8c-eac944f61ffc",
         "__version": 2,
@@ -269,6 +302,7 @@
                 "BoneMergeTarget": null,
                 "CreateAttachments": false,
                 "CreateBoneObjects": true,
+                "DeformationMode": "Normal",
                 "LodOverride": null,
                 "MaterialGroup": null,
                 "MaterialOverride": null,
@@ -284,13 +318,7 @@
                 "OnComponentFixedUpdate": null,
                 "OnComponentStart": null,
                 "OnComponentUpdate": null,
-                "Parameters": {
-                  "bools": {},
-                  "ints": {},
-                  "floats": {},
-                  "vectors": {},
-                  "rotations": {}
-                },
+                "Parameters": {},
                 "PlaybackRate": 1,
                 "RenderOptions": {
                   "GameLayer": true,

@@ -70,9 +70,15 @@
         "__guid": "651668cb-d7cd-4b8d-b246-be9b09fd1f1c",
         "__enabled": true,
         "Flags": 0,
-        "agent": null,
+        "agent": {
+          "_type": "component",
+          "component_id": "3f407b4f-97bf-4207-a23c-9309ce46c792",
+          "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
+          "component_type": "NavMeshAgent"
+        },
         "distanceLock": 500,
         "enemyPresentation": null,
+        "fallDuration": 2,
         "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,

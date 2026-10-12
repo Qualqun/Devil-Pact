@@ -8,9 +8,12 @@ public sealed class EnemySpawner : Component
 	[Property, Group( "Stats" )] public int baseNbEnemy { get; set; } = 10;
 	[Property, Group( "Stats" )] public float factorEnemyPerRound { get; set; } = 1.4f;
 	[Property, Group( "Stats" )] public float rangeSpawnAirEnemies { get; set; } = 1000f;
+	[Property, Group( "Stats" )] public float hightSpawnAirEnemies { get; set; } = 200f;
 
 	[Property, Group( "List Refs" )] public List<GameObject> enemiesPrefabs { get; set; }
 	[Property, Group( "List Refs" )] public List<GameObject> spawnPoints { get; set; }
+
+	[Property, Group( "Debug" )] bool showGizmo = false;
 
 
 	public GameManager gameManager { get; set; }
@@ -38,34 +41,39 @@ public sealed class EnemySpawner : Component
 		if ( spawnPoints == null || spawnPoints.Count == 0 ) return;
 
 		int enemyType = Game.Random.Int( enemiesPrefabs.Count - 1 );
-
+		
 		GameObject enemyPrefab = enemiesPrefabs[enemyType];
-		GameObject enemy = enemyPrefab.Clone();
+
+		SpawnType spawnType = enemyPrefab.GetComponent<BaseEnemyBehaviour>().spawnType;
+		GameObject enemy = enemyPrefab.Clone( GetSpawnPosition ( spawnType ) );
 
 		BaseEnemyBehaviour enemyBehaviour = enemy.GetComponent<BaseEnemyBehaviour>();
-
-		switch ( enemyBehaviour.spawnType )
-		{
-			case SpawnType.Doors:
-				enemyPrefab.WorldPosition = DoorSpawnPoint();
-				break;
-			case SpawnType.Air:
-				enemyPrefab.WorldPosition = AirSpawnPoint();
-
-				break;
-			default:
-				break;
-		}
-
 
 		enemy.NetworkSpawn();
 
 		enemyBehaviour.gameManager = gameManager;
 
 		enemyBehaviour.SetPlayers( gameManager.GameState.Players );
-		enemyBehaviour.InitStats( gameManager.GameState.CurrentRound );
+		enemyBehaviour.InitEnemy( gameManager.GameState.CurrentRound );
 
 		gameManager.GameState.Server_AddEnemy( enemy );
+	}
+
+	Vector3 GetSpawnPosition( SpawnType type )
+	{
+		switch ( type )
+		{
+			case SpawnType.Doors:
+				return DoorSpawnPoint();
+
+			case SpawnType.Air:
+				return AirSpawnPoint();
+
+			default:
+				break;
+		}
+
+		return Vector3.Zero;
 	}
 
 	Vector3 DoorSpawnPoint()
@@ -95,9 +103,9 @@ public sealed class EnemySpawner : Component
 					}
 				}
 
-				if( isOnlyGround )
+				if ( isOnlyGround )
 				{
-					return randGroundPosition;
+					return randGroundPosition.WithZ( hightSpawnAirEnemies );
 				}
 			}
 		}
@@ -105,11 +113,14 @@ public sealed class EnemySpawner : Component
 
 	protected override void DrawGizmos()
 	{
-		base.DrawGizmos();
+		if( showGizmo )
+		{
+			base.DrawGizmos();
 
-		Gizmo.Transform = global::Transform.Zero;
-		Gizmo.Draw.Color = Color.Yellow;
-		Gizmo.Draw.LineSphere( WorldPosition, rangeSpawnAirEnemies );
-
+			Gizmo.Transform = global::Transform.Zero;
+			Gizmo.Draw.Color = Color.Yellow;
+			Gizmo.Draw.LineSphere( WorldPosition, rangeSpawnAirEnemies );
+			Gizmo.Draw.LineSphere( WorldPosition + Vector3.Up * hightSpawnAirEnemies, MathX.MeterToInch( 1f ) );
+		}
 	}
 }
