@@ -40,6 +40,45 @@
       "Children": []
     },
     {
+      "__guid": "848dd56b-5738-476a-acd8-a877a171323b",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "PoolManager",
+      "Position": "0,0,0",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "PoolManager",
+          "__guid": "b970b551-97fc-4895-98c8-a4bc3eaa18dc",
+          "__enabled": true,
+          "Flags": 0,
+          "bulletPool": {
+            "item": {
+              "_type": "gameobject",
+              "prefab": "prefabs/player/playerbullet.prefab"
+            },
+            "baseAmount": 100,
+            "itemStack": []
+          },
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
+        }
+      ],
+      "Children": []
+    },
+    {
       "__guid": "6308e9fd-2ee1-40c4-aa6b-0deb242610a3",
       "__version": 2,
       "Flags": 0,
@@ -96,8 +135,8 @@
           },
           "EnemySpawner": {
             "_type": "component",
-            "component_id": "6e12d80f-7825-4df7-bfe5-ddff1ebf0ab9",
-            "go": "5cb72abd-b19c-4e2a-986f-7d8dd9146c2f",
+            "component_id": "090794a4-6a4e-4a5c-8f18-6b0361192de1",
+            "go": "711ae739-446a-4399-9500-4a56651dbe5f",
             "component_type": "EnemySpawner"
           },
           "ExperienceBase": 200,
@@ -121,8 +160,8 @@
           },
           "PoolManager": {
             "_type": "component",
-            "component_id": "757585fe-b3a3-4130-8836-ca2dd8b29487",
-            "go": "ab239e30-6b72-406a-86a3-f8e373631e17",
+            "component_id": "b970b551-97fc-4895-98c8-a4bc3eaa18dc",
+            "go": "848dd56b-5738-476a-acd8-a877a171323b",
             "component_type": "PoolManager"
           },
           "StartZonePoint": {
@@ -143,7 +182,7 @@
       ],
       "Children": [
         {
-          "__guid": "5cb72abd-b19c-4e2a-986f-7d8dd9146c2f",
+          "__guid": "711ae739-446a-4399-9500-4a56651dbe5f",
           "__version": 2,
           "Flags": 0,
           "Name": "EnemySpawner",
@@ -160,7 +199,7 @@
           "Components": [
             {
               "__type": "EnemySpawner",
-              "__guid": "6e12d80f-7825-4df7-bfe5-ddff1ebf0ab9",
+              "__guid": "090794a4-6a4e-4a5c-8f18-6b0361192de1",
               "__enabled": true,
               "Flags": 0,
               "baseNbEnemy": 1,
@@ -193,143 +232,10 @@
                   "_type": "gameobject",
                   "go": "87e7835a-c9f6-44c5-a367-09d86863f349"
                 },
-                {
-                  "_type": "gameobject",
-                  "go": "d27a0c9b-82a4-4748-80f2-e9ddd842eff6"
-                }
+                null
               ]
             }
           ],
-          "Children": []
-        }
-      ]
-    },
-    {
-      "__guid": "ab239e30-6b72-406a-86a3-f8e373631e17",
-      "__version": 2,
-      "Flags": 0,
-      "Name": "PoolManager",
-      "Position": "0,0,0",
-      "Rotation": "0,0,0,1",
-      "Scale": "1,1,1",
-      "Tags": "",
-      "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkFlags": 0,
-      "NetworkOrphaned": 0,
-      "NetworkTransmit": true,
-      "OwnerTransfer": 1,
-      "Components": [
-        {
-          "__type": "PoolManager",
-          "__guid": "757585fe-b3a3-4130-8836-ca2dd8b29487",
-          "__enabled": true,
-          "Flags": 0,
-          "bulletPool": {
-            "item": {
-              "_type": "gameobject",
-              "prefab": "prefabs/player/playerbullet.prefab"
-            },
-            "baseAmount": 100,
-            "itemStack": []
-          },
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null
-        }
-      ],
-      "Children": []
-    },
-    {
-      "__guid": "eb097fb8-705c-4675-a424-aa29a1999473",
-      "__version": 2,
-      "Flags": 0,
-      "Name": "SpawnPoint",
-      "Position": "0,0,0",
-      "Rotation": "0,0,0,1",
-      "Scale": "1,1,1",
-      "Tags": "",
-      "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkFlags": 0,
-      "NetworkOrphaned": 0,
-      "NetworkTransmit": true,
-      "OwnerTransfer": 1,
-      "Components": [],
-      "Children": [
-        {
-          "__guid": "3935d6d2-cfdd-4ffa-8dc8-b5c2876b85e9",
-          "__version": 2,
-          "Flags": 0,
-          "Name": "Point",
-          "Position": "565.343689,-633.662842,0.000129538326",
-          "Rotation": "0,0,0,1",
-          "Scale": "1,1,1",
-          "Tags": "",
-          "Enabled": true,
-          "NetworkMode": 2,
-          "NetworkFlags": 0,
-          "NetworkOrphaned": 0,
-          "NetworkTransmit": true,
-          "OwnerTransfer": 1,
-          "Components": [],
-          "Children": []
-        },
-        {
-          "__guid": "d613af4f-65ca-44c9-af3c-d8bedbbb3191",
-          "__version": 2,
-          "Flags": 0,
-          "Name": "Point (2)",
-          "Position": "-77.2215576,-958.576416,-4.01362777E-05",
-          "Rotation": "0,0,0,1",
-          "Scale": "1,1,1",
-          "Tags": "",
-          "Enabled": true,
-          "NetworkMode": 2,
-          "NetworkFlags": 0,
-          "NetworkOrphaned": 0,
-          "NetworkTransmit": true,
-          "OwnerTransfer": 1,
-          "Components": [],
-          "Children": []
-        },
-        {
-          "__guid": "87e7835a-c9f6-44c5-a367-09d86863f349",
-          "__version": 2,
-          "Flags": 0,
-          "Name": "Point (3)",
-          "Position": "237.040878,738.456238,-9.92119312E-05",
-          "Rotation": "0,0,0,1",
-          "Scale": "1,1,1",
-          "Tags": "",
-          "Enabled": true,
-          "NetworkMode": 2,
-          "NetworkFlags": 0,
-          "NetworkOrphaned": 0,
-          "NetworkTransmit": true,
-          "OwnerTransfer": 1,
-          "Components": [],
-          "Children": []
-        },
-        {
-          "__guid": "d27a0c9b-82a4-4748-80f2-e9ddd842eff6",
-          "__version": 2,
-          "Flags": 0,
-          "Name": "Point (4)",
-          "Position": "-936.545532,72.9833908,-0.0015626736",
-          "Rotation": "0,0,0,1",
-          "Scale": "1,1,1",
-          "Tags": "",
-          "Enabled": true,
-          "NetworkMode": 2,
-          "NetworkFlags": 0,
-          "NetworkOrphaned": 0,
-          "NetworkTransmit": true,
-          "OwnerTransfer": 1,
-          "Components": [],
           "Children": []
         }
       ]
@@ -460,6 +366,98 @@
             }
           ],
           "Children": []
+        }
+      ]
+    },
+    {
+      "__guid": "37d370e2-a0d9-40bb-8197-81b2222af6a0",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "TempMap",
+      "Position": "0,0,0",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [],
+      "Children": [
+        {
+          "__guid": "eb097fb8-705c-4675-a424-aa29a1999473",
+          "__version": 2,
+          "Flags": 0,
+          "Name": "SpawnPoint",
+          "Position": "0,0,0",
+          "Rotation": "0,0,0,1",
+          "Scale": "1,1,1",
+          "Tags": "",
+          "Enabled": true,
+          "NetworkMode": 2,
+          "NetworkFlags": 0,
+          "NetworkOrphaned": 0,
+          "NetworkTransmit": true,
+          "OwnerTransfer": 1,
+          "Components": [],
+          "Children": [
+            {
+              "__guid": "3935d6d2-cfdd-4ffa-8dc8-b5c2876b85e9",
+              "__version": 2,
+              "Flags": 0,
+              "Name": "Point",
+              "Position": "565.343689,-633.662842,0.000129538326",
+              "Rotation": "0,0,0,1",
+              "Scale": "1,1,1",
+              "Tags": "",
+              "Enabled": true,
+              "NetworkMode": 2,
+              "NetworkFlags": 0,
+              "NetworkOrphaned": 0,
+              "NetworkTransmit": true,
+              "OwnerTransfer": 1,
+              "Components": [],
+              "Children": []
+            },
+            {
+              "__guid": "d613af4f-65ca-44c9-af3c-d8bedbbb3191",
+              "__version": 2,
+              "Flags": 0,
+              "Name": "Point (2)",
+              "Position": "-77.2215576,-958.576416,-4.01362777E-05",
+              "Rotation": "0,0,0,1",
+              "Scale": "1,1,1",
+              "Tags": "",
+              "Enabled": true,
+              "NetworkMode": 2,
+              "NetworkFlags": 0,
+              "NetworkOrphaned": 0,
+              "NetworkTransmit": true,
+              "OwnerTransfer": 1,
+              "Components": [],
+              "Children": []
+            },
+            {
+              "__guid": "87e7835a-c9f6-44c5-a367-09d86863f349",
+              "__version": 2,
+              "Flags": 0,
+              "Name": "Point (3)",
+              "Position": "237.040878,738.456238,-9.92119312E-05",
+              "Rotation": "0,0,0,1",
+              "Scale": "1,1,1",
+              "Tags": "",
+              "Enabled": true,
+              "NetworkMode": 2,
+              "NetworkFlags": 0,
+              "NetworkOrphaned": 0,
+              "NetworkTransmit": true,
+              "OwnerTransfer": 1,
+              "Components": [],
+              "Children": []
+            }
+          ]
         }
       ]
     },
