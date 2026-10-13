@@ -7,6 +7,8 @@ public sealed class DroneInteraction : Component
 	[Property] public float distance { get; set; } = 100f;
 	[Property] float radius { get; set; } = 15f;
 	[Property] float height { get; set; } = 30f;
+	[Property] int minReposition { get; set; } = 4;
+
 	[Property, Range( 1f, 2f )] float spacingMultiplier { get; set; } = 1f;
 
 	[Property, Group( "Debug" )] bool showGizmo = false;
@@ -50,6 +52,11 @@ public sealed class DroneInteraction : Component
 				{
 					Gizmo.Draw.Color = hitObstacle[i] ? Color.Red : Color.Green;
 				}
+				else
+				{
+					Gizmo.Draw.Color = i < minReposition ? Color.Green : Color.White;
+				}
+
 
 				Gizmo.Draw.LineSphere( positions[i], radius );
 			}
@@ -73,7 +80,17 @@ public sealed class DroneInteraction : Component
 		return positions;
 	}
 
-	public Vector3 GetClosestPosition( Vector3 worldPos )
+	int NormalizeIndex( int index )
+	{
+		return index < 0 ? positions.Length - 1 : index % positions.Length;
+	}
+
+	Vector3 DronePosition( Vector3 worldPosition )
+	{
+		return worldPosition - Vector3.Up * height - WorldPosition;
+	}
+
+	public Vector3 GetClosestPosition( Vector3 worldPos, out int iPos )
 	{
 		Vector3 closestPos = Vector3.Zero;
 		float closestDist = float.MaxValue;
@@ -81,17 +98,44 @@ public sealed class DroneInteraction : Component
 		if ( hitObstacle == null )
 			OnFixedUpdate();
 
+		iPos = -1;
+
 		for ( int i = 0; i < positions.Length; i++ )
 		{
 			float distance = Vector3.DistanceBetween( worldPos, positions[i] );
 
-			if( !hitObstacle[i] && distance < closestDist)
+			if ( !hitObstacle[i] && distance < closestDist )
 			{
+				iPos = i;
 				closestPos = positions[i];
 				closestDist = distance;
 			}
 		}
 
-		return closestPos - Vector3.Up * height;
+		return DronePosition( closestPos );
 	}
+
+	public bool NextPositionAvailable( int iPos, int direction, out int nextDirection, out int iNextPos, out Vector3 nextPosition )
+	{
+		iNextPos = NormalizeIndex( iPos + direction );
+
+		nextDirection = direction;
+		nextPosition = DronePosition( positions[iNextPos] );
+
+		if ( !hitObstacle[iNextPos] )
+			return true;
+
+		nextDirection *= -1;
+		iNextPos = NormalizeIndex( iPos + nextDirection );
+		nextPosition = DronePosition( positions[iNextPos] );
+
+		if ( !hitObstacle[iNextPos] )
+			return true;
+
+		return false;
+	}
+
+
+
+
 }

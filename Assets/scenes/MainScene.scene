@@ -163,18 +163,14 @@
               "__guid": "6e12d80f-7825-4df7-bfe5-ddff1ebf0ab9",
               "__enabled": true,
               "Flags": 0,
-              "baseNbEnemy": 5,
+              "baseNbEnemy": 1,
               "enemiesPrefabs": [
                 {
                   "_type": "gameobject",
-                  "prefab": "prefabs/enemies/meleeenemy.prefab"
-                },
-                {
-                  "_type": "gameobject",
-                  "prefab": "prefabs/enemies/rangeenemy.prefab"
+                  "prefab": "prefabs/enemies/droneenemy.prefab"
                 }
               ],
-              "factorEnemyPerRound": 1.4,
+              "factorEnemyPerRound": 0,
               "hightSpawnAirEnemies": 400,
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,

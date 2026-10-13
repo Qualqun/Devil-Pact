@@ -42,7 +42,7 @@
     {
       "__guid": "ad50268c-07a4-4e09-8440-7f00c4594fae",
       "__version": 2,
-      "__Prefab": "prefabs/player.prefab",
+      "__Prefab": "prefabs/player/player.prefab",
       "__PrefabInstancePatch": {
         "AddedObjects": [],
         "RemovedObjects": [],

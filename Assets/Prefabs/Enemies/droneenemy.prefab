@@ -76,7 +76,6 @@
           "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
           "component_type": "NavMeshAgent"
         },
-        "distanceLock": 500,
         "enemyPresentation": null,
         "fallDuration": 2,
         "hp": 25,
@@ -90,6 +89,8 @@
         "OnComponentStart": null,
         "OnComponentUpdate": null,
         "repathDistance": 64,
+        "rotationSpeed": 250,
+        "showGizmo": false,
         "spawnType": "Air"
       }
     ],
