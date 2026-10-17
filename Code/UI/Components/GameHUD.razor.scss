@@ -322,6 +322,11 @@
 	letter-spacing: 4px;
 	color: rgb(255, 220, 110);
 	text-shadow: 0 0 25px rgba(255, 180, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.9);
+
+	&.lost {
+		color: rgb(230, 60, 60);
+		text-shadow: 0 0 25px rgba(200, 0, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.9);
+	}
 }
 
 /* --- Waiting For Other Players Banner --- */
@@ -768,6 +773,226 @@
 	font-size: 13px;
 	letter-spacing: 3px;
 	color: rgba(255, 255, 255, 0.5);
+}
+
+.game-over-stat-time {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 15px;
+	letter-spacing: 2px;
+	color: rgba(255, 220, 110, 0.85);
+	margin-top: 4px;
+}
+
+/* --- Ladder result on the game over card --- */
+.ladder-result {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 22px;
+}
+
+.ladder-result-rank {
+	font-size: 26px;
+	font-weight: bold;
+	letter-spacing: 3px;
+	color: rgb(255, 220, 110);
+	text-shadow: 0 0 18px rgba(255, 180, 0, 0.6);
+}
+
+.ladder-result-best {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 13px;
+	letter-spacing: 2px;
+	color: rgba(255, 255, 255, 0.55);
+	margin-top: 4px;
+}
+
+/* --- Global ladder in the lobby --- */
+.ladder-panel {
+	position: absolute;
+	top: 22vh;
+	right: 50px;
+	width: 420px;
+	max-height: 58vh;
+	display: flex;
+	flex-direction: column;
+	padding: 18px 20px;
+	background: linear-gradient(145deg, rgba(25, 5, 8, 0.85) 0%, rgba(6, 2, 3, 0.9) 100%);
+	border: 1px solid rgba(255, 40, 40, 0.3);
+	border-right: 3px solid rgb(255, 40, 40);
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+	pointer-events: all;
+	animation: slide-up-fade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 1s backwards;
+}
+
+.ladder-title {
+	font-size: 28px;
+	font-weight: bold;
+	letter-spacing: 4px;
+	color: rgb(255, 55, 55);
+	text-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+}
+
+.ladder-subtitle {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 12px;
+	letter-spacing: 2px;
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 12px;
+}
+
+.ladder-list {
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 1;
+	overflow-y: scroll;
+}
+
+.ladder-row {
+	display: flex;
+	flex-direction: row;
+	flex-shrink: 0;
+	align-items: center;
+	padding: 5px 8px;
+	font-size: 15px;
+	color: rgba(255, 255, 255, 0.85);
+
+	&.ladder-header {
+		font-family: 'Cynosure', sans-serif;
+		font-size: 11px;
+		letter-spacing: 2px;
+		color: rgba(255, 255, 255, 0.45);
+		border-bottom: 1px solid rgba(255, 40, 40, 0.3);
+	}
+
+	&.podium {
+		color: rgb(255, 220, 110);
+	}
+
+	&.me {
+		color: white;
+		background-color: rgba(255, 40, 40, 0.28);
+	}
+
+	&.pinned {
+		margin-top: 8px;
+		border-top: 1px solid rgba(255, 40, 40, 0.5);
+	}
+}
+
+.ladder-rank {
+	width: 56px;
+	flex-shrink: 0;
+}
+
+.ladder-name {
+	flex-grow: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.ladder-round {
+	width: 64px;
+	flex-shrink: 0;
+	justify-content: flex-end;
+	text-align: right;
+}
+
+.ladder-time {
+	width: 80px;
+	flex-shrink: 0;
+	justify-content: flex-end;
+	text-align: right;
+}
+
+.ladder-empty {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.5);
+	padding: 16px 8px;
+}
+
+/* --- Personal run stats --- */
+.run-stats {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 28px;
+}
+
+.run-stats-title {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 14px;
+	letter-spacing: 4px;
+	color: rgba(255, 90, 90, 0.85);
+	margin-bottom: 12px;
+}
+
+.run-stats-grid {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	width: 540px;
+}
+
+.run-stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 168px;
+	padding: 10px 0;
+	margin: 4px;
+	background-color: rgba(0, 0, 0, 0.45);
+	border: 1px solid rgba(255, 0, 0, 0.18);
+}
+
+.run-stat-value {
+	font-size: 30px;
+	font-weight: bold;
+	color: rgb(255, 235, 200);
+	text-shadow: 0 0 14px rgba(255, 120, 60, 0.6);
+}
+
+.run-stat-label {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 11px;
+	letter-spacing: 2px;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.run-powers {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	width: 540px;
+	margin-top: 12px;
+}
+
+.run-power {
+	position: relative;
+	width: 48px;
+	height: 48px;
+	margin: 4px;
+	background-color: rgba(0, 0, 0, 0.45);
+	border: 1px solid rgba(255, 40, 40, 0.3);
+}
+
+.run-power-icon {
+	width: 100%;
+	height: 100%;
+}
+
+.run-power-count {
+	position: absolute;
+	right: 2px;
+	bottom: 0;
+	font-size: 13px;
+	font-weight: bold;
+	color: rgb(255, 220, 110);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 
 .game-over-restart {

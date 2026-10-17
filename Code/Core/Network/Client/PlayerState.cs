@@ -105,6 +105,38 @@ public sealed class PlayerState : Component
 
 	#endregion
 
+	#region Run stats
+
+	public int Kills { get; private set; }
+	public float DamageDealt { get; private set; }
+	public int Deaths { get; private set; }
+	public int PactsMade { get; private set; }
+	public int LevelsGained { get; private set; }
+	public List<BoostType> ClaimedBoosts { get; private set; } = new();
+
+	public void AddDamageDealt( float amount ) => DamageDealt += amount;
+	public void AddDeath() => Deaths++;
+	public void AddPactMade() => PactsMade++;
+	public void AddLevelGained() => LevelsGained++;
+
+	[Rpc.Owner]
+	public void Owner_AddKill()
+	{
+		Kills++;
+	}
+
+	void ResetRunStats()
+	{
+		Kills = 0;
+		DamageDealt = 0f;
+		Deaths = 0;
+		PactsMade = 0;
+		LevelsGained = 0;
+		ClaimedBoosts.Clear();
+	}
+
+	#endregion
+
 	private void AddModifier( ModifierType modifier )
 	{
 		ActiveModifiers.Add( modifier );
@@ -158,14 +190,10 @@ public sealed class PlayerState : Component
 		XpMultiplier = System.Math.Max( 0, XpMultiplier / 2 );
 	}
 
-	[Description( "Spends one level up. The host decides when the player is done picking." )]
 	[Rpc.Host]
 	public void Host_ConsumeLevel()
 	{
 		XpMultiplier = System.Math.Max( 0, XpMultiplier - 1 );
-
-		if ( XpMultiplier <= 0 )
-			RewardTaken = true;
 	}
 
 	[Rpc.Host]
@@ -222,6 +250,7 @@ public sealed class PlayerState : Component
 		Dead = false;
 
 		ActiveModifiers.Clear();
+		ResetRunStats();
 	}
 
 	public void ResetRewardTaken()
@@ -239,6 +268,8 @@ public sealed class PlayerState : Component
 	{
 		Host_ConsumeLevel();
 		Host_ApplyBoost( boost );
+
+		ClaimedBoosts.Add( boost );
 
 		switch ( boost )
 		{

@@ -99,6 +99,9 @@
 
 	private void OnRewardClicked(Power selectedPower)
 	{
+		if (RemainingPicks <= 0)
+			return;
+
 		var localPlayerState = GetLocalPlayer();
 
 		if (localPlayerState != null)
@@ -110,6 +113,9 @@
 
 		if (RemainingPicks <= 0)
 		{
+			// Tell the host we are done instead of letting it guess from XpMultiplier,
+			// which can drift (xp picked up mid-choice) and leave the team waiting forever
+			localPlayerState?.Host_TakeReward();
 			Hide();
 		}
 		else
