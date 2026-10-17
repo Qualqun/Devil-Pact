@@ -76,8 +76,20 @@
           "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
           "component_type": "NavMeshAgent"
         },
+        "bullet": {
+          "_type": "gameobject",
+          "prefab": "prefabs/enemies/enemybullet.prefab"
+        },
+        "bulletDamage": 3,
+        "bulletSpeed": 180,
         "enemyPresentation": null,
         "fallDuration": 2,
+        "fireRate": 0.75,
+        "gunPoint": {
+          "_type": "gameobject",
+          "go": "cad6d1e8-8a64-4022-aa07-2d709ef97ad2"
+        },
+        "heightFly": 150,
         "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,
@@ -90,7 +102,7 @@
         "OnComponentUpdate": null,
         "repathDistance": 64,
         "rotationSpeed": 250,
-        "showGizmo": false,
+        "showGizmo": true,
         "spawnType": "Air"
       }
     ],
@@ -814,6 +826,24 @@
                 ]
               }
             ]
+          },
+          {
+            "__guid": "cad6d1e8-8a64-4022-aa07-2d709ef97ad2",
+            "__version": 2,
+            "Flags": 0,
+            "Name": "GunPoint",
+            "Position": "-17.3574486,0,58.33255",
+            "Rotation": "0,0,0,1",
+            "Scale": "1,1,1",
+            "Tags": "",
+            "Enabled": true,
+            "NetworkMode": 2,
+            "NetworkFlags": 0,
+            "NetworkOrphaned": 0,
+            "NetworkTransmit": true,
+            "OwnerTransfer": 1,
+            "Components": [],
+            "Children": []
           }
         ]
       }

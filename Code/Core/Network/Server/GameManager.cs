@@ -664,9 +664,8 @@ public sealed class GameManager : Component
 			xpObject = BonusPrefab.Clone( spawnPoint + offSet );
 			xpBehaviour = xpObject.GetComponent<BonusBehaviour>();
 
-
 			xpBehaviour.InitBonus();
-			xpBehaviour.amountExperience = AmountExperienceThisRound / EnemySpawner.NbEnemyThisRound;
+			xpBehaviour.amountExperience = AmountExperienceThisRound / Math.Clamp( EnemySpawner.NbEnemyThisRound, 1, int.MaxValue);
 			xpBehaviour.offset = ExperienceSpawnDist;
 			xpBehaviour.center = spawnPoint;
 			xpBehaviour.angle = angle * i;
@@ -675,7 +674,6 @@ public sealed class GameManager : Component
 		}
 
 	}
-
 
 	#endregion
 }

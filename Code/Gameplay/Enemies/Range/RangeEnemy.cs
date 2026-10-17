@@ -40,9 +40,9 @@ public class RangeEnemy : BaseEnemyBehaviour
 			if ( canShoot )
 			{
 				Capsule enemyCapsule = new Capsule( capsuleCollider.Start, capsuleCollider.End, capsuleCollider.Radius );
-	
+
 				SceneTraceResult hit = Scene.Trace
-					.Sphere( bulletSize, gunPoint.WorldPosition, target.WorldPosition + Vector3.Up * 32f)
+					.Sphere( bulletSize, gunPoint.WorldPosition, target.WorldPosition + Vector3.Up * 32f )
 					.WithoutTags( "enemy" ).Run();
 
 				canShoot = false;
@@ -73,17 +73,24 @@ public class RangeEnemy : BaseEnemyBehaviour
 		}
 	}
 
+	void Shoot( Vector3 direction )
+	{
+		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
+		EnemyBulletBehaviour bulletBehaviour = newBullet.GetComponent<EnemyBulletBehaviour>();
+
+		bulletBehaviour.speed = bulletSpeed;
+		bulletBehaviour.damage = bulletDamage;
+		bulletBehaviour.direction = direction.Normal;
+		bulletBehaviour.gameManager = gameManager;
+
+		newBullet.NetworkSpawn();
+	}
+
 	async Task AttackBehaviour()
 	{
-		Vector3 direction = target.WorldPosition - WorldPosition;
-
-		GameObject newBullet;
-		EnemyBulletBehaviour bulletBehaviour;
-
-		direction = direction.WithZ( 0 );
+		Vector3 direction = (target.WorldPosition - WorldPosition).WithZ( 0 );
 
 		_ = AimRotate( direction, aimTime );
-
 
 		await Task.DelaySeconds( aimTime );
 
@@ -98,20 +105,15 @@ public class RangeEnemy : BaseEnemyBehaviour
 		enemyPresentation.ResetLaser();
 		enemyPresentation.Shoot();
 
-		newBullet = bullet.Clone( gunPoint.WorldPosition );
-		bulletBehaviour = newBullet.GetComponent<EnemyBulletBehaviour>();
-
-		bulletBehaviour.speed = bulletSpeed;
-		bulletBehaviour.damage = bulletDamage;
-		bulletBehaviour.direction = direction.Normal;
-		bulletBehaviour.gameManager = gameManager;
-
-		newBullet.NetworkSpawn();
+		Shoot( direction );
 
 		await Task.DelaySeconds( reloadTime );
 
 		attackTask = null;
 	}
+
+	
+
 
 	async Task AimRotate( Vector3 direction, float duration )
 	{
@@ -150,8 +152,8 @@ public class RangeEnemy : BaseEnemyBehaviour
 		Gizmo.Draw.Color = Color.Green;
 		Gizmo.Draw.LineSphere( WorldPosition, range );
 
-		
+
 	}
 
-	
+
 }

@@ -26,6 +26,7 @@
         "Gravity": false,
         "GravityScale": 0,
         "ImpactDamage": 0,
+        "InertiaScale": 1,
         "LinearDamping": 0,
         "Locking": {
           "X": false,
@@ -196,7 +197,10 @@
         "__guid": "2fe5adce-5473-44df-94dd-41d88f6887d2",
         "__enabled": true,
         "Flags": 0,
-        "mainMusic": "audio/music/mainmusic.vsnd",
+        "mainMusic": {
+          "Id": "31150889-4d00-43b5-8fce-e6b2d2497579",
+          "Path": "audio/music/mainmusic.vsnd"
+        },
         "model": {
           "_type": "component",
           "component_id": "e5728d85-77e1-4852-a22c-6cda78821502",
@@ -243,6 +247,7 @@
             "Flags": 0,
             "distance": 150,
             "height": 40,
+            "minReposition": 6,
             "OnComponentDestroy": null,
             "OnComponentDisabled": null,
             "OnComponentEnabled": null,

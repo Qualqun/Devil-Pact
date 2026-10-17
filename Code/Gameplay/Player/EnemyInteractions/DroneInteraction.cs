@@ -7,7 +7,7 @@ public sealed class DroneInteraction : Component
 	[Property] public float distance { get; set; } = 100f;
 	[Property] float radius { get; set; } = 15f;
 	[Property] float height { get; set; } = 30f;
-	[Property] int minReposition { get; set; } = 4;
+	[Property] int consecutiveFreePositions { get; set; } = 4;
 
 	[Property, Range( 1f, 2f )] float spacingMultiplier { get; set; } = 1f;
 
@@ -54,10 +54,10 @@ public sealed class DroneInteraction : Component
 				}
 				else
 				{
-					Gizmo.Draw.Color = i < minReposition ? Color.Green : Color.White;
+					Gizmo.Draw.Color = i < consecutiveFreePositions ? Color.Green : Color.White;
 				}
 
-
+				
 				Gizmo.Draw.LineSphere( positions[i], radius );
 			}
 
@@ -88,6 +88,18 @@ public sealed class DroneInteraction : Component
 	Vector3 DronePosition( Vector3 worldPosition )
 	{
 		return worldPosition - Vector3.Up * height - WorldPosition;
+	}
+
+
+
+
+	#region Public Methods
+
+	public bool PositionIsAvailable( int index )
+	{
+		index = NormalizeIndex( index );
+
+		return hitObstacle[index];
 	}
 
 	public Vector3 GetClosestPosition( Vector3 worldPos, out int iPos )
@@ -135,7 +147,41 @@ public sealed class DroneInteraction : Component
 		return false;
 	}
 
+	public bool GetNewPosition( int baseIPos, int direction, out int iNewPos, out Vector3 newPosition )
+	{
+		int tempIPos = NormalizeIndex( baseIPos + positions.Length / 2 );
+		int positionsChecked = 0;
+
+		iNewPos = -1;
+		newPosition = Vector3.Zero;
+
+		for ( int i = 0; i < positions.Length; i++ )
+		{
+			if ( positionsChecked >= consecutiveFreePositions )
+			{
+				iNewPos = NormalizeIndex( tempIPos - consecutiveFreePositions * direction );
+				newPosition = DronePosition( positions[iNewPos] );
+
+				return true;
+			}
+
+			if ( !hitObstacle[tempIPos] )
+			{
+				positionsChecked++;
+			}
+			else
+			{
+				positionsChecked = 0;
+			}
+
+			tempIPos = NormalizeIndex( tempIPos + direction );
+		}
+
+		return false;
+
+	}
 
 
+	#endregion
 
 }

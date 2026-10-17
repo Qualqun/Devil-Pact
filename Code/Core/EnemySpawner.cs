@@ -17,7 +17,6 @@ public sealed class EnemySpawner : Component
 
 
 	public GameManager gameManager { get; set; }
-
 	public int NbEnemyThisRound => (int)(baseNbEnemy * MathF.Pow( factorEnemyPerRound, gameManager.GameState.CurrentRound - 1 ));
 
 
@@ -30,8 +29,6 @@ public sealed class EnemySpawner : Component
 			SpawnEnemy();
 
 			await Task.DelaySeconds( spawnDelay );
-			if ( token.IsCancellationRequested ) break;
-
 		}
 	}
 
@@ -85,7 +82,9 @@ public sealed class EnemySpawner : Component
 
 	Vector3 AirSpawnPoint()
 	{
-		while ( true )
+		int iterationsNB = 0; // security
+
+		while ( iterationsNB < 100000 )
 		{
 			Vector3 randGroundPosition = Game.Random.VectorInSphere( rangeSpawnAirEnemies ).WithZ( 0 );
 			List<SceneTraceResult> results = Scene.Trace.Sphere( MathX.MeterToInch( 1f ), randGroundPosition, randGroundPosition ).RunAll().ToList();
@@ -108,7 +107,11 @@ public sealed class EnemySpawner : Component
 					return randGroundPosition.WithZ( hightSpawnAirEnemies );
 				}
 			}
+
+			iterationsNB++;
 		}
+
+		return Vector3.Zero;
 	}
 
 	protected override void DrawGizmos()
