@@ -1,7 +1,9 @@
 @using Sandbox
 @using Sandbox.UI
 @using System
+@using System.Collections.Generic
 @using System.Linq
+@using System.Threading.Tasks
 @inherits PanelComponent
 @namespace Sandbox
 
@@ -26,6 +28,47 @@
 				<div class="player-count" @ref="PlayerCountPanel">
 					@PlayerCountText
 				</div>
+			</div>
+
+			<div class="ladder-panel">
+				<div class="ladder-title">GLOBAL LADDER</div>
+				<div class="ladder-subtitle">@LadderSubtitle</div>
+
+				<div class="ladder-row ladder-header">
+					<span class="ladder-rank">#</span>
+					<span class="ladder-name">PLAYER</span>
+					<span class="ladder-round">ROUND</span>
+					<span class="ladder-time">TIME</span>
+				</div>
+
+				<div class="ladder-list">
+					@if (_ladder is { } ladder && ladder.Top.Count > 0)
+					{
+						foreach (var row in ladder.Top)
+						{
+							<div class="ladder-row @(row.IsMe ? "me" : "") @(row.Rank <= 3 ? "podium" : "")">
+								<span class="ladder-rank">@row.Rank</span>
+								<span class="ladder-name">@row.Name</span>
+								<span class="ladder-round">@row.Rounds</span>
+								<span class="ladder-time">@RunLeaderboard.FormatTime(row.Seconds)</span>
+							</div>
+						}
+					}
+					else
+					{
+						<div class="ladder-empty">@LadderEmptyText</div>
+					}
+				</div>
+
+				@if (MyRowOutsideTop is { } myRow)
+				{
+					<div class="ladder-row me pinned">
+						<span class="ladder-rank">@myRow.Rank</span>
+						<span class="ladder-name">@myRow.Name</span>
+						<span class="ladder-round">@myRow.Rounds</span>
+						<span class="ladder-time">@RunLeaderboard.FormatTime(myRow.Seconds)</span>
+					</div>
+				}
 			</div>
 		</div>
 	}
@@ -63,7 +106,7 @@
 		@if (ShowRoundWonBanner)
 		{
 			<div class="round-won-container">
-				<div class="round-won-text">ROUND WON</div>
+				<div class="round-won-text @(IsRoundEndBad ? "lost" : "")">@RoundEndText</div>
 			</div>
 		}
 		else if (AreAllPlayersReady() && (GameState?.PhaseTimer ?? 0f) > 0f)
@@ -180,6 +223,48 @@
 				<div class="game-over-stat">
 					<span class="game-over-stat-value">@CurrentRoundText</span>
 					<span class="game-over-stat-label">@(GameState.CurrentRound > 1 ? "ROUNDS SURVIVED" : "ROUND SURVIVED")</span>
+					<span class="game-over-stat-time">IN @RunTimeText</span>
+				</div>
+
+				@if (LocalPlayer != null)
+				{
+					<div class="run-stats">
+						<div class="run-stats-title">YOUR RUN</div>
+
+						<div class="run-stats-grid">
+							@foreach (var stat in RunStats)
+							{
+								<div class="run-stat">
+									<span class="run-stat-value">@stat.Value</span>
+									<span class="run-stat-label">@stat.Label</span>
+								</div>
+							}
+						</div>
+
+						@if (ClaimedPowers.Count > 0)
+						{
+							<div class="run-powers">
+								@foreach (var claimed in ClaimedPowers)
+								{
+									<div class="run-power">
+										<Image class="run-power-icon" Texture="@claimed.Power.Image" />
+										@if (claimed.Count > 1)
+										{
+											<span class="run-power-count">x@(claimed.Count)</span>
+										}
+									</div>
+								}
+							</div>
+						}
+					</div>
+				}
+
+				<div class="ladder-result">
+					<div class="ladder-result-rank">@LadderResultText</div>
+					@if (BestRunText is { } bestRun)
+					{
+						<div class="ladder-result-best">@bestRun</div>
+					}
 				</div>
 
 				<div class="game-over-restart">Back to the lobby in @TimerText...</div>
@@ -217,6 +302,12 @@
 	private bool _isFadingOutPact = false;
 	private bool _pactCompleted = false;
 
+	private const int LadderSize = 100;
+	private RunLeaderboard.LadderPage? _ladder;
+	private bool _ladderLoading;
+	private bool _ladderFailed;
+	private int _ladderVersion;
+
 	private PlayerState LocalPlayer =>
 		PlayerState ?? Scene?.GetAllComponents<PlayerState>().FirstOrDefault(p => !p.IsProxy);
 
@@ -249,6 +340,101 @@
 
 	private bool ShowRoundWonBanner =>
 		GameState?.State == GameStateType.WaitingForNextRound && _timeSinceStateChange < 2.0f;
+
+	private List<(string Label, string Value)> RunStats
+	{
+		get
+		{
+			var player = LocalPlayer;
+			int powers = player.ClaimedBoosts.Count;
+
+			return new List<(string Label, string Value)>
+			{
+				("KILLS", $"{player.Kills}"),
+				("DAMAGE", FormatDamage(player.DamageDealt)),
+				(player.Deaths == 1 ? "DEATH" : "DEATHS", $"{player.Deaths}"),
+				(player.PactsMade == 1 ? "DEVIL PACT" : "DEVIL PACTS", $"{player.PactsMade}"),
+				(player.LevelsGained == 1 ? "LEVEL UP" : "LEVEL UPS", $"{player.LevelsGained}"),
+				(powers == 1 ? "POWER CLAIMED" : "POWERS CLAIMED", $"{powers}"),
+			};
+		}
+	}
+
+	private List<(Power Power, int Count)> ClaimedPowers
+	{
+		get
+		{
+			var powers = ResourceLibrary.GetAll<Power>().Where(p => p != null && p.Image != null).ToList();
+
+			return LocalPlayer.ClaimedBoosts
+				.GroupBy(boost => boost)
+				.Select(group => (Power: powers.FirstOrDefault(p => p.BoostType == group.Key), Count: group.Count()))
+				.Where(claimed => claimed.Power != null)
+				.OrderByDescending(claimed => claimed.Count)
+				.ToList();
+		}
+	}
+
+	private static string FormatDamage(float damage) =>
+		damage >= 10000f ? $"{damage / 1000f:0.#}K" : $"{MathF.Round(damage)}";
+
+	private string RunTimeText => RunLeaderboard.FormatTime((int)MathF.Ceiling(GameState?.RunTime ?? 0f));
+
+	private string LadderSubtitle =>
+		_ladder is { } ladder && ladder.TotalPlayers > 0
+			? $"TOP {LadderSize} OF {ladder.TotalPlayers} PLAYERS"
+			: $"TOP {LadderSize}";
+
+	private string LadderEmptyText =>
+		_ladderLoading ? "Loading..."
+		: _ladderFailed ? "Ladder unavailable right now."
+		: "No runs yet. Be the first!";
+
+	// Your own row, pinned under the list when you are not in the top
+	private RunLeaderboard.Row? MyRowOutsideTop =>
+		_ladder is { } ladder && ladder.Me is { } me && !ladder.Top.Any(row => row.IsMe) ? me : null;
+
+	private string LadderResultText
+	{
+		get
+		{
+			if (_ladderFailed)
+				return "LADDER UNAVAILABLE";
+
+			if (_ladder is not { } ladder)
+				return "SUBMITTING YOUR RUN...";
+
+			if (ladder.Me is not { } me)
+				return "RUN SUBMITTED";
+
+			// The title font has no proper '#' glyph
+			return $"GLOBAL RANK {me.Rank} / {Math.Max(ladder.TotalPlayers, me.Rank)}";
+		}
+	}
+
+	// The ladder keeps your best run, say so when this one was not it
+	private string BestRunText
+	{
+		get
+		{
+			if (_ladder?.Me is not { } me || GameState is null)
+				return null;
+
+			bool isThisRun = me.Rounds == GameState.CurrentRound && me.Seconds == (int)MathF.Ceiling(GameState.RunTime);
+
+			return isThisRun ? "NEW PERSONAL BEST" : $"Your best: round {me.Rounds} in {RunLeaderboard.FormatTime(me.Seconds)}";
+		}
+	}
+
+	private bool IsRoundLost => GameState?.LastRoundLost ?? false;
+
+	// mustDevilPact is only set on players who went down this round
+	private bool IsRoundEndBad => IsRoundLost || MustDevilPact;
+
+	private string RoundEndText =>
+		IsRoundLost ? "ROUND LOST"
+		: MustDevilPact ? "YOU FELL"
+		: "ROUND WON";
 
 	private bool AreAllPlayersReady()
 	{
@@ -353,6 +539,8 @@
 		if (!forced)
 			player?.Host_LoseLife();
 
+		player?.AddPactMade();
+
 		_isFadingOutPact = true;
 		StateHasChanged();
 
@@ -380,11 +568,62 @@
 
 		if (GameState.State != _lastState)
 		{
+			var previousState = _lastState;
+
 			_lastState = GameState.State;
 			_timeSinceStateChange = 0;
 			_isFadingOutPact = false;
 			_pactCompleted = false;
+
+			// Only players who saw the run end submit it, not someone joining on the game over screen
+			bool wasInRun = previousState is GameStateType.Playing or GameStateType.WaitingForNextRound;
+
+			if (GameState.State == GameStateType.GameOver && wasInRun)
+				_ = SubmitRunAndRefreshLadder();
+			else if (GameState.State == GameStateType.WaitingForPlayers)
+				_ = RefreshLadder();
 		}
+	}
+
+	private async Task SubmitRunAndRefreshLadder()
+	{
+		_ladder = null;
+		_ladderVersion++;
+
+		try
+		{
+			RunLeaderboard.Submit(GameState.CurrentRound, GameState.RunTime);
+			await RunLeaderboard.FlushAsync();
+		}
+		catch (Exception e)
+		{
+			Log.Warning($"[Ladder] Could not submit the run: {e.Message}");
+		}
+
+		await RefreshLadder();
+	}
+
+	private async Task RefreshLadder()
+	{
+		if (_ladderLoading)
+			return;
+
+		_ladderLoading = true;
+		_ladderFailed = false;
+		_ladderVersion++;
+
+		try
+		{
+			_ladder = await RunLeaderboard.FetchAsync(LadderSize);
+		}
+		catch (Exception e)
+		{
+			_ladderFailed = true;
+			Log.Warning($"[Ladder] Could not load the ladder: {e.Message}");
+		}
+
+		_ladderLoading = false;
+		_ladderVersion++;
 	}
 
 	public void Show()
@@ -423,7 +662,8 @@
 			return HashCode.Combine(
 				GameState.State,
 				GameState.PlayerCount,
-				GameState.PlayerReadyCount
+				GameState.PlayerReadyCount,
+				_ladderVersion
 			);
 		}
 
@@ -441,19 +681,22 @@
 					_pactCompleted,
 					player?.RewardTaken ?? false
 				),
-				HashCode.Combine(MustDevilPact, IsLocalPlayerOut, LivesLeft, BonusCount)
+				HashCode.Combine(MustDevilPact, IsLocalPlayerOut, LivesLeft, BonusCount, IsRoundLost)
 			);
 		}
 
 		return HashCode.Combine(
-			GameState.State,
-			GameState.CurrentRound,
-			(int)MathF.Ceiling(GameState.PhaseTimer),
-			GameState.PlayerCount,
-			GameState.PlayerReadyCount,
-			RemainingEnemies,
-			IsLocalPlayerDown,
-			IsLocalPlayerOut
+			HashCode.Combine(
+				GameState.State,
+				GameState.CurrentRound,
+				(int)MathF.Ceiling(GameState.PhaseTimer),
+				GameState.PlayerCount,
+				GameState.PlayerReadyCount,
+				RemainingEnemies,
+				IsLocalPlayerDown,
+				IsLocalPlayerOut
+			),
+			_ladderVersion
 		);
 	}
 }

@@ -10,6 +10,7 @@ public struct BulletInfo
 	public Vector3 direction { get; set; }
 	public List<OnAirModifier> onAirModifier { get; set; }
 	public List<EndModifier> endModifiers { get; set; }
+	public PlayerState shooter { get; set; }
 
 	public void AddAirModifier( OnAirModifier modifier )
 	{
@@ -135,6 +136,7 @@ public sealed class BulletBehaviour : Component
 				enemyHit.Add( collideObj );
 				gameManager.EnemyTakeDamage( collideObj, bulletInfo.damage );
 				gameManager.UiManager.HitNumbers.ShowNumber( bulletInfo.damage, traceResult.HitPosition );
+				bulletInfo.shooter?.AddDamageDealt( bulletInfo.damage );
 			}
 
 			if ( updateNextStep )

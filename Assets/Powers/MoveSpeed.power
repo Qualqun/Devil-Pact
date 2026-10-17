@@ -1,6 +1,6 @@
 {
   "Title": "Speed",
-  "BoostType": "Hp",
+  "BoostType": "MoveSpeed",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

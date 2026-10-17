@@ -44,6 +44,7 @@ public sealed class GameManager : Component
 
 	CancellationTokenSource Cancellation;
 	bool enemyCountShown;
+	TimeSince timeSinceRunStart;
 
 	int AmountExperienceThisRound => ExperienceBase + (ExperiencePerRound * GameState.CurrentRound);
 
@@ -351,6 +352,8 @@ public sealed class GameManager : Component
 		Broadcast_HideEnemyCount();
 		Broadcast_HideAllPanels();
 
+		// Set before the state so clients submitting to the ladder on GameOver read the final time
+		GameState.Server_SetRunTime( timeSinceRunStart );
 		GameState.Server_SetPhaseTimer( TimeGameOver > 0f ? TimeGameOver : 5f );
 		GameState.Server_SetGameState( GameStateType.GameOver );
 
@@ -400,6 +403,7 @@ public sealed class GameManager : Component
 			return;
 
 		GameState.Server_SetPhaseTimer( 0f );
+		GameState.Server_SetLastRoundLost( roundLost );
 		GameState.Server_SetGameState( GameStateType.WaitingForNextRound );
 
 		StopRoundSpawner();
@@ -419,7 +423,6 @@ public sealed class GameManager : Component
 		}
 	}
 
-	[Description( "Brings every downed player back for the inter round. Players out of lives stay ghosts." )]
 	public void Server_ReviveDownedPlayers()
 	{
 		if ( !Networking.IsHost )
@@ -450,6 +453,9 @@ public sealed class GameManager : Component
 		}
 
 		enemyCountShown = false;
+
+		if ( GameState.CurrentRound == 0 )
+			timeSinceRunStart = 0;
 
 		GameState.Server_SetCurrentRound( GameState.CurrentRound + 1 );
 		GameState.Server_SetPhaseTimer( TimePerRound );
@@ -624,14 +630,28 @@ public sealed class GameManager : Component
 	[Rpc.Host]
 	public void EnemyTakeDamage( GameObject enemyObj, float amount )
 	{
-		if ( enemyObj == null && !enemyObj.IsValid ) return;
+		if ( enemyObj == null || !enemyObj.IsValid ) return;
 
 		BaseEnemyBehaviour enemy = enemyObj.GetComponent<BaseEnemyBehaviour>();
 
 		if ( enemy == null )
 			return;
 
+		// The enemy is only destroyed at the end of the frame, so two bullets can land on a dead one
+		bool wasAlive = enemy.hp > 0f;
+
 		enemy.TakeDamage( amount );
+
+		if ( wasAlive && enemy.hp <= 0f )
+			GetPlayerOwnedBy( Rpc.Caller )?.State?.Owner_AddKill();
+	}
+
+	PlayerBehaviour GetPlayerOwnedBy( Connection connection )
+	{
+		if ( connection == null )
+			return null;
+
+		return GetAllPlayers().FirstOrDefault( player => player.Network.OwnerId == connection.Id );
 	}
 
 	#endregion

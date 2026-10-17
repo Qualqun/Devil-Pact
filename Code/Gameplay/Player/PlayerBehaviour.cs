@@ -75,7 +75,8 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 			damage = State.BulletDamage,
 			direction = direction,
 			onAirModifier = new List<OnAirModifier>(),
-			endModifiers = new List<EndModifier>()
+			endModifiers = new List<EndModifier>(),
+			shooter = State
 		};
 
 		foreach ( ModifierType mod in State.ActiveModifiers )
@@ -213,6 +214,9 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	{
 		bool levelUp = State.AddExperience( amount );
 
+		if ( levelUp && !IsProxy )
+			State.AddLevelGained();
+
 		playerUI.ShowExperienceNotification( levelUp );
 	}
 
@@ -286,6 +290,9 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	public void Broadcast_SetDead( bool permanent )
 	{
 		SetDead( permanent );
+
+		if ( !IsProxy )
+			State.AddDeath();
 	}
 
 	#endregion
