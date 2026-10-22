@@ -64,9 +64,7 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 
 	BulletInfo InitBaseBullet()
 	{
-		Vector3 direction = Rotation.FromYaw( body.WorldRotation.Yaw() ) * Vector3.Forward;
-
-		direction = direction.WithZ( 0 ).Normal;
+		Vector3 direction = (Rotation.FromYaw( body.WorldRotation.Yaw() ) * Vector3.Forward).WithZ( 0 ).Normal;
 
 		BulletInfo newBulletInfo = new BulletInfo
 		{

@@ -179,7 +179,7 @@
         "FireRateMultiplier": 1,
         "MaxExperience": 100,
         "MaxHp": 100,
-        "MaxLives": 5,
+        "MaxLives": 0,
         "MoveSpeed": 250,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
@@ -190,6 +190,7 @@
         "RewardTaken": false,
         "SizeMultiplier": 1,
         "TimeInvulnerability": 1,
+        "Velocity": "0,0,0",
         "XpMultiplier": 0
       },
       {
@@ -197,10 +198,7 @@
         "__guid": "2fe5adce-5473-44df-94dd-41d88f6887d2",
         "__enabled": true,
         "Flags": 0,
-        "mainMusic": {
-          "Id": "31150889-4d00-43b5-8fce-e6b2d2497579",
-          "Path": "audio/music/mainmusic.vsnd"
-        },
+        "mainMusic": "audio/music/mainmusic.vsnd",
         "model": {
           "_type": "component",
           "component_id": "e5728d85-77e1-4852-a22c-6cda78821502",
@@ -239,27 +237,47 @@
         "NetworkOrphaned": 0,
         "NetworkTransmit": true,
         "OwnerTransfer": 1,
-        "Components": [
+        "Components": [],
+        "Children": [
           {
-            "__type": "DroneInteraction",
-            "__guid": "30c589ad-9f24-4517-8812-fe8c7b489474",
-            "__enabled": true,
+            "__guid": "80c60253-75ec-48be-8ff2-f2eedddbc71b",
+            "__version": 2,
             "Flags": 0,
-            "distance": 150,
-            "height": 40,
-            "minReposition": 6,
-            "OnComponentDestroy": null,
-            "OnComponentDisabled": null,
-            "OnComponentEnabled": null,
-            "OnComponentFixedUpdate": null,
-            "OnComponentStart": null,
-            "OnComponentUpdate": null,
-            "radius": 15,
-            "showGizmo": true,
-            "spacingMultiplier": 1.8
+            "Name": "DroneInteraction",
+            "Position": "0,0,0",
+            "Rotation": "0,0,0,1",
+            "Scale": "1,1,1",
+            "Tags": "",
+            "Enabled": true,
+            "NetworkMode": 2,
+            "NetworkFlags": 0,
+            "NetworkOrphaned": 0,
+            "NetworkTransmit": true,
+            "OwnerTransfer": 1,
+            "Components": [
+              {
+                "__type": "DroneInteraction",
+                "__guid": "e1451bea-41c1-4aa3-832a-8f4831870bf4",
+                "__enabled": true,
+                "Flags": 0,
+                "consecutiveFreePositions": 4,
+                "distance": 150,
+                "height": 40,
+                "OnComponentDestroy": null,
+                "OnComponentDisabled": null,
+                "OnComponentEnabled": null,
+                "OnComponentFixedUpdate": null,
+                "OnComponentStart": null,
+                "OnComponentUpdate": null,
+                "radius": 15,
+                "showGizmo": true,
+                "spacingMultiplier": 1.8,
+                "speedSurround": 150
+              }
+            ],
+            "Children": []
           }
-        ],
-        "Children": []
+        ]
       },
       {
         "__guid": "096b6c54-8ae0-450b-aa8c-eac944f61ffc",

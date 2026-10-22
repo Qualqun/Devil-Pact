@@ -80,11 +80,11 @@
           "_type": "gameobject",
           "prefab": "prefabs/enemies/enemybullet.prefab"
         },
-        "bulletDamage": 3,
+        "bulletDamage": 6,
         "bulletSpeed": 180,
         "enemyPresentation": null,
         "fallDuration": 2,
-        "fireRate": 0.75,
+        "fireRate": 20,
         "gunPoint": {
           "_type": "gameobject",
           "go": "cad6d1e8-8a64-4022-aa07-2d709ef97ad2"

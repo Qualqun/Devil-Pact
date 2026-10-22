@@ -7,16 +7,47 @@ public sealed class DroneInteraction : Component
 	[Property] public float distance { get; set; } = 100f;
 	[Property] float radius { get; set; } = 15f;
 	[Property] float height { get; set; } = 30f;
+	[Property] float speedFactor{ get; set; } = 0.8f;
 	[Property] int consecutiveFreePositions { get; set; } = 4;
 
 	[Property, Range( 1f, 2f )] float spacingMultiplier { get; set; } = 1f;
-
 	[Property, Group( "Debug" )] bool showGizmo = false;
+
+	PlayerBehaviour playerBehaviour { get; set; }
+
 
 
 	bool[] hitObstacle = null;
 	Vector3[] positions = null;
 
+
+	protected override void OnStart()
+	{
+		base.OnStart();
+
+		playerBehaviour = GetComponentInParent<PlayerBehaviour>();
+
+	}
+
+	protected override void OnUpdate()
+	{
+		Vector3 inversePlayerVelocity = playerBehaviour.State.Velocity.WithZ( 0 ) * -1;
+		float speedSurround = MathF.Max( playerBehaviour.State.MoveSpeed, playerBehaviour.State.Velocity.Length ) * speedFactor;
+
+		LocalPosition += inversePlayerVelocity * Time.Delta;
+
+		if ( LocalPosition.Length > 1f )
+		{
+			LocalPosition += (LocalPosition.Normal * -1 * speedSurround) * Time.Delta;
+		}
+		else
+		{
+			LocalPosition = Vector3.Zero;
+		}
+
+		base.OnUpdate();
+
+	}
 
 	protected override void OnFixedUpdate()
 	{
@@ -32,7 +63,6 @@ public sealed class DroneInteraction : Component
 
 		base.OnFixedUpdate();
 	}
-
 
 	protected override void DrawGizmos()
 	{
@@ -57,7 +87,7 @@ public sealed class DroneInteraction : Component
 					Gizmo.Draw.Color = i < consecutiveFreePositions ? Color.Green : Color.White;
 				}
 
-				
+
 				Gizmo.Draw.LineSphere( positions[i], radius );
 			}
 

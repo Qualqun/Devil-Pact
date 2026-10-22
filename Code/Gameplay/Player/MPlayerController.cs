@@ -93,13 +93,15 @@ public sealed class MPlayerController : Component
 
 			rigidbody.Velocity = velocity.Normal * speed;
 		}
+
+		playerBehaviour.State.Velocity = rigidbody.Velocity;
 	}
 
 	async Task Dash( Vector3 velocity )
 	{
 		rigidbody.Velocity = velocity * dashSpeed;
 		dashEnd = false;
-		playerBehaviour.Broadcast_SetInvulnerability( true , true);
+		playerBehaviour.Broadcast_SetInvulnerability( true, true );
 
 		await Task.DelaySeconds( dashDuration );
 
