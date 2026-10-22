@@ -82,9 +82,10 @@
         },
         "bulletDamage": 6,
         "bulletSpeed": 180,
+        "burstDuration": 1,
+        "burstFrequency": 2,
         "enemyPresentation": null,
         "fallDuration": 2,
-        "fireRate": 20,
         "gunPoint": {
           "_type": "gameobject",
           "go": "cad6d1e8-8a64-4022-aa07-2d709ef97ad2"
@@ -94,6 +95,7 @@
         "hpPerRound": 25,
         "meleDamage": 8,
         "meleDamagePerRound": 6,
+        "nbBulletBurst": 3,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,

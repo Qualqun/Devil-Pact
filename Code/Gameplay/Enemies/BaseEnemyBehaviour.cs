@@ -50,8 +50,8 @@ public class BaseEnemyBehaviour : Component
 		base.OnUpdate();
 
 		CheckTarget();
-
 	}
+
 	protected override void OnDestroy()
 	{
 		base.OnDestroy();
@@ -103,6 +103,8 @@ public class BaseEnemyBehaviour : Component
 		hp -= amount;
 
 		enemyPresentation?.TakeHit();
+
+		
 
 		if ( hp <= 0f )
 		{

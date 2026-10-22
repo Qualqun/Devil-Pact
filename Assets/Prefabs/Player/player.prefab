@@ -179,7 +179,7 @@
         "FireRateMultiplier": 1,
         "MaxExperience": 100,
         "MaxHp": 100,
-        "MaxLives": 0,
+        "MaxLives": 5,
         "MoveSpeed": 250,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
@@ -272,7 +272,7 @@
                 "radius": 15,
                 "showGizmo": true,
                 "spacingMultiplier": 1.8,
-                "speedSurround": 150
+                "speedFactor": 0.9
               }
             ],
             "Children": []

@@ -7,7 +7,7 @@ public sealed class DroneInteraction : Component
 	[Property] public float distance { get; set; } = 100f;
 	[Property] float radius { get; set; } = 15f;
 	[Property] float height { get; set; } = 30f;
-	[Property] float speedFactor{ get; set; } = 0.8f;
+	[Property] float speedFactor { get; set; } = 0.8f;
 	[Property] int consecutiveFreePositions { get; set; } = 4;
 
 	[Property, Range( 1f, 2f )] float spacingMultiplier { get; set; } = 1f;
@@ -56,7 +56,7 @@ public sealed class DroneInteraction : Component
 
 		for ( int i = 0; i < positions.Length; i++ )
 		{
-			SceneTraceResult sphereTrace = Scene.Trace.Sphere( radius, positions[i], positions[i] ).WithoutTags( "player", "enemy" ).Run();
+			SceneTraceResult sphereTrace = Scene.Trace.Sphere( radius, WorldPosition + positions[i], WorldPosition + positions[i] ).WithoutTags( "player", "enemy" ).Run();
 
 			hitObstacle[i] = sphereTrace.Hit;
 		}
@@ -88,7 +88,7 @@ public sealed class DroneInteraction : Component
 				}
 
 
-				Gizmo.Draw.LineSphere( positions[i], radius );
+				Gizmo.Draw.LineSphere( WorldPosition + positions[i], radius );
 			}
 
 		}
@@ -104,7 +104,7 @@ public sealed class DroneInteraction : Component
 
 		for ( int i = 0; i < nbSpheres; i++ )
 		{
-			positions[i] = WorldPosition + Rotation.FromYaw( anglePerSphere * i ) * startPosition;
+			positions[i] = LocalPosition + Rotation.FromYaw( anglePerSphere * i ) * startPosition;
 		}
 
 		return positions;
@@ -115,12 +115,10 @@ public sealed class DroneInteraction : Component
 		return index < 0 ? positions.Length - 1 : index % positions.Length;
 	}
 
-	Vector3 DronePosition( Vector3 worldPosition )
+	Vector3 DronePosition( Vector3 localPosition )
 	{
-		return worldPosition - Vector3.Up * height - WorldPosition;
+		return localPosition - Vector3.Up * height;
 	}
-
-
 
 
 	#region Public Methods

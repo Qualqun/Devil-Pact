@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 public class DroneEnemy : BaseEnemyBehaviour
 {
 
-	[Property, Group( "Stats" )] public float bulletSpeed { get; set; } = 180f;
-	[Property, Group( "Stats" )] public float bulletDamage { get; set; } = 6f;
-	[Property, Group( "Stats" )] public float fireRate { get; set; } = 1.2f;
+	[Property, Group( "Bullet stats" )] public float bulletSpeed { get; set; } = 180f;
+	[Property, Group( "Bullet stats" )] public float bulletDamage { get; set; } = 6f;
+	[Property, Group( "Bullet stats" )] public float burstFrequency { get; set; } = 1.2f;
+	[Property, Group( "Bullet stats" )] public float burstDuration { get; set; } = 3;
+	[Property, Group( "Bullet stats" )] public int nbBulletBurst { get; set; } = 3;
 
 
 	[Property, Group( "Stats" )] float rotationSpeed { get; set; } = 500f;
@@ -62,10 +64,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 				firstPosition = playerLocked.GetClosestPosition( WorldPosition, out iPos );
 
-				GameObject.SetParent( playerLocked.GameObject );
-				moveTask = GoToLocalPosition( firstPosition, iPos );
-
-
+				moveTask = GoTo( firstPosition, iPos );
 				cancellation = new CancellationTokenSource();
 
 				_ = AttackBehaviour( cancellation.Token );
@@ -113,7 +112,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 	{
 		if ( playerLocked.NextPositionAvailable( iPos, rotationDirection, out int direction, out int iNextPos, out Vector3 nextPosition ) )
 		{
-			moveTask = GoToLocalPosition( nextPosition, iNextPos );
+			moveTask = GoTo( nextPosition, iNextPos );
 			rotationDirection = direction;
 			iPos = iNextPos;
 
@@ -125,19 +124,18 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 	void FindNewPosition()
 	{
-
-		if ( playerLocked.GetNewPosition( iPos, rotationDirection, out int iNewPos, out Vector3 newPosition ) )
+		if ( playerLocked.GetNewPosition( iPos, rotationDirection, out int iNewPos, out Vector3 newLocalPosition ) )
 		{
-			float distance = Vector3.DistanceBetween( newPosition.WithZ( 0 ), LocalPosition.WithZ( 0 ) );
+			float distance = Vector3.DistanceBetween( newLocalPosition.WithZ( 0 ), LocalPosition.WithZ( 0 ) );
 
-			Vector3 direction = (newPosition - LocalPosition).WithZ( 0 ).Normal;
-			Vector3 control = LocalPosition.WithZ( 0 ) + direction * distance / 2f + Vector3.Up * heightFly;
+			Vector3 droneLocalPositon = (WorldPosition - target.WorldPosition).WithZ( 0 );
+			Vector3 direction = (newLocalPosition - droneLocalPositon).WithZ( 0 ).Normal;
+			Vector3 control = droneLocalPositon + direction * distance / 2f + Vector3.Up * heightFly;
 
-			moveTask = GoToBezierLocalPosition( newPosition, control, iNewPos );
+			moveTask = GoToBezier( newLocalPosition, control, iNewPos );
 			iPos = iNewPos;
 		}
 	}
-
 	void Shoot()
 	{
 		Vector3 direction = target.WorldPosition.WithZ( 0 ) - WorldPosition.WithZ( 0 );
@@ -151,10 +149,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 		bulletBehaviour.gameManager = gameManager;
 
 		newBullet.NetworkSpawn();
-
-		Log.Info( "Shoot" );
 	}
-
 
 	async Task DroneFall()
 	{
@@ -181,9 +176,9 @@ public class DroneEnemy : BaseEnemyBehaviour
 		fallTask = null;
 	}
 
-	async Task GoToLocalPosition( Vector3 localTarget, int iNextPos )
+	async Task GoTo( Vector3 localTarget, int iNextPos )
 	{
-		Vector3 startPosition = LocalPosition;
+		Vector3 startPosition = WorldPosition - target.WorldPosition;
 		Vector3 endPosition = localTarget;
 
 		float timer = 0f;
@@ -193,7 +188,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 		{
 			float t = timer / duration;
 
-			LocalPosition = Vector3.Lerp( startPosition, endPosition, t );
+			WorldPosition = target.WorldPosition + Vector3.Lerp( startPosition, endPosition, t );
 			timer += Time.Delta;
 
 			canShoot = true;
@@ -209,15 +204,16 @@ public class DroneEnemy : BaseEnemyBehaviour
 			await Task.FrameEnd();
 		}
 
-		LocalPosition = endPosition;
+		WorldPosition = target.WorldPosition + localTarget;
 		moveTask = null;
 
 	}
 
-	async Task GoToBezierLocalPosition( Vector3 localTarget, Vector3 control, int iNextPos )
+	async Task GoToBezier( Vector3 localTarget, Vector3 localControl, int iNextPos )
 	{
-		Vector3 startPosition = LocalPosition;
-		Vector3 endPosition = localTarget;
+		Vector3 startPosition = WorldPosition - target.WorldPosition;
+		Vector3 endPosition =  localTarget;
+		Vector3 control =  localControl;
 
 		float timer = 0f;
 		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / rotationSpeed;
@@ -227,10 +223,10 @@ public class DroneEnemy : BaseEnemyBehaviour
 			float t = timer / duration;
 			float easedT = 1f - (float)Math.Pow( 1f - t, 3f );
 
-			LocalPosition = Vector3.CubicBezier( startPosition, endPosition, control, control, easedT );
-			timer += Time.Delta;
+			WorldPosition = target.WorldPosition + Vector3.CubicBezier( startPosition, endPosition, control, control, easedT );
 
-			canShoot = false ;
+			timer += Time.Delta;
+			canShoot = false;
 
 			if ( playerLocked.PositionIsAvailable( iNextPos ) )
 			{
@@ -243,26 +239,61 @@ public class DroneEnemy : BaseEnemyBehaviour
 			await Task.FrameEnd();
 		}
 
-		LocalPosition = endPosition;
+		WorldPosition = target.WorldPosition + localTarget;
 		moveTask = null;
 	}
 
 	async Task AttackBehaviour( CancellationToken token )
 	{
+		Task burstShoot = null;
 		float timer = 0f;
 
 		while ( !token.IsCancellationRequested )
 		{
-
 			timer += canShoot ? Time.Delta : 0f;
 
-			if ( timer >= fireRate )
+			if ( timer >= burstFrequency && burstShoot == null )
 			{
-				Shoot();
-				timer = 0f;
+				burstShoot = BurstShoot();
+
+				if ( burstShoot.IsCompleted )
+				{
+					timer = 0f;
+					burstShoot = null;
+				}
 			}
 
 			await Task.FrameEnd();
 		}
 	}
+
+	async Task BurstShoot()
+	{
+		float timer = 0f;
+		float shootDuration = burstDuration / nbBulletBurst;
+
+		int nbShoot = 0;
+
+		while ( true )
+		{
+			timer += canShoot ? Time.Delta : 0f;
+
+			if ( timer >= shootDuration )
+			{
+				Shoot();
+
+				timer = 0;
+				nbShoot++;
+
+				if ( nbShoot >= nbBulletBurst )
+					return;
+
+			}
+
+			await Task.FrameEnd();
+		}
+	}
+
+
+
 }
