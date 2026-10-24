@@ -186,6 +186,17 @@ public sealed class GameManager : Component
 	}
 
 	[Rpc.Broadcast]
+	public void Broadcast_RoundEnded( bool roundLost )
+	{
+		GameHUD panel = Scene.GetAllComponents<GameHUD>().FirstOrDefault();
+
+		if ( panel != null )
+			panel.OnRoundEnded( roundLost );
+		else
+			Log.Warning( "GameHUD not found in the scene!" );
+	}
+
+	[Rpc.Broadcast]
 	public void Broadcast_HideEnemyCount()
 	{
 		GameHUD panel = Scene.GetAllComponents<GameHUD>().FirstOrDefault();
@@ -403,8 +414,8 @@ public sealed class GameManager : Component
 			return;
 
 		GameState.Server_SetPhaseTimer( 0f );
-		GameState.Server_SetLastRoundLost( roundLost );
 		GameState.Server_SetGameState( GameStateType.WaitingForNextRound );
+		Broadcast_RoundEnded( roundLost );
 
 		StopRoundSpawner();
 		RemoveAllEnemies();

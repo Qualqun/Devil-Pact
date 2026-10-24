@@ -3,6 +3,7 @@
 @using System;
 @using System.Collections.Generic;
 @using System.Globalization;
+@using System.Linq;
 @inherits PanelComponent
 @namespace Sandbox
 
@@ -33,6 +34,34 @@
 					</div>
 				</div>
 			</div>
+
+			@if (Teammates.Count > 0)
+			{
+				<div class="teammates">
+					@foreach (var mate in Teammates)
+					{
+						<div class="teammate @(mate.isPermanentlyDead ? "gone" : mate.isDead ? "down" : "")">
+							<div class="teammate-name">
+								@TeammateName(mate)
+								@if (mate.isPermanentlyDead)
+								{
+									<span class="teammate-status">GONE</span>
+								}
+								else if (mate.isDead)
+								{
+									<span class="teammate-status">DOWN</span>
+								}
+							</div>
+							<div class="teammate-panel">
+								<div class="teammate-bar">
+									<div class="teammate-fill" style="width: @TeammateHealthWidth(mate)%"></div>
+								</div>
+								<div class="teammate-lives">x@(mate.State?.Lives ?? 0)</div>
+							</div>
+						</div>
+					}
+				</div>
+			}
 		</div>
 	}
 
@@ -105,6 +134,39 @@
 			float current = PlayerState?.Experience ?? 0f;
 			return (current / max).Clamp(0f, 1f);
 		}
+	}
+
+	List<PlayerBehaviour> Teammates =>
+		Scene?.GetAllComponents<PlayerBehaviour>()
+			.Where(player => player.IsValid() && player.IsProxy)
+			.OrderBy(player => player.Network.OwnerId)
+			.ToList() ?? new List<PlayerBehaviour>();
+
+	static string TeammateName(PlayerBehaviour mate) => mate.Network.Owner?.DisplayName ?? "Player";
+
+	static string TeammateHealthWidth(PlayerBehaviour mate)
+	{
+		var state = mate.State;
+		float fraction = state == null || state.MaxHp <= 0f ? 0f : (state.Hp / state.MaxHp).Clamp(0f, 1f);
+
+		return (fraction * 100f).ToString("0.##", CultureInfo.InvariantCulture);
+	}
+
+	int TeammatesHash()
+	{
+		var hash = new HashCode();
+
+		foreach (var mate in Teammates)
+		{
+			hash.Add(mate.Network.OwnerId);
+			hash.Add(MathF.Ceiling(mate.State?.Hp ?? 0f));
+			hash.Add(MathF.Ceiling(mate.State?.MaxHp ?? 0f));
+			hash.Add(mate.State?.Lives ?? 0);
+			hash.Add(mate.isDead);
+			hash.Add(mate.isPermanentlyDead);
+		}
+
+		return hash.ToHashCode();
 	}
 
 	public void SetHealth(float currentHealth, float maxHealth)
@@ -280,7 +342,8 @@
 			ShowWorldArrow,
 			arrowVisible,
 			arrowStyle
-		)
+		),
+		TeammatesHash()
 	);
 
 	protected override void OnDisabled()
