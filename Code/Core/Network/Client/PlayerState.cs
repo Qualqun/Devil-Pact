@@ -51,7 +51,7 @@ public sealed class PlayerState : Component
 	[Property, Sync] public float DamageMultiplier { get; set; } = 1f;
 	[Property, Sync] public float SizeMultiplier { get; set; } = 1f;
 	[Property, Sync] public NetList<ModifierType> ActiveModifiers { get; set; } = new();
-	[Property, Sync] public Vector3 Velocity { get; set; } = Vector3.Zero;
+	[Sync] public Vector3 Velocity { get; set; } = Vector3.Zero;
 
 	public float FireRate => BaseFireRate * FireRateMultiplier;
 	public float BulletDamage => BaseBulletDamage * DamageMultiplier;

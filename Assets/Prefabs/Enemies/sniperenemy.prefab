@@ -3,7 +3,7 @@
     "__guid": "550d6052-1a2e-4f07-8865-e53e4716cea7",
     "__version": 2,
     "Flags": 0,
-    "Name": "rangeenemy",
+    "Name": "sniperenemy",
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
@@ -66,8 +66,8 @@
         "SurfaceVelocity": "0,0,0"
       },
       {
-        "__type": "RangeEnemy",
-        "__guid": "7a7a96c3-a5e8-42fe-b5e2-eee623673e4a",
+        "__type": "SniperEnemy",
+        "__guid": "3d5232d2-3adc-4a73-825d-10194d1552ad",
         "__enabled": true,
         "Flags": 0,
         "agent": {
@@ -83,8 +83,8 @@
         },
         "bulletDamage": 6,
         "bulletDamagePerRound": 6,
-        "bulletSize": 16,
-        "bulletSpeed": 1000,
+        "bulletSize": 32,
+        "bulletSpeed": 180,
         "capsuleCollider": {
           "_type": "component",
           "component_id": "c2889749-06cd-4885-baf4-6b6e9d308f12",
@@ -93,16 +93,16 @@
         },
         "enemyPresentation": {
           "_type": "component",
-          "component_id": "796c3ef9-5862-4257-ac62-5c741dc0b976",
+          "component_id": "52538c48-3e97-457b-b81c-d7e16167eda0",
           "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
-          "component_type": "RangeEnemyPresentation"
+          "component_type": "SniperEnemyPresentation"
         },
         "gunPoint": {
           "_type": "gameobject",
           "go": "0847bc44-9917-41af-a64c-d6173528996b"
         },
-        "hp": 30,
-        "hpPerRound": 6,
+        "hp": 25,
+        "hpPerRound": 25,
         "meleDamage": 8,
         "meleDamagePerRound": 6,
         "OnComponentDestroy": null,
@@ -114,11 +114,12 @@
         "range": 300,
         "reloadTime": 1.4,
         "repathDistance": 64,
-        "shootTime": 1.2
+        "shootTime": 1.2,
+        "spawnType": "Doors"
       },
       {
-        "__type": "RangeEnemyPresentation",
-        "__guid": "796c3ef9-5862-4257-ac62-5c741dc0b976",
+        "__type": "SniperEnemyPresentation",
+        "__guid": "52538c48-3e97-457b-b81c-d7e16167eda0",
         "__enabled": true,
         "Flags": 0,
         "blinkSpeed": 0.05,
@@ -188,16 +189,26 @@
                 "__guid": "55877364-1eab-4af3-a53b-76223c029f8a",
                 "__enabled": true,
                 "Flags": 0,
-                "AnimationGraph": "animgraphs/ennemi2.vanmgrph",
+                "AnimationGraph": {
+                  "Id": "79d7bafa-7b1a-4499-bfed-3a85a21097c5",
+                  "Path": "animgraphs/ennemi2.vanmgrph"
+                },
                 "BodyGroups": 18446744073709551615,
                 "BoneMergeTarget": null,
                 "CreateAttachments": false,
                 "CreateBoneObjects": true,
+                "DeformationMode": "Normal",
                 "LodOverride": null,
                 "MaterialGroup": null,
-                "MaterialOverride": "art/shaders/enemy.vmat",
+                "MaterialOverride": {
+                  "Id": "1460e9d3-9411-4841-9b92-1f21d09d5749",
+                  "Path": "art/shaders/enemy.vmat"
+                },
                 "Materials": null,
-                "Model": "art/asset/player/ennemi2.vmdl",
+                "Model": {
+                  "Id": "e10e4c98-f1f3-43c1-9e69-c1703bf87cf3",
+                  "Path": "art/asset/player/ennemi2.vmdl"
+                },
                 "Morphs": {},
                 "OnComponentDestroy": null,
                 "OnComponentDisabled": null,
@@ -205,13 +216,7 @@
                 "OnComponentFixedUpdate": null,
                 "OnComponentStart": null,
                 "OnComponentUpdate": null,
-                "Parameters": {
-                  "bools": {},
-                  "ints": {},
-                  "floats": {},
-                  "vectors": {},
-                  "rotations": {}
-                },
+                "Parameters": {},
                 "PlaybackRate": 1,
                 "RenderOptions": {
                   "GameLayer": true,

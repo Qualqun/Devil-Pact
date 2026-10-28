@@ -2,26 +2,34 @@ using Sandbox;
 using System.Threading.Tasks;
 
 
-public class RangeEnemy : BaseEnemyBehaviour
+public class SniperEnemy : BaseEnemyBehaviour
 {
 
-	[Property, Group( "Stats" )] public float range { get; set; } = 100f;
-	[Property, Group( "Stats" )] public float bulletSpeed { get; set; } = 180f;
-	[Property, Group( "Stats" )] public float bulletDamage { get; set; } = 6f;
-	[Property, Group( "Stats" )] public float aimTime { get; set; } = 0.4f;
-	[Property, Group( "Stats" )] public float shootTime { get; set; } = 1.2f;
-	[Property, Group( "Stats" )] public float reloadTime { get; set; } = 1.4f;
-	[Property, Group( "Stats" )] public float bulletSize { get; set; } = 32f;
+	[Property, Group( "Stats" ), Order( 20 )] float range { get; set; } = 100f;
+	[Property, Group( "Stats" )] float bulletSpeed { get; set; } = 180f;
+	[Property, Group( "Stats" )] float bulletDamage { get; set; } = 6f;
+	[Property, Group( "Stats" )] float aimTime { get; set; } = 0.4f;
+	[Property, Group( "Stats" )] float shootTime { get; set; } = 1.2f;
+	[Property, Group( "Stats" )] float reloadTime { get; set; } = 1.4f;
 
-	[Property, Group( "Growth stats" )] public float bulletDamagePerRound { get; set; } = 6f;
+	[Property, Group( "Growth stats" )] float bulletDamagePerRound { get; set; } = 6f;
 
-	[Property, Group( "Refs" )] new RangeEnemyPresentation enemyPresentation { get; set; }
-	[Property, Group( "Refs" )] CapsuleCollider capsuleCollider { get; set; }
+	[Property, Group( "Refs" )] new SniperEnemyPresentation enemyPresentation { get; set; }
+	[Property, Group( "Refs" )] GameObject gunPoint { get; set; }
 
-	[Property, Group( "Refs" )] public GameObject bullet { get; set; }
-	[Property, Group( "Refs" )] public GameObject gunPoint { get; set; }
+	[Property, Group( "Refs Prefabs" ), Order( 200 )] GameObject bullet { get; set; }
+
 
 	Task attackTask;
+	float bulletSize;
+
+	protected override void OnStart()
+	{
+		base.OnStart();
+
+		bulletSize = bullet.GetComponent<EnemyBulletBehaviour>().size;
+	}
+
 
 	protected override void OnUpdate()
 	{
@@ -35,25 +43,8 @@ public class RangeEnemy : BaseEnemyBehaviour
 
 		if ( !noTarget )
 		{
-			bool canShoot = targetDist < range && attackTask == null;
-
-			if ( canShoot )
-			{
-				Capsule enemyCapsule = new Capsule( capsuleCollider.Start, capsuleCollider.End, capsuleCollider.Radius );
-
-				SceneTraceResult hit = Scene.Trace
-					.Sphere( bulletSize, gunPoint.WorldPosition, target.WorldPosition + Vector3.Up * 32f )
-					.WithoutTags( "enemy" ).Run();
-
-				canShoot = false;
-
-				if ( hit.Hit && !hit.StartedSolid )
-				{
-					canShoot = hit.Collider.Tags.Has( "player" );
-				}
-
-			}
-
+			bool canShoot = CanShoot();
+			
 			enemyPresentation.stand = canShoot || attackTask != null;
 
 			if ( canShoot || attackTask != null )
@@ -72,6 +63,29 @@ public class RangeEnemy : BaseEnemyBehaviour
 
 		}
 	}
+
+	bool CanShoot()
+	{
+		bool canShoot = targetDist < range && attackTask == null;
+
+		if ( canShoot )
+		{
+			SceneTraceResult hit = Scene.Trace
+				.Sphere( bulletSize, gunPoint.WorldPosition, target.WorldPosition + Vector3.Up * 32f )
+				.WithoutTags( "enemy" ).Run();
+
+			canShoot = false;
+
+			if ( hit.Hit && !hit.StartedSolid )
+			{
+				canShoot = hit.Collider.Tags.Has( "player" );
+			}
+
+		}
+
+		return canShoot;
+	}
+
 
 	void Shoot( Vector3 direction )
 	{
@@ -112,7 +126,7 @@ public class RangeEnemy : BaseEnemyBehaviour
 		attackTask = null;
 	}
 
-	
+
 
 
 	async Task AimRotate( Vector3 direction, float duration )

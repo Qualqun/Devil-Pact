@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 public class DroneEnemy : BaseEnemyBehaviour
 {
 
-	[Property, Group( "Bullet stats" )] public float bulletSpeed { get; set; } = 180f;
+	[Property, Group( "Bullet stats" ), Order( 21 )] public float bulletSpeed { get; set; } = 180f;
 	[Property, Group( "Bullet stats" )] public float bulletDamage { get; set; } = 6f;
 	[Property, Group( "Bullet stats" )] public float burstFrequency { get; set; } = 1.2f;
 	[Property, Group( "Bullet stats" )] public float burstDuration { get; set; } = 3;
 	[Property, Group( "Bullet stats" )] public int nbBulletBurst { get; set; } = 3;
 
 
-	[Property, Group( "Stats" )] float rotationSpeed { get; set; } = 500f;
+	[Property, Group( "Stats" ), Order( 20 )] float rotationSpeed { get; set; } = 500f;
 	[Property, Group( "Stats" )] float fallDuration { get; set; } = 1f;
 	[Property, Group( "Stats" )] float heightFly { get; set; } = 100f;
 
-	[Property, Group( "Refs" )] public GameObject bullet { get; set; }
 	[Property, Group( "Refs" )] public GameObject gunPoint { get; set; }
+	[Property, Group( "Refs Objects" ), Order( 200 )] public GameObject bullet { get; set; }
 
-	[Property, Group( "Debug" )] bool showGizmo = false;
+	[Property, Group( "Debug" ), Order( 1000 )] bool showGizmo = false;
 
 	Task fallTask = null;
 	Task moveTask = null;

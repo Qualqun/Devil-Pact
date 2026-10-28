@@ -2,7 +2,7 @@ using Sandbox;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class RangeEnemyPresentation : BaseEnemyPresentation
+public class SniperEnemyPresentation : BaseEnemyPresentation
 {
 	[Property, Group( "Visual shoot" )] float blinkSpeed { get; set; } = 0.01f;
 	[Property, Group( "Visual shoot" )] LineRenderer laserInfo { get; set; }

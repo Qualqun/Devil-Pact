@@ -18,17 +18,16 @@ public enum SpawnType
 
 public class BaseEnemyBehaviour : Component
 {
+	[Property, Order( 0 )] public SpawnType spawnType { get; set; } = SpawnType.Doors;
+	[Property, Group( "Base stats" ), Order( 10 )] public float hp { get; set; } = 25f;
+	[Property, Group( "Base stats" )] public float meleDamage { get; set; } = 8f;
+	[Property, Group( "Base stats" )] protected float repathDistance { get; set; } = 64f;
 
-	[Property] public SpawnType spawnType { get; set; } = SpawnType.Doors;
-	[Property, Group( "Stats" )] public float hp { get; set; } = 25f;
-	[Property, Group( "Stats" )] public float meleDamage { get; set; } = 8f;
-
-	[Property, Group( "Growth stats" )] public float hpPerRound { get; set; } = 25f;
+	[Property, Group( "Growth stats" ), Order( 30 )] public float hpPerRound { get; set; } = 25f;
 	[Property, Group( "Growth stats" )] public float meleDamagePerRound { get; set; } = 6f;
 
-	[Property, Group( "Refs" )] protected NavMeshAgent agent { get; set; }
+	[Property, Group( "Refs" ), Order( 100 )] protected NavMeshAgent agent { get; set; }
 	[Property, Group( "Refs" )] protected BaseEnemyPresentation enemyPresentation { get; set; }
-	[Property, Group( "Refs" )] protected float repathDistance { get; set; } = 64f;
 
 	protected List<PlayerBehaviour> players;
 	public GameManager gameManager { get; set; }
@@ -104,7 +103,7 @@ public class BaseEnemyBehaviour : Component
 
 		enemyPresentation?.TakeHit();
 
-		
+
 
 		if ( hp <= 0f )
 		{
@@ -136,8 +135,9 @@ public class BaseEnemyBehaviour : Component
 					if ( dist < targetDist )
 					{
 						noTarget = false;
-						target = players[i];
 						targetDist = dist;
+						target = players[i];
+
 					}
 					else if ( target == players[i] )
 					{
