@@ -118,13 +118,19 @@ public sealed class PlayerState : Component
 
 	public void AddDamageDealt( float amount ) => DamageDealt += amount;
 	public void AddDeath() => Deaths++;
-	public void AddPactMade() => PactsMade++;
 	public void AddLevelGained() => LevelsGained++;
+
+	public void AddPactMade()
+	{
+		PactsMade++;
+		RunAchievements.OnPactMade();
+	}
 
 	[Rpc.Owner]
 	public void Owner_AddKill()
 	{
 		Kills++;
+		RunAchievements.OnKill();
 	}
 
 	void ResetRunStats()
@@ -272,6 +278,7 @@ public sealed class PlayerState : Component
 		Host_ApplyBoost( boost );
 
 		ClaimedBoosts.Add( boost );
+		RunAchievements.OnPowerClaimed( ClaimedBoosts );
 
 		switch ( boost )
 		{

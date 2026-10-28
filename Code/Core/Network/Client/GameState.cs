@@ -35,9 +35,6 @@ public sealed class GameState : Component
 	public int EnemyCount { get; private set; }
 
 	[Sync( SyncFlags.FromHost )]
-	public bool LastRoundLost { get; private set; }
-
-	[Sync( SyncFlags.FromHost )]
 	public float RunTime { get; private set; }
 
 	public List<PlayerBehaviour> Players { get; private set; } = new List<PlayerBehaviour>();
@@ -130,14 +127,6 @@ public sealed class GameState : Component
 			return;
 
 		RunTime = seconds;
-	}
-
-	public void Server_SetLastRoundLost( bool lost )
-	{
-		if ( !Networking.IsHost )
-			return;
-
-		LastRoundLost = lost;
 	}
 
 	public void Server_SetPlayerReadyCount( int count )

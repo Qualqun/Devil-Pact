@@ -25,8 +25,21 @@ public sealed class MPlayerController : Component
 
 	protected override void OnUpdate()
 	{
+		if ( GameHUD.IsPauseMenuOpen )
+		{
+			StandStill();
+			return;
+		}
+
 		PlayerRotation();
 		Inputs();
+	}
+
+	void StandStill()
+	{
+		rigidbody.Velocity = Vector3.Zero;
+		playerBehaviour.playerPresentation.move = Vector2.Zero;
+		playerBehaviour.State.Velocity = Vector3.Zero;
 	}
 
 	void PlayerRotation()

@@ -285,6 +285,74 @@
 			@PhaseText
 		</div>
 	}
+
+	@if (IsPauseMenuOpen && LocalPlayer != null)
+	{
+		<div class="pause-overlay">
+			<div class="pause-card">
+				<div class="pause-title">PAUSED</div>
+				<div class="pause-subtitle">@PauseSubtitle</div>
+
+				<div class="pause-section">
+					<div class="run-stats-title">YOUR BUILD</div>
+
+					<div class="pause-health">
+						<div class="pause-health-header">
+							<span class="pause-health-label">HEALTH</span>
+							<span class="pause-health-value">@MathF.Ceiling(LocalPlayer.Hp) / @MathF.Ceiling(LocalPlayer.MaxHp)</span>
+						</div>
+						<div class="pause-health-bar">
+							<div class="pause-health-fill" style="width: @LocalHealthWidth%"></div>
+						</div>
+					</div>
+
+					<div class="pause-chips">
+						@foreach (var stat in BuildStats)
+						{
+							<div class="pause-chip">
+								<span class="pause-chip-value">@stat.Value</span>
+								<span class="pause-chip-label">@stat.Label</span>
+							</div>
+						}
+					</div>
+
+					@if (ClaimedPowers.Count > 0)
+					{
+						<div class="run-powers">
+							@foreach (var claimed in ClaimedPowers)
+							{
+								<div class="run-power">
+									<Image class="run-power-icon" Texture="@claimed.Power.Image" />
+									@if (claimed.Count > 1)
+									{
+										<span class="run-power-count">x@(claimed.Count)</span>
+									}
+								</div>
+							}
+						</div>
+					}
+				</div>
+
+				<div class="pause-section">
+					<div class="run-stats-title">THIS RUN</div>
+					<div class="pause-chips">
+						@foreach (var stat in RunStats.Take(3))
+						{
+							<div class="pause-chip">
+								<span class="pause-chip-value">@stat.Value</span>
+								<span class="pause-chip-label">@stat.Label</span>
+							</div>
+						}
+					</div>
+				</div>
+
+				<div class="pause-buttons">
+					<div class="pause-button" @onclick=@(() => SetPauseMenu(false))>RESUME</div>
+					<div class="pause-button quit" @onclick=@QuitGame>QUIT</div>
+				</div>
+			</div>
+		</div>
+	}
 </root>
 
 @code
@@ -298,7 +366,8 @@
 	public Panel PlayerCountPanel { get; set; }
 
 	private GameStateType? _lastState;
-	private RealTimeSince _timeSinceStateChange;
+	private RealTimeSince _timeSinceRoundEnded;
+	private bool _lastRoundWon;
 	private bool _isFadingOutPact = false;
 	private bool _pactCompleted = false;
 
@@ -339,7 +408,7 @@
 	}
 
 	private bool ShowRoundWonBanner =>
-		GameState?.State == GameStateType.WaitingForNextRound && _timeSinceStateChange < 2.0f;
+		_lastRoundWon && GameState?.State == GameStateType.WaitingForNextRound && _timeSinceRoundEnded < 2.0f;
 
 	private List<(string Label, string Value)> RunStats
 	{
@@ -426,14 +495,11 @@
 		}
 	}
 
-	private bool IsRoundLost => GameState?.LastRoundLost ?? false;
-
 	// mustDevilPact is only set on players who went down this round
-	private bool IsRoundEndBad => IsRoundLost || MustDevilPact;
+	private bool IsRoundEndBad => MustDevilPact;
 
 	private string RoundEndText =>
-		IsRoundLost ? "ROUND LOST"
-		: MustDevilPact ? "YOU FELL"
+		MustDevilPact ? "YOU FELL"
 		: "ROUND WON";
 
 	private bool AreAllPlayersReady()
@@ -557,6 +623,15 @@
 	protected override void OnStart()
 	{
 		base.OnStart();
+
+		IsPauseMenuOpen = false;
+	}
+
+	protected override void OnDestroy()
+	{
+		SetPauseMenu(false);
+
+		base.OnDestroy();
 	}
 
 	protected override void OnUpdate()
@@ -566,12 +641,13 @@
 		if (GameState is null)
 			return;
 
+		UpdatePauseMenu();
+
 		if (GameState.State != _lastState)
 		{
 			var previousState = _lastState;
 
 			_lastState = GameState.State;
-			_timeSinceStateChange = 0;
 			_isFadingOutPact = false;
 			_pactCompleted = false;
 
@@ -582,6 +658,8 @@
 				_ = SubmitRunAndRefreshLadder();
 			else if (GameState.State == GameStateType.WaitingForPlayers)
 				_ = RefreshLadder();
+			else if (GameState.State == GameStateType.Playing && previousState is GameStateType.Starting or GameStateType.WaitingForNextRound)
+				RunAchievements.OnRoundStarted(GameState.CurrentRound);
 		}
 	}
 
@@ -636,6 +714,15 @@
 		Panel.AddClass("hidden");
 	}
 
+	public void OnRoundEnded(bool roundLost)
+	{
+		_lastRoundWon = !roundLost;
+		_timeSinceRoundEnded = 0;
+
+		if (_lastRoundWon)
+			RunAchievements.OnRoundWon(LocalPlayerBehaviour);
+	}
+
 	public void ShowEnemyCount()
 	{
 		EnemyCountPanel?.RemoveClass("hidden");
@@ -652,7 +739,97 @@
 		PlayerCountPanel?.RemoveClass("hidden");
 	}
 
+	public static bool IsPauseMenuOpen { get; private set; }
+
+	private bool _pausedWorld;
+
+	private bool IsInRun =>
+		GameState?.State is GameStateType.Starting or GameStateType.Playing or GameStateType.WaitingForNextRound;
+
+	private static bool IsAlone => Connection.All.Count <= 1;
+
+	private string PauseSubtitle =>
+		$"ROUND {CurrentRoundText} · " + (_pausedWorld ? "THE GAME IS PAUSED" : "THE GAME KEEPS RUNNING FOR YOUR TEAM");
+
+	private List<(string Label, string Value)> BuildStats
+	{
+		get
+		{
+			var player = LocalPlayer;
+
+			return new List<(string Label, string Value)>
+			{
+				("DAMAGE", $"{player.BulletDamage:0.#}"),
+				("SHOTS / SEC", $"{player.FireRate:0.#}"),
+				("MOVE SPEED", $"{player.MoveSpeed:0}"),
+				("BULLET SPEED", $"{player.BulletSpeed:0}"),
+			};
+		}
+	}
+
+	private string LocalHealthWidth
+	{
+		get
+		{
+			var player = LocalPlayer;
+			float fraction = player == null || player.MaxHp <= 0f ? 0f : (player.Hp / player.MaxHp).Clamp(0f, 1f);
+
+			return (fraction * 100f).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+		}
+	}
+
+	private void UpdatePauseMenu()
+	{
+		// Escape only opens our menu during a run, the lobby and game over keep the s&box menu
+		if (Input.EscapePressed && IsInRun)
+		{
+			Input.EscapePressed = false;
+			SetPauseMenu(!IsPauseMenuOpen);
+		}
+
+		if (IsPauseMenuOpen && !IsInRun)
+			SetPauseMenu(false);
+
+		// Someone joined while the world was paused
+		if (_pausedWorld && !IsAlone)
+		{
+			Scene.TimeScale = 1f;
+			_pausedWorld = false;
+		}
+	}
+
+	private void SetPauseMenu(bool open)
+	{
+		IsPauseMenuOpen = open;
+
+		bool pauseWorld = open && IsAlone && Networking.IsHost;
+
+		if (pauseWorld != _pausedWorld && Scene is not null)
+		{
+			Scene.TimeScale = pauseWorld ? 0f : 1f;
+			_pausedWorld = pauseWorld;
+		}
+	}
+
+	private void QuitGame()
+	{
+		SetPauseMenu(false);
+		Game.Close();
+	}
+
 	protected override int BuildHash()
+	{
+		var player = LocalPlayer;
+
+		return HashCode.Combine(
+			StateHash(),
+			IsPauseMenuOpen,
+			_pausedWorld,
+			IsPauseMenuOpen && player != null ? HashCode.Combine(MathF.Ceiling(player.Hp), player.MaxHp, player.Lives) : 0
+		);
+	}
+
+	private int StateHash()
 	{
 		if (GameState is null)
 			return 0;
@@ -681,7 +858,7 @@
 					_pactCompleted,
 					player?.RewardTaken ?? false
 				),
-				HashCode.Combine(MustDevilPact, IsLocalPlayerOut, LivesLeft, BonusCount, IsRoundLost)
+				HashCode.Combine(MustDevilPact, IsLocalPlayerOut, LivesLeft, BonusCount)
 			);
 		}
 
