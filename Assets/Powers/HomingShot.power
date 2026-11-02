@@ -1,6 +1,7 @@
 {
   "Title": "Homing Rounds",
   "BoostType": "HomingShot",
+  "Rarity": "Legendary",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

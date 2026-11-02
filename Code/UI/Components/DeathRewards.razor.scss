@@ -10,6 +10,27 @@
 	}
 }
 
+@keyframes card-flash {
+	0% { opacity: 0.95; }
+	100% { opacity: 0; }
+}
+
+@keyframes card-punch {
+	0% { transform: scale(1.18); }
+	60% { transform: scale(0.97); }
+	100% { transform: scale(1); }
+}
+
+@keyframes rays-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+@keyframes rays-in {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
 .death-rewards {
 	position: absolute;
 	top: 0;
@@ -97,38 +118,65 @@
 	max-width: 1150px;
 	display: flex;
 	flex-direction: row;
-	gap: 24px;
+	gap: 28px;
 	justify-content: center;
-	align-items: stretch;
+	align-items: flex-start;
+	margin-top: 10px;
+}
+
+/* Position in the fan and the deal come from an inline transform set by DeathRewards */
+.card-slot {
+	position: relative;
+	width: 300px;
+	height: 460px;
+	transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1), opacity 0.3s ease;
+}
+
+.card-flipper {
+	width: 100%;
+	height: 100%;
+	transform: scaleX(1);
+	transition: transform 0.15s ease-in;
+
+	&.flipping {
+		transform: scaleX(0);
+	}
+}
+
+.card-back {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	background: linear-gradient(145deg, rgb(40, 8, 12) 0%, rgb(14, 3, 5) 100%);
+	border: 2px solid rgba(255, 50, 50, 0.45);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(255, 0, 0, 0.12);
+
+	.card-back-sigil {
+		font-size: 120px;
+		color: rgba(255, 60, 60, 0.35);
+		text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+	}
 }
 
 .reward-card {
-	flex: 1;
-	max-width: 340px;
-	min-height: 440px;
-	padding: 24px 20px;
-	background: linear-gradient(145deg, rgba(24, 8, 12, 0.95) 0%, rgba(10, 3, 5, 0.98) 100%);
-	border: 1px solid rgba(255, 0, 0, 0.2);
-	border-left: 3px solid rgba(255, 50, 50, 0.8);
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 0, 0, 0.05);
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding: 20px 18px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	cursor: pointer;
-	position: relative;
 	overflow: hidden;
-	transform: skewX(-10deg) scale(1);
-	transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-
-	&::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		height: 2px;
-		background: linear-gradient(to right, rgba(255, 0, 0, 0.8), transparent);
-	}
+	background: linear-gradient(160deg, rgba(24, 8, 12, 0.97) 0%, rgba(10, 3, 5, 0.99) 100%);
+	border: 2px solid rgba(255, 50, 50, 0.5);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+	transform: scale(1);
+	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+	animation: card-punch 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 
 	.card-glow {
 		position: absolute;
@@ -136,97 +184,313 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: radial-gradient(circle at center, rgba(255, 40, 40, 0.25) 0%, transparent 70%);
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity 0.3s ease;
 	}
 
+	.card-flash {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		background-color: white;
+		opacity: 0;
+		animation: card-flash 0.5s ease-out;
+	}
+
 	&:hover {
-		transform: skewX(-10deg) scale(1.05);
-		border-color: rgba(255, 70, 70, 0.8);
-		border-left-color: rgb(255, 100, 100);
-		box-shadow: 0 15px 40px rgba(255, 0, 0, 0.25), inset 0 0 25px rgba(255, 0, 0, 0.2);
+		transform: scale(1.06);
 
 		.card-glow {
 			opacity: 1;
 		}
 
-		.reward-image {
-			border-color: rgba(255, 60, 60, 0.6);
-			box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-		}
-
-		.reward-title {
-			text-shadow: 0 0 20px rgba(255, 80, 80, 0.9);
-		}
-
 		.reward-select-btn {
-			background-color: rgb(220, 30, 30);
-			box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
-			transform: scale(1.03);
+			transform: scale(1.05);
 		}
 	}
 }
 
+/* Name, then rarity, then a big icon, then what changes, then the flavour text */
+.reward-title {
+	font-size: 24px;
+	letter-spacing: 1px;
+	color: rgb(255, 240, 240);
+	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+	text-align: center;
+}
+
+.reward-rarity {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 13px;
+	letter-spacing: 4px;
+	margin-top: 4px;
+	padding: 2px 12px;
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .reward-image {
-	width: 120px;
-	height: 120px;
-	margin-top: 8px;
-	margin-bottom: 20px;
+	width: 130px;
+	height: 130px;
+	margin: 16px 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background: rgba(0, 0, 0, 0.5);
-	border: 1px solid rgba(255, 0, 0, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.15);
 	box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
-	transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
 	img {
-		width: 90px;
-		height: 90px;
+		width: 100px;
+		height: 100px;
 		object-fit: contain;
 		filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
 	}
 }
 
-.reward-title {
-	font-size: 22px;
-	letter-spacing: 1px;
-	color: rgb(255, 240, 240);
-	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-	text-align: center;
-	margin-bottom: 12px;
-	transition: text-shadow 0.3s ease;
+.reward-stats {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.stat-line {
+	font-family: 'Cynosure', sans-serif;
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	.stat-label {
+		color: rgba(255, 255, 255, 0.75);
+		margin-right: 4px;
+	}
+
+	.stat-from {
+		color: rgba(255, 255, 255, 0.45);
+	}
+
+	.stat-arrow {
+		font-family: 'Poppins', sans-serif;
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	.stat-to {
+		font-weight: bold;
+		color: rgb(120, 255, 150);
+		text-shadow: 0 0 8px rgba(80, 255, 120, 0.6);
+	}
 }
 
 .reward-passive {
 	font-family: 'Cynosure', sans-serif;
-	font-size: 15px;
-	line-height: 1.4;
-	color: rgba(255, 255, 255, 0.7);
+	font-size: 13px;
+	line-height: 1.35;
+	color: rgba(255, 255, 255, 0.55);
 	text-align: center;
-	padding: 12px 10px;
+	padding: 10px 6px 0 6px;
 	margin-top: auto;
 	width: 100%;
-	border-top: 1px solid rgba(255, 0, 0, 0.2);
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .reward-select-btn {
 	font-family: 'Cynosure', sans-serif;
-	font-size: 15px;
+	font-size: 14px;
 	font-weight: bold;
 	color: white;
-	background-color: rgba(180, 20, 20, 0.85);
-	border: none;
-	border-left: 2px solid white;
-	padding: 8px 24px;
-	margin-top: 15px;
-	cursor: pointer;
+	padding: 6px 24px;
+	margin-top: 12px;
 	text-transform: uppercase;
-	letter-spacing: 1px;
-	box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-	transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+	letter-spacing: 2px;
+	transition: transform 0.2s ease;
+}
+
+.card-rays {
+	position: absolute;
+	left: -150px;
+	top: -70px;
+	width: 600px;
+	height: 600px;
+	pointer-events: none;
+	animation: rays-in 0.4s ease-out, rays-spin 14s linear infinite;
+
+	.ray {
+		position: absolute;
+		left: 285px;
+		top: 0;
+		width: 30px;
+		height: 600px;
+	}
+}
+
+/* One color per rarity, carried by the whole card: border, glow, label, button and rays */
+.card-slot.rarity-common {
+	.reward-card { border-color: rgba(170, 170, 185, 0.6); }
+	.card-glow { background: radial-gradient(circle at center, rgba(200, 200, 220, 0.15) 0%, transparent 70%); }
+	.reward-rarity { color: rgb(190, 190, 200); }
+	.reward-select-btn { background-color: rgba(120, 120, 135, 0.6); }
+}
+
+.card-slot.rarity-rare {
+	.reward-card {
+		border-color: rgb(70, 150, 255);
+		background: linear-gradient(160deg, rgba(10, 22, 48, 0.97) 0%, rgba(4, 8, 18, 0.99) 100%);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(70, 150, 255, 0.35);
+	}
+	.card-glow { background: radial-gradient(circle at center, rgba(70, 150, 255, 0.25) 0%, transparent 70%); }
+	.reward-rarity { color: rgb(110, 175, 255); }
+	.reward-select-btn { background-color: rgba(50, 120, 230, 0.85); }
+}
+
+.card-slot.rarity-epic {
+	.reward-card {
+		border-color: rgb(180, 80, 255);
+		background: linear-gradient(160deg, rgba(36, 10, 52, 0.97) 0%, rgba(12, 3, 18, 0.99) 100%);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 30px rgba(180, 80, 255, 0.45);
+	}
+	.card-glow { background: radial-gradient(circle at center, rgba(180, 80, 255, 0.28) 0%, transparent 70%); }
+	.reward-rarity { color: rgb(200, 130, 255); }
+	.reward-select-btn { background-color: rgba(150, 60, 230, 0.85); }
+	.ray { background: linear-gradient(to bottom, transparent 0%, rgba(180, 80, 255, 0.22) 50%, transparent 100%); }
+}
+
+.card-slot.rarity-legendary {
+	.reward-card {
+		border-color: rgb(255, 195, 50);
+		background: linear-gradient(160deg, rgba(70, 46, 6, 0.97) 0%, rgba(22, 13, 2, 0.99) 100%);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 45px rgba(255, 190, 40, 0.6);
+	}
+	.card-glow { background: radial-gradient(circle at center, rgba(255, 200, 60, 0.3) 0%, transparent 70%); }
+	.reward-rarity { color: rgb(255, 205, 70); }
+	.reward-select-btn { background-color: rgba(220, 150, 20, 0.9); }
+	.ray { background: linear-gradient(to bottom, transparent 0%, rgba(255, 200, 60, 0.3) 50%, transparent 100%); }
+}
+
+/* Click-to-open card: each click climbs one rarity, punches the card, bursts its new color and shakes the hand */
+@keyframes tap-punch-a {
+	0% { transform: scale(1.16) rotate(-3deg); }
+	50% { transform: scale(0.95) rotate(1deg); }
+	100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes tap-punch-b {
+	0% { transform: scale(1.16) rotate(3deg); }
+	50% { transform: scale(0.95) rotate(-1deg); }
+	100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes tap-burst-a {
+	0% { opacity: 0.9; transform: scale(0.3); }
+	100% { opacity: 0; transform: scale(1.8); }
+}
+
+@keyframes tap-burst-b {
+	0% { opacity: 0.9; transform: scale(0.3); }
+	100% { opacity: 0; transform: scale(1.8); }
+}
+
+@keyframes hand-shake-a {
+	0% { transform: translateX(0px); }
+	25% { transform: translateX(-8px) translateY(3px); }
+	50% { transform: translateX(7px) translateY(-3px); }
+	75% { transform: translateX(-4px); }
+	100% { transform: translateX(0px); }
+}
+
+@keyframes hand-shake-b {
+	0% { transform: translateX(0px); }
+	25% { transform: translateX(8px) translateY(-3px); }
+	50% { transform: translateX(-7px) translateY(3px); }
+	75% { transform: translateX(4px); }
+	100% { transform: translateX(0px); }
+}
+
+@keyframes tap-idle {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.12); }
+	100% { transform: scale(1); }
+}
+
+@keyframes tap-hint-pulse {
+	0% { opacity: 0.4; }
+	50% { opacity: 1; }
+	100% { opacity: 0.4; }
+}
+
+.rewards.shake-a { animation: hand-shake-a 0.25s ease-out; }
+.rewards.shake-b { animation: hand-shake-b 0.25s ease-out; }
+
+.card-back.tap-card {
+	position: relative;
+	flex-direction: column;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+	&.punch-a { animation: tap-punch-a 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+	&.punch-b { animation: tap-punch-b 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+	.card-back-sigil {
+		animation: tap-idle 0.9s ease-in-out infinite;
+	}
+
+	.tap-burst {
+		position: absolute;
+		left: -60px;
+		top: -40px;
+		width: 420px;
+		height: 540px;
+		pointer-events: none;
+		opacity: 0;
+
+		&.burst-a { animation: tap-burst-a 0.45s ease-out; }
+		&.burst-b { animation: tap-burst-b 0.45s ease-out; }
+	}
+
+	.tap-hint {
+		font-family: 'Cynosure', sans-serif;
+		font-size: 18px;
+		letter-spacing: 4px;
+		color: white;
+		margin-top: 10px;
+		animation: tap-hint-pulse 0.8s ease-in-out infinite;
+	}
+}
+
+.card-back.back-common {
+	border-color: rgb(170, 170, 185);
+	box-shadow: 0 0 20px rgba(200, 200, 220, 0.3);
+	.card-back-sigil { color: rgba(220, 220, 235, 0.6); text-shadow: 0 0 25px rgba(220, 220, 235, 0.5); }
+	.tap-burst { background: radial-gradient(circle at center, rgba(220, 220, 235, 0.7) 0%, transparent 60%); }
+}
+
+.card-back.back-rare {
+	border-color: rgb(70, 150, 255);
+	background: linear-gradient(145deg, rgb(12, 28, 60) 0%, rgb(4, 8, 18) 100%);
+	box-shadow: 0 0 40px rgba(70, 150, 255, 0.6);
+	.card-back-sigil { color: rgb(110, 175, 255); text-shadow: 0 0 30px rgba(70, 150, 255, 0.9); }
+	.tap-burst { background: radial-gradient(circle at center, rgba(70, 150, 255, 0.8) 0%, transparent 60%); }
+}
+
+.card-back.back-epic {
+	border-color: rgb(180, 80, 255);
+	background: linear-gradient(145deg, rgb(44, 12, 64) 0%, rgb(12, 3, 18) 100%);
+	box-shadow: 0 0 60px rgba(180, 80, 255, 0.75);
+	.card-back-sigil { color: rgb(200, 130, 255); text-shadow: 0 0 35px rgba(180, 80, 255, 1); }
+	.tap-burst { background: radial-gradient(circle at center, rgba(180, 80, 255, 0.85) 0%, transparent 60%); }
+}
+
+.card-back.back-legendary {
+	border-color: rgb(255, 195, 50);
+	background: linear-gradient(145deg, rgb(84, 56, 8) 0%, rgb(22, 13, 2) 100%);
+	box-shadow: 0 0 80px rgba(255, 190, 40, 0.9);
+	.card-back-sigil { color: rgb(255, 215, 90); text-shadow: 0 0 40px rgba(255, 190, 40, 1); }
+	.tap-burst { background: radial-gradient(circle at center, rgba(255, 210, 80, 0.95) 0%, transparent 60%); }
 }
 
 .hidden {

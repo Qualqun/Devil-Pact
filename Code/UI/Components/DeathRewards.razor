@@ -20,25 +20,74 @@
 		</div>
 	</div>
 
-	<div class="rewards">
-		@foreach (var power in ActivePowers)
+	<div class="rewards @ShakeClass()">
+		@for (int i = 0; i < Slots.Count; i++)
 		{
-			<div class="reward-card" @onclick=@( () => OnRewardClicked( power ) )>
-				<div class="card-glow"></div>
+			var slot = Slots[i];
 
-				<div class="reward-image">
-					<Image Texture="@power.Image" />
+			<div class="card-slot @RarityClass(slot.Power.Rarity)" style="@SlotStyle(i)">
+				@if (slot.Revealed && slot.Power.Rarity >= PowerRarity.Epic)
+				{
+					<div class="card-rays">
+						@for (int r = 0; r < 6; r++)
+						{
+							<div class="ray" style="transform: rotate(@(r * 30)deg)"></div>
+						}
+					</div>
+				}
+
+				<div class="card-flipper @(slot.Flipping ? "flipping" : "")">
+					@if (slot.Revealed)
+					{
+						<div class="reward-card" @onclick=@( () => OnCardClicked( slot ) )>
+							<div class="card-glow"></div>
+
+							@if (slot.Power.Rarity >= PowerRarity.Rare)
+							{
+								<div class="card-flash"></div>
+							}
+
+							<div class="reward-title">@slot.Power.Title</div>
+							<div class="reward-rarity">@slot.Power.Rarity.ToString().ToUpperInvariant()</div>
+
+							<div class="reward-image">
+								<Image Texture="@slot.Power.Image" />
+							</div>
+
+							<div class="reward-stats">
+								@foreach (var line in slot.Preview)
+								{
+									<div class="stat-line">
+										<span class="stat-label">@line.Label</span>
+										<span class="stat-from">@line.From</span>
+										<span class="stat-arrow">@("→")</span>
+										<span class="stat-to">@line.To</span>
+									</div>
+								}
+							</div>
+
+							<div class="reward-passive">@slot.Power.Description</div>
+
+							<div class="reward-select-btn">CLAIM</div>
+						</div>
+					}
+					else
+					{
+						<div class="card-back @BackClass(slot)" @onclick=@( () => OnCardClicked( slot ) )>
+							@if (slot.Taps > 0)
+							{
+								<div class="tap-burst @(slot.Taps % 2 == 0 ? "burst-a" : "burst-b")"></div>
+							}
+
+							<div class="card-back-sigil">?</div>
+
+							@if (slot.IsTapCard && slot.Dealt)
+							{
+								<div class="tap-hint">CLICK!</div>
+							}
+						</div>
+					}
 				</div>
-
-				<div class="reward-title">
-					@power.Title
-				</div>
-
-				<div class="reward-passive">
-					@power.Description
-				</div>
-
-				<button class="reward-select-btn">CLAIM</button>
 			</div>
 		}
 	</div>
@@ -48,10 +97,46 @@
 {
 	[Property] public PlayerState PlayerState { get; set; }
 
-	public List<Power> ActivePowers { get; set; } = new List<Power>();
+	private class CardSlot
+	{
+		public Power Power;
+		public List<(string Label, string From, string To)> Preview;
+		public float DealAt;
+		public float FlipAt;
+		public bool Dealt;
+		public bool Flipping;
+		public bool Revealed;
+
+		// The best card of a lucky hand stays face down and climbs one rarity per click until it reaches its real one
+		public bool IsTapCard;
+		public PowerRarity ShownRarity = PowerRarity.Common;
+		public int Taps;
+	}
+
+	// Seconds after Show, on real time since the world can be paused behind this panel
+	// The first deal waits a beat so the cards are drawn once at their off-screen start before flying in
+	private const float DealDelay = 0.1f;
+	private const float DealStagger = 0.12f;
+	private const float FirstFlip = 0.85f;
+	private const float FlipStagger = 0.35f;
+	private const float FlipHalfTime = 0.15f;
+
+	// Gap between a pick and the next hand, so the old cards are removed before new ones are built
+	private const float NextHandDelay = 0.15f;
+
+	// Lowest rarity whose card has to be clicked open instead of flipping on its own
+	private const PowerRarity TapRarity = PowerRarity.Epic;
+
+	private List<CardSlot> Slots { get; set; } = new List<CardSlot>();
 
 	public int RemainingPicks { get; private set; } = 1;
 	public int TotalPicks { get; private set; } = 1;
+
+	private float dealStartTime;
+	private bool animating;
+	private int stateVersion;
+	private int handTaps;
+	private float nextHandAt = -1f;
 
 	private PlayerState GetLocalPlayer() =>
 		PlayerState ?? Scene?.GetAllComponents<PlayerState>().FirstOrDefault(p => !p.IsProxy);
@@ -75,26 +160,189 @@
 	public void Hide()
 	{
 		Panel.AddClass("hidden");
+		animating = false;
+		nextHandAt = -1f;
+
+		// Drop the last hand so it can't show for a frame when the panel opens again
+		Slots = new List<CardSlot>();
+		stateVersion++;
 	}
 
 	private void GenerateRandomRewards()
 	{
-		var allPowers = ResourceLibrary.GetAll<Power>()
+		var pool = ResourceLibrary.GetAll<Power>()
 			.Where(p => p != null && !string.IsNullOrEmpty(p.Title) && p.Image != null)
 			.ToList();
 
-		if (allPowers.Count == 0)
+		if (pool.Count == 0)
 		{
 			Log.Warning("Aucun fichier .power valide n'a été trouvé !");
 			return;
 		}
 
 		Random rng = new Random();
-		var shuffledPowers = allPowers.OrderBy(x => rng.Next()).ToList();
+		var player = GetLocalPlayer();
 
-		ActivePowers = shuffledPowers.Take(3).ToList();
+		Slots = new List<CardSlot>();
+		handTaps = 0;
+
+		for (int i = 0; i < 3 && pool.Count > 0; i++)
+		{
+			var power = RollPower(pool, rng);
+			pool.Remove(power);
+
+			Slots.Add(new CardSlot
+			{
+				Power = power,
+				Preview = player?.GetBoostPreview(power.BoostType) ?? new List<(string Label, string From, string To)>(),
+				DealAt = DealDelay + i * DealStagger
+			});
+		}
+
+		// Flip the commons first and keep the rarest card for last; if it is rare enough the player clicks it open
+		var flipOrder = Slots.OrderBy(s => s.Power.Rarity).ToList();
+		var best = flipOrder[flipOrder.Count - 1];
+		best.IsTapCard = best.Power.Rarity >= TapRarity;
+
+		float flipAt = FirstFlip;
+
+		foreach (var slot in flipOrder)
+		{
+			if (slot.IsTapCard)
+			{
+				slot.FlipAt = float.MaxValue;
+				continue;
+			}
+
+			slot.FlipAt = flipAt;
+			flipAt += FlipStagger;
+		}
+
+		dealStartTime = RealTime.Now;
+		animating = true;
+		stateVersion++;
 
 		StateHasChanged();
+	}
+
+	// Rolls a rarity first so adding powers to one rarity doesn't make that rarity more common
+	private static Power RollPower(List<Power> pool, Random rng)
+	{
+		var rarities = pool.Select(p => p.Rarity).Distinct().ToList();
+		float roll = (float)rng.NextDouble() * rarities.Sum(Power.GetRarityWeight);
+
+		var rarity = rarities[rarities.Count - 1];
+		foreach (var candidate in rarities)
+		{
+			roll -= Power.GetRarityWeight(candidate);
+			if (roll <= 0f)
+			{
+				rarity = candidate;
+				break;
+			}
+		}
+
+		var powers = pool.Where(p => p.Rarity == rarity).ToList();
+		return powers[rng.Next(powers.Count)];
+	}
+
+	protected override void OnUpdate()
+	{
+		if (nextHandAt >= 0f && RealTime.Now >= nextHandAt)
+		{
+			nextHandAt = -1f;
+			GenerateRandomRewards();
+		}
+
+		if (!animating)
+			return;
+
+		float t = RealTime.Now - dealStartTime;
+		bool allRevealed = true;
+
+		foreach (var slot in Slots)
+		{
+			if (!slot.Dealt && t >= slot.DealAt)
+			{
+				slot.Dealt = true;
+				stateVersion++;
+			}
+
+			if (!slot.Revealed && !slot.Flipping && t >= slot.FlipAt)
+			{
+				slot.Flipping = true;
+				stateVersion++;
+			}
+
+			// Swap faces once the card is edge-on, then let it open back up
+			if (slot.Flipping && t >= slot.FlipAt + FlipHalfTime)
+			{
+				slot.Flipping = false;
+				slot.Revealed = true;
+				stateVersion++;
+			}
+
+			allRevealed &= slot.Revealed;
+		}
+
+		if (allRevealed)
+			animating = false;
+	}
+
+	// Skips the automatic flips; the click-to-open card still waits for its clicks
+	private void RevealAutoCards()
+	{
+		foreach (var slot in Slots)
+		{
+			slot.Dealt = true;
+
+			if (slot.IsTapCard)
+				continue;
+
+			slot.Flipping = false;
+			slot.Revealed = true;
+		}
+
+		stateVersion++;
+	}
+
+	private void TapCard(CardSlot slot)
+	{
+		if (!slot.Dealt || slot.Flipping)
+			return;
+
+		slot.Taps++;
+		handTaps++;
+
+		if (slot.ShownRarity < slot.Power.Rarity)
+		{
+			slot.ShownRarity++;
+		}
+		else
+		{
+			slot.FlipAt = RealTime.Now - dealStartTime;
+			slot.Flipping = true;
+		}
+
+		stateVersion++;
+	}
+
+	private void OnCardClicked(CardSlot slot)
+	{
+		if (slot.IsTapCard && !slot.Revealed)
+		{
+			TapCard(slot);
+			return;
+		}
+
+		// A click during the reveal skips it rather than picking a card the player hasn't read
+		if (animating)
+		{
+			RevealAutoCards();
+			return;
+		}
+
+		OnRewardClicked(slot.Power);
 	}
 
 	private void OnRewardClicked(Power selectedPower)
@@ -120,12 +368,40 @@
 		}
 		else
 		{
-			GenerateRandomRewards();
+			// Reused card panels would fade out from the old spots, so clear the hand and deal fresh ones a moment later
+			Slots = new List<CardSlot>();
+			stateVersion++;
+			nextHandAt = RealTime.Now + NextHandDelay;
 		}
+	}
+
+	private static string RarityClass(PowerRarity rarity) => $"rarity-{rarity.ToString().ToLowerInvariant()}";
+
+	private static string BackClass(CardSlot slot)
+	{
+		if (!slot.IsTapCard)
+			return "";
+
+		// Alternating the class restarts the punch animation on every click
+		string punch = slot.Taps == 0 ? "" : slot.Taps % 2 == 0 ? "punch-a" : "punch-b";
+		return $"tap-card back-{slot.ShownRarity.ToString().ToLowerInvariant()} {punch}";
+	}
+
+	private string ShakeClass() => handTaps == 0 ? "" : handTaps % 2 == 0 ? "shake-a" : "shake-b";
+
+	// Fans the hand out from the middle; undealt cards wait below the screen
+	private string SlotStyle(int index)
+	{
+		float offset = index - (Slots.Count - 1) * 0.5f;
+
+		if (!Slots[index].Dealt)
+			return $"transform: translateY(900px) rotate({offset * 25f}deg) scale(0.7); opacity: 0;";
+
+		return $"transform: translateY({MathF.Abs(offset) * 22f}px) rotate({offset * 6f}deg); opacity: 1;";
 	}
 
 	protected override int BuildHash()
 	{
-		return HashCode.Combine(RemainingPicks, TotalPicks, ActivePowers.Count);
+		return HashCode.Combine(RemainingPicks, TotalPicks, Slots.Count, stateVersion);
 	}
 }

@@ -1,6 +1,7 @@
 {
   "Title": "Rapid Fire",
   "BoostType": "FireRate",
+  "Rarity": "Common",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

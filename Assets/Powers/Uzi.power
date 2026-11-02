@@ -1,6 +1,7 @@
 {
   "Title": "Uzi",
   "BoostType": "Uzi",
+  "Rarity": "Epic",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",
