@@ -18,18 +18,44 @@
 
 @code
 {
-	[Property] public float Duration { get; set; } = 1f;
-	[Property] public float RiseDistance { get; set; } = 56f;
+	[Property] public float HitLifetime { get; set; } = 0.8f;
+	[Property] public float ArcHeight { get; set; } = 180f;
+	[Property] public float HorizontalSpread { get; set; } = 30f;
+	[Property] public float SolidLifetimeRatio { get; set; } = 0.90f;
+	[Property] public float PunchIntensity { get; set; } = 0.28f;
+	[Property] public float PunchDuration { get; set; } = 0.16f;
+	[Property] public float MinFontSize { get; set; } = 26f;
+	[Property] public float BaseFontSize { get; set; } = 38f;
+	[Property] public float MaxFontSize { get; set; } = 58f;
+	[Property] public int DamageHistorySize { get; set; } = 12;
+	[Property] public float SizeSensitivity { get; set; } = 0.75f;
 
 	private readonly List<FloatingNumber> numbers = new();
+	private readonly Dictionary<GameObject, EnemyHistory> histories = new();
+	private readonly List<GameObject> expiredEnemies = new();
+	private readonly Random random = new();
+	private bool contentChanged;
+
+	private sealed class EnemyHistory
+	{
+		public readonly Queue<float> Hits = new();
+		public double Sum;
+		public FloatingNumber Current;
+	}
 
 	private sealed class FloatingNumber
 	{
 		public string Text;
+		public double Value;
 		public Vector3 WorldPosition;
 		public float Age;
 		public float Lifetime;
-		public float Rise;
+		public float Height;
+		public float SolidRatio;
+		public float FontSize;
+		public float Punch;
+		public float PunchTime;
+		public float HorizontalTravel;
 		public bool Visible;
 		public string Style;
 	}
@@ -38,27 +64,109 @@
 	[Rpc.Broadcast]
 	public void ShowNumber( float value, Vector3 worldPosition )
 	{
+		AddNumber( value, worldPosition, null );
+	}
+
+	// Use instead of ShowNumber when the caller can supply the actual hit object.
+		// Never call both for one impact. Position alone cannot identify an enemy.
+	[Rpc.Broadcast]
+	public void ShowNumberForEnemy( float value, Vector3 worldPosition, GameObject enemy )
+	{
+		AddNumber( value, worldPosition, enemy );
+	}
+
+	private static float Setting( float value, float fallback, float min, float max )
+		=> float.IsFinite( value ) ? Math.Clamp( value, min, max ) : fallback;
+
+	private void AddNumber( float value, Vector3 worldPosition, GameObject enemy )
+	{
 		if ( !float.IsFinite( value ) || !float.IsFinite( worldPosition.x )
 			|| !float.IsFinite( worldPosition.y ) || !float.IsFinite( worldPosition.z ) )
 			return;
 
-		numbers.Add( new FloatingNumber
+		EnemyHistory history = null;
+		float minSize = Setting( MinFontSize, 26f, 1f, 256f );
+		float maxSize = Setting( MaxFontSize, 58f, minSize, 256f );
+		float fontSize = Setting( BaseFontSize, 38f, minSize, maxSize );
+		if ( enemy.IsValid() )
 		{
+			if ( !histories.TryGetValue( enemy, out history ) )
+			{
+				history = new EnemyHistory();
+				histories.Add( enemy, history );
+			}
+
+			int capacity = Math.Clamp( DamageHistorySize, 1, 256 );
+			while ( history.Hits.Count > capacity )
+				history.Sum -= history.Hits.Dequeue();
+			// Compare with preceding individual hits, before inserting this hit.
+			double magnitude = Math.Abs( (double)value );
+			double average = history.Hits.Count > 0 ? history.Sum / history.Hits.Count : magnitude;
+			if ( history.Hits.Count == capacity )
+				history.Sum -= history.Hits.Dequeue();
+			history.Hits.Enqueue( (float)magnitude );
+			history.Sum += magnitude;
+
+			var current = history.Current;
+			bool accumulate = current != null && current.Age < current.Lifetime * current.SolidRatio;
+			// Rescale the displayed total against individual hits, never store totals in the history.
+			if ( accumulate )
+			{
+				magnitude = Math.Abs( current.Value + value );
+				average = history.Sum / history.Hits.Count;
+			}
+			double comparison = magnitude + average > 0d ? (magnitude - average) / (magnitude + average) : 0d;
+			float weight = (float)Math.Clamp( comparison * Setting( SizeSensitivity, 0.75f, 0f, 4f ), -1d, 1d );
+			fontSize += weight * (weight < 0f ? fontSize - minSize : maxSize - fontSize);
+			if ( accumulate )
+			{
+				current.Value += value;
+				current.Text = current.Value.ToString( "0.##", CultureInfo.InvariantCulture );
+				current.FontSize = fontSize;
+				contentChanged = true;
+				return;
+			}
+		}
+
+		var number = new FloatingNumber
+		{
+			Value = value,
 			Text = value.ToString( "0.##", CultureInfo.InvariantCulture ),
 			WorldPosition = worldPosition,
-			Lifetime = float.IsFinite( Duration ) ? MathF.Max( Duration, 0.01f ) : 1f,
-			Rise = float.IsFinite( RiseDistance ) ? MathF.Max( RiseDistance, 0f ) : 56f
-		} );
+			Lifetime = Setting( HitLifetime, 0.8f, 0.01f, 60f ),
+			SolidRatio = Setting( SolidLifetimeRatio, 0.90f, 0f, 0.999f ),
+			Height = Setting( ArcHeight, 180f, 0f, 2000f ),
+			FontSize = fontSize,
+			Punch = Setting( PunchIntensity, 0.28f, 0f, 2f ),
+			PunchTime = Setting( PunchDuration, 0.16f, 0.01f, 10f ),
+			HorizontalTravel = (random.Next( 2 ) == 0 ? -1f : 1f)
+				* Setting( HorizontalSpread, 30f, 0f, 2000f )
+		};
+		numbers.Add( number );
+		contentChanged = true;
+		if ( history != null ) history.Current = number;
 	}
 
 	protected override void OnPreRender()
 	{
 		base.OnPreRender();
 
+		// Histories survive individual numbers, but never retain destroyed enemies.
+		foreach ( var entry in histories )
+		{
+			if ( !entry.Key.IsValid() ) expiredEnemies.Add( entry.Key );
+			else if ( entry.Value.Current is { } current && current.Age >= current.Lifetime * current.SolidRatio )
+				entry.Value.Current = null;
+		}
+		foreach ( var enemy in expiredEnemies ) histories.Remove( enemy );
+		expiredEnemies.Clear();
+
 		if ( numbers.Count == 0 )
 			return;
 
 		CameraComponent camera = Scene.Camera;
+		bool changed = contentChanged;
+		contentChanged = false;
 
 		for ( int i = numbers.Count - 1; i >= 0; i-- )
 		{
@@ -68,12 +176,15 @@
 			if ( number.Age >= number.Lifetime )
 			{
 				numbers.RemoveAt( i );
+				changed = true;
 				continue;
 			}
 
+			bool wasVisible = number.Visible;
 			number.Visible = camera.IsValid()
 				&& Vector3.Dot( number.WorldPosition - camera.WorldPosition, camera.WorldRotation.Forward ) > 0f;
 
+			changed |= wasVisible != number.Visible;
 			if ( !number.Visible )
 				continue;
 
@@ -81,24 +192,48 @@
 			if ( !float.IsFinite( screen.x ) || !float.IsFinite( screen.y ) )
 			{
 				number.Visible = false;
+				changed |= wasVisible;
 				continue;
 			}
 
 			float progress = number.Age / number.Lifetime;
-			float opacity = 1f - ((progress - 0.6f) / 0.4f).Clamp( 0f, 1f );
+			float fade = ((progress - number.SolidRatio) / (1f - number.SolidRatio)).Clamp( 0f, 1f );
+			float opacity = 1f - fade * fade * (3f - 2f * fade);
+			float punchProgress = (number.Age / number.PunchTime).Clamp( 0f, 1f );
+			float scale = 1f + number.Punch * MathF.Sin( punchProgress * MathF.PI );
+			// Linear time progression: peak height at half-life, then return to the starting level.
+			// Parameters and horizontal direction are fixed at birth, including during accumulation.
+			float offsetX = number.HorizontalTravel * progress;
+			float offsetY = -4f * number.Height * progress * (1f - progress);
 
 			// Percentages preserve world projection across UI resolutions; the rise is in UI pixels.
-			number.Style = FormattableString.Invariant(
-				$"left: {screen.x * 100f:0.###}%; top: {screen.y * 100f:0.###}%; margin-top: {-number.Rise * progress:0.###}px; opacity: {opacity:0.###};" );
+			string style = FormattableString.Invariant(
+				$"left: {screen.x * 100f:0.###}%; top: {screen.y * 100f:0.###}%; margin-left: {offsetX:0.##}px; margin-top: {offsetY:0.##}px; font-size: {number.FontSize:0.##}px; transform: translate(-50%, -100%) scale({scale:0.###}); opacity: {opacity:0.###};" );
+			changed |= number.Style != style;
+			number.Style = style;
 		}
 
-		StateHasChanged();
+		if ( changed ) StateHasChanged();
 	}
 
 	protected override void OnDisabled()
 	{
-		numbers.Clear();
+		ClearNumbers();
 		StateHasChanged();
 		base.OnDisabled();
+	}
+
+	protected override void OnDestroy()
+	{
+		ClearNumbers();
+		base.OnDestroy();
+	}
+
+	private void ClearNumbers()
+	{
+		numbers.Clear();
+		histories.Clear();
+		expiredEnemies.Clear();
+		contentChanged = false;
 	}
 }

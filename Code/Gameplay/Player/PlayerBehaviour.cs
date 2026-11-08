@@ -176,7 +176,7 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 			foreach ( BulletInfo bulletInfo in bullets )
 			{
 				GameObject newBullet = poolManager.GetBullet();
-				BulletBehaviour bulletBehaviour = newBullet.GetComponent<BulletBehaviour>();
+				PlayerBullet bulletBehaviour = newBullet.GetComponent<PlayerBullet>();
 
 				newBullet.WorldPosition = gunPoint.WorldPosition;
 

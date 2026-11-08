@@ -3,7 +3,7 @@
     "__guid": "550d6052-1a2e-4f07-8865-e53e4716cea7",
     "__version": 2,
     "Flags": 0,
-    "Name": "droneenemy",
+    "Name": "droneEnemy",
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
@@ -78,7 +78,7 @@
         },
         "bullet": {
           "_type": "gameobject",
-          "prefab": "prefabs/enemies/enemybullet.prefab"
+          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
         },
         "bulletDamage": 6,
         "bulletSpeed": 180,

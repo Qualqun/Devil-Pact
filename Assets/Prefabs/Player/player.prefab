@@ -168,7 +168,9 @@
         "__guid": "28a22751-d9f3-44e3-b3e2-af68d1912b50",
         "__enabled": true,
         "Flags": 0,
-        "ActiveModifiers": [],
+        "ActiveModifiers": [
+          "Uzi"
+        ],
         "BaseBulletDamage": 15,
         "BaseBulletSize": 1,
         "BaseBulletSpeed": 700,
@@ -190,7 +192,6 @@
         "RewardTaken": false,
         "SizeMultiplier": 1,
         "TimeInvulnerability": 1,
-        "Velocity": "0,0,0",
         "XpMultiplier": 0
       },
       {
@@ -270,7 +271,7 @@
                 "OnComponentStart": null,
                 "OnComponentUpdate": null,
                 "radius": 15,
-                "showGizmo": true,
+                "showGizmo": false,
                 "spacingMultiplier": 1.8,
                 "speedFactor": 0.9
               }

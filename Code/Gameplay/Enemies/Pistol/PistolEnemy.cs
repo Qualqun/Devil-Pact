@@ -28,7 +28,7 @@ public class PistolEnemy : BaseEnemyBehaviour
 	{
 		base.OnStart();
 
-		bulletSize = bullet.GetComponent<EnemyBulletBehaviour>().size;
+		bulletSize = bullet.GetComponent<EnemyBullet>().size;
 	}
 
 	protected override void OnUpdate()
@@ -66,10 +66,7 @@ public class PistolEnemy : BaseEnemyBehaviour
 		Gizmo.Draw.Color = Color.Green;
 		Gizmo.Draw.LineSphere( WorldPosition, range );
 
-
 	}
-
-
 
 	bool CanShoot()
 	{
@@ -144,7 +141,7 @@ public class PistolEnemy : BaseEnemyBehaviour
 		Vector3 direction = (shootPosition - gunPoint.WorldPosition).WithZ( 0 );
 
 		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
-		EnemyBulletBehaviour bulletBehaviour = newBullet.GetComponent<EnemyBulletBehaviour>();
+		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
 		bulletBehaviour.damage = bulletDamage;

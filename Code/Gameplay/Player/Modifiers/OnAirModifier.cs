@@ -6,7 +6,7 @@ public class OnAirModifier
 	public ModifierType modifierType;
 	public int level = 1;
 
-	public virtual Vector3 GetNewDirection( Vector3 baseDirection, BulletBehaviour bullet )
+	public virtual Vector3 GetNewDirection( Vector3 baseDirection, PlayerBullet bullet )
 	{
 		return baseDirection;
 	}
@@ -33,7 +33,7 @@ public class HomingShot : OnAirModifier
 
 	}
 
-	public override Vector3 GetNewDirection( Vector3 baseDirection, BulletBehaviour bullet )
+	public override Vector3 GetNewDirection( Vector3 baseDirection, PlayerBullet bullet )
 	{
 		Vector3 newDirection = baseDirection;
 		Scene scene = bullet.GameObject.Scene;

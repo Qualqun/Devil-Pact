@@ -7,7 +7,7 @@
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
-    "Tags": "enemybullet",
+    "Tags": "bullet",
     "Enabled": true,
     "NetworkMode": 1,
     "NetworkFlags": 0,
@@ -16,11 +16,11 @@
     "OwnerTransfer": 1,
     "Components": [
       {
-        "__type": "EnemyBulletBehaviour",
-        "__guid": "62490943-98f1-4afd-b56f-11c3d00e047b",
+        "__type": "EnemyBullet",
+        "__guid": "ad008685-fbab-4528-9566-c2e790f788a9",
         "__enabled": true,
         "Flags": 0,
-        "noCollideTag": "enemy,enemybullet,bullet,invulnerability,ground",
+        "noCollideTag": "enemy,bullet,ground",
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -34,7 +34,10 @@
       {
         "__guid": "3c42d765-5ad5-4438-b639-300b791c53d1",
         "__version": 2,
-        "__Prefab": "art/prefabs/map/bullet/bulletsniper.prefab",
+        "__Prefab": {
+          "Id": "cd48208b-5658-42e1-b75c-9fe0a2c1fa5e",
+          "Path": "art/prefabs/map/bullet/bulletsniper.prefab"
+        },
         "__PrefabInstancePatch": {
           "AddedObjects": [],
           "RemovedObjects": [],

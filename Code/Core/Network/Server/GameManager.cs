@@ -584,7 +584,7 @@ public sealed class GameManager : Component
 		}
 		GameState.Server_ClearEnemies();
 
-		foreach ( var bullet in Scene.GetAllComponents<EnemyBulletBehaviour>().ToList() )
+		foreach ( var bullet in Scene.GetAllComponents<EnemyBullet>().ToList() )
 		{
 			if ( bullet != null && bullet.IsValid() )
 				bullet.GameObject.Destroy();

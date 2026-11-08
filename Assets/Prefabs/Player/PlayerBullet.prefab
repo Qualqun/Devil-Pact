@@ -16,11 +16,11 @@
     "OwnerTransfer": 1,
     "Components": [
       {
-        "__type": "BulletBehaviour",
-        "__guid": "4d6f29fe-0c5f-4d87-b0d2-d5c4457c6b22",
+        "__type": "PlayerBullet",
+        "__guid": "03b1697f-4c77-4215-9e98-ad3e668fcb4f",
         "__enabled": true,
         "Flags": 0,
-        "noCollideTag": "player,bullet,enemybullet,ground",
+        "noCollideTag": "player,ground,bullet",
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,

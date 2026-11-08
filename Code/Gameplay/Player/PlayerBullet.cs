@@ -54,7 +54,7 @@ public struct BulletInfo
 
 }
 
-public sealed class BulletBehaviour : Component
+public sealed class PlayerBullet : Component
 {
 	[Property, WideMode] TagSet noCollideTag { get; set; }
 	[Property] float size { get; set; } = 32f;
@@ -135,7 +135,7 @@ public sealed class BulletBehaviour : Component
 				Log.Info( "hit" );
 				enemyHit.Add( collideObj );
 				gameManager.EnemyTakeDamage( collideObj, bulletInfo.damage );
-				gameManager.UiManager.HitNumbers.ShowNumber( bulletInfo.damage, traceResult.HitPosition );
+				gameManager.UiManager.HitNumbers.ShowNumberForEnemy( bulletInfo.damage, traceResult.HitPosition, collideObj );
 				bulletInfo.shooter?.AddDamageDealt( bulletInfo.damage );
 			}
 

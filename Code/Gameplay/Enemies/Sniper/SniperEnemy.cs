@@ -27,7 +27,7 @@ public class SniperEnemy : BaseEnemyBehaviour
 	{
 		base.OnStart();
 
-		bulletSize = bullet.GetComponent<EnemyBulletBehaviour>().size;
+		bulletSize = bullet.GetComponent<EnemyBullet>().size;
 	}
 
 
@@ -90,7 +90,7 @@ public class SniperEnemy : BaseEnemyBehaviour
 	void Shoot( Vector3 direction )
 	{
 		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
-		EnemyBulletBehaviour bulletBehaviour = newBullet.GetComponent<EnemyBulletBehaviour>();
+		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
 		bulletBehaviour.damage = bulletDamage;

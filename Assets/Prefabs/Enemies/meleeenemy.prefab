@@ -82,7 +82,7 @@
           "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
           "component_type": "BaseEnemyPresentation"
         },
-        "hp": 30,
+        "hp": 35,
         "hpPerRound": 12,
         "meleDamage": 8,
         "meleDamagePerRound": 6,
@@ -93,7 +93,7 @@
         "OnComponentStart": null,
         "OnComponentUpdate": null,
         "repathDistance": 64,
-        "slowDuration": 1
+        "spawnType": "Doors"
       },
       {
         "__type": "BaseEnemyPresentation",
@@ -160,16 +160,26 @@
                 "__guid": "55877364-1eab-4af3-a53b-76223c029f8a",
                 "__enabled": true,
                 "Flags": 0,
-                "AnimationGraph": "animgraphs/ennemi1.vanmgrph",
+                "AnimationGraph": {
+                  "Id": "ea57bafb-0f24-4615-b524-1965a19ba216",
+                  "Path": "animgraphs/ennemi1.vanmgrph"
+                },
                 "BodyGroups": 18446744073709551615,
                 "BoneMergeTarget": null,
                 "CreateAttachments": false,
                 "CreateBoneObjects": false,
+                "DeformationMode": "Normal",
                 "LodOverride": null,
                 "MaterialGroup": null,
-                "MaterialOverride": "art/shaders/enemy.vmat",
+                "MaterialOverride": {
+                  "Id": "1460e9d3-9411-4841-9b92-1f21d09d5749",
+                  "Path": "art/shaders/enemy.vmat"
+                },
                 "Materials": null,
-                "Model": "art/asset/player/ennemi1.vmdl",
+                "Model": {
+                  "Id": "a7ae34aa-b7b2-4001-886e-de5651cfd574",
+                  "Path": "art/asset/player/ennemi1.vmdl"
+                },
                 "Morphs": {},
                 "OnComponentDestroy": null,
                 "OnComponentDisabled": null,
@@ -177,13 +187,7 @@
                 "OnComponentFixedUpdate": null,
                 "OnComponentStart": null,
                 "OnComponentUpdate": null,
-                "Parameters": {
-                  "bools": {},
-                  "ints": {},
-                  "floats": {},
-                  "vectors": {},
-                  "rotations": {}
-                },
+                "Parameters": {},
                 "PlaybackRate": 1.5,
                 "RenderOptions": {
                   "GameLayer": true,

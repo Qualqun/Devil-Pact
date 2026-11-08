@@ -39,7 +39,6 @@ public class DroneEnemy : BaseEnemyBehaviour
 		fallTask = DroneFall();
 	}
 
-
 	protected override void OnUpdate()
 	{
 
@@ -74,7 +73,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 		}
 		else
 		{
-			WorldRotation = Rotation.LookAt( target.WorldPosition - WorldPosition.WithZ( 0 ) );
+			WorldRotation = Rotation.LookAt( (target.WorldPosition - WorldPosition).WithZ( 0 ) );
 
 			if ( moveTask == null )
 			{
@@ -136,12 +135,13 @@ public class DroneEnemy : BaseEnemyBehaviour
 			iPos = iNewPos;
 		}
 	}
+
 	void Shoot()
 	{
 		Vector3 direction = target.WorldPosition.WithZ( 0 ) - WorldPosition.WithZ( 0 );
 
 		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
-		EnemyBulletBehaviour bulletBehaviour = newBullet.GetComponent<EnemyBulletBehaviour>();
+		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
 		bulletBehaviour.damage = bulletDamage;
@@ -174,73 +174,6 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 		WorldPosition = endPosition;
 		fallTask = null;
-	}
-
-	async Task GoTo( Vector3 localTarget, int iNextPos )
-	{
-		Vector3 startPosition = WorldPosition - target.WorldPosition;
-		Vector3 endPosition = localTarget;
-
-		float timer = 0f;
-		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / rotationSpeed;
-
-		while ( timer <= duration )
-		{
-			float t = timer / duration;
-
-			WorldPosition = target.WorldPosition + Vector3.Lerp( startPosition, endPosition, t );
-			timer += Time.Delta;
-
-			canShoot = true;
-
-			if ( playerLocked.PositionIsAvailable( iNextPos ) )
-			{
-				FindNewPosition();
-
-				return;
-			}
-
-
-			await Task.FrameEnd();
-		}
-
-		WorldPosition = target.WorldPosition + localTarget;
-		moveTask = null;
-
-	}
-
-	async Task GoToBezier( Vector3 localTarget, Vector3 localControl, int iNextPos )
-	{
-		Vector3 startPosition = WorldPosition - target.WorldPosition;
-		Vector3 endPosition =  localTarget;
-		Vector3 control =  localControl;
-
-		float timer = 0f;
-		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / rotationSpeed;
-
-		while ( timer <= duration )
-		{
-			float t = timer / duration;
-			float easedT = 1f - (float)Math.Pow( 1f - t, 3f );
-
-			WorldPosition = target.WorldPosition + Vector3.CubicBezier( startPosition, endPosition, control, control, easedT );
-
-			timer += Time.Delta;
-			canShoot = false;
-
-			if ( playerLocked.PositionIsAvailable( iNextPos ) )
-			{
-				FindNewPosition();
-
-				return;
-			}
-
-
-			await Task.FrameEnd();
-		}
-
-		WorldPosition = target.WorldPosition + localTarget;
-		moveTask = null;
 	}
 
 	async Task AttackBehaviour( CancellationToken token )
@@ -292,6 +225,72 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 			await Task.FrameEnd();
 		}
+	}
+
+	async Task GoTo( Vector3 localTarget, int iNextPos )
+	{
+		Vector3 startPosition = WorldPosition - target.WorldPosition;
+		Vector3 endPosition = localTarget;
+
+		float timer = 0f;
+		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / rotationSpeed;
+
+		while ( timer <= duration )
+		{
+			float t = timer / duration;
+
+			WorldPosition = target.WorldPosition + Vector3.Lerp( startPosition, endPosition, t );
+			timer += Time.Delta;
+
+			canShoot = true;
+
+			if ( playerLocked.PositionIsAvailable( iNextPos ) )
+			{
+				FindNewPosition();
+
+				return;
+			}
+
+
+			await Task.FrameEnd();
+		}
+
+		WorldPosition = target.WorldPosition + localTarget;
+		moveTask = null;
+
+	}
+
+	async Task GoToBezier( Vector3 localTarget, Vector3 localControl, int iNextPos )
+	{
+		Vector3 startPosition = WorldPosition - target.WorldPosition;
+		Vector3 endPosition = localTarget;
+
+		float timer = 0f;
+		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / rotationSpeed;
+
+		while ( timer <= duration )
+		{
+			float t = timer / duration;
+			float easedT = 1f - (float)Math.Pow( 1f - t, 3f );
+
+			WorldPosition = target.WorldPosition + Vector3.CubicBezier( startPosition, endPosition, localControl, localControl, easedT );
+
+			timer += Time.Delta;
+			canShoot = false;
+
+			if ( playerLocked.PositionIsAvailable( iNextPos ) )
+			{
+				FindNewPosition();
+
+				return;
+			}
+
+
+			await Task.FrameEnd();
+		}
+
+		WorldPosition = target.WorldPosition + localTarget;
+		moveTask = null;
 	}
 
 

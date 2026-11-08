@@ -5,7 +5,7 @@ public class EndModifier
 	public ModifierType modifierType;
 	public int level = 1;
 
-	public virtual bool EndBehaviour( SceneTraceResult traceResult, BulletBehaviour bullet, out bool updateNextStep )
+	public virtual bool EndBehaviour( SceneTraceResult traceResult, PlayerBullet bullet, out bool updateNextStep )
 	{
 		updateNextStep = false;
 		return true;
@@ -32,7 +32,7 @@ public class Bounce : EndModifier
 		modifierType = ModifierType.Bounce;
 	}
 
-	public override bool EndBehaviour( SceneTraceResult traceResult, BulletBehaviour bullet, out bool updateNextStep )
+	public override bool EndBehaviour( SceneTraceResult traceResult, PlayerBullet bullet, out bool updateNextStep )
 	{
 		if ( !traceResult.HasTag( "enemy" ) && nbBounce > 0 )
 		{
@@ -80,7 +80,7 @@ public class Percing : EndModifier
 		modifierType = ModifierType.Percing;
 	}
 
-	public override bool EndBehaviour( SceneTraceResult traceResult, BulletBehaviour bullet, out bool updateNextStep )
+	public override bool EndBehaviour( SceneTraceResult traceResult, PlayerBullet bullet, out bool updateNextStep )
 	{
 		GameObject collisionObj = traceResult.Collider.GameObject;
 		bool alreadyEncountered = bullet.enemyHit.Contains( collisionObj );
@@ -130,7 +130,7 @@ public class EndExplosion : EndModifier
 		modifierType = ModifierType.Explosion;
 	}
 
-	public override bool EndBehaviour( SceneTraceResult traceResult, BulletBehaviour bullet, out bool updateNextStep )
+	public override bool EndBehaviour( SceneTraceResult traceResult, PlayerBullet bullet, out bool updateNextStep )
 	{
 		GameObject collisionObj = traceResult.Collider.GameObject;
 		GameObject bulletObj = bullet.GameObject;
@@ -152,7 +152,7 @@ public class EndExplosion : EndModifier
 			for ( int i = 0; i < nbBullets; i++ )
 			{
 				GameObject newBullet = bullet.poolManager.GetBullet();
-				BulletBehaviour bulletBehaviour = newBullet.GetComponent<BulletBehaviour>();
+				PlayerBullet bulletBehaviour = newBullet.GetComponent<PlayerBullet>();
 
 				newBullet.WorldPosition = bulletObj.WorldPosition;
 

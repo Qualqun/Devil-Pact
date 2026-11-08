@@ -79,18 +79,11 @@
         "aimTime": 0.4,
         "bullet": {
           "_type": "gameobject",
-          "prefab": "prefabs/enemies/enemybullet.prefab"
+          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
         },
         "bulletDamage": 6,
         "bulletDamagePerRound": 6,
-        "bulletSize": 32,
-        "bulletSpeed": 180,
-        "capsuleCollider": {
-          "_type": "component",
-          "component_id": "c2889749-06cd-4885-baf4-6b6e9d308f12",
-          "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
-          "component_type": "CapsuleCollider"
-        },
+        "bulletSpeed": 750,
         "enemyPresentation": {
           "_type": "component",
           "component_id": "52538c48-3e97-457b-b81c-d7e16167eda0",
