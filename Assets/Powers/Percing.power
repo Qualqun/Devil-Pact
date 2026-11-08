@@ -1,6 +1,7 @@
 {
   "Title": "Piercing Rounds",
   "BoostType": "Percing",
+  "Rarity": "Rare",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

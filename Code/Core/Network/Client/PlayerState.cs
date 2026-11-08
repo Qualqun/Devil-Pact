@@ -1,5 +1,6 @@
 using Sandbox;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum BoostType
 {
@@ -335,6 +336,72 @@ public sealed class PlayerState : Component
 				AddModifier( ModifierType.HomingShot );
 				break;
 		}
+	}
+
+	public List<(string Label, string From, string To)> GetBoostPreview( BoostType boost )
+	{
+		var lines = new List<(string Label, string From, string To)>();
+
+		void Add( string label, float from, float to ) => lines.Add( (label, from.ToString( "0.##" ), to.ToString( "0.##" )) );
+		void AddStacks( ModifierType modifier )
+		{
+			int stacks = ActiveModifiers.Count( m => m == modifier );
+			Add( "Stacks", stacks, stacks + 1 );
+		}
+
+		switch ( boost )
+		{
+			case BoostType.Hp:
+				Add( "Max HP", MaxHp, MaxHp + 30f );
+				break;
+			case BoostType.Lives:
+				Add( "Lives", MaxLives, MaxLives + 1 );
+				break;
+			case BoostType.MoveSpeed:
+				Add( "Move Speed", MoveSpeed, MoveSpeed + 25f );
+				break;
+			case BoostType.FireRate:
+				Add( "Fire Rate", FireRate, (BaseFireRate + 0.25f) * FireRateMultiplier );
+				break;
+			case BoostType.TimeInvulnerability:
+				Add( "Invulnerability", TimeInvulnerability, TimeInvulnerability + 1f );
+				break;
+			case BoostType.BulletDamage:
+				Add( "Damage", BulletDamage, (BaseBulletDamage + 5f) * DamageMultiplier );
+				break;
+			case BoostType.BulletSpeed:
+				Add( "Bullet Speed", BulletSpeed, BulletSpeed + 100f );
+				break;
+
+			case BoostType.Shotgun:
+				Add( "Fire Rate", FireRate, FireRate * 0.75f );
+				Add( "Damage", BulletDamage, BulletDamage * 0.75f );
+				break;
+			case BoostType.Uzi:
+				Add( "Fire Rate", FireRate, FireRate * 2f );
+				Add( "Damage", BulletDamage, BulletDamage * 0.6f );
+				break;
+			case BoostType.Sniper:
+				Add( "Fire Rate", FireRate, FireRate * 0.4f );
+				Add( "Damage", BulletDamage, BulletDamage * 1.9f );
+				Add( "Bullet Speed", BulletSpeed, BulletSpeed + 100f );
+				break;
+
+			case BoostType.Percing:
+				AddStacks( ModifierType.Percing );
+				break;
+			case BoostType.Bounce:
+				AddStacks( ModifierType.Bounce );
+				break;
+			case BoostType.Explosion:
+				AddStacks( ModifierType.Explosion );
+				break;
+			case BoostType.HomingShot:
+				AddStacks( ModifierType.HomingShot );
+				break;
+		}
+
+		return lines;
 	}
 
 	#endregion

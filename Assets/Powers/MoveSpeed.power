@@ -1,6 +1,7 @@
 {
   "Title": "Speed",
   "BoostType": "MoveSpeed",
+  "Rarity": "Common",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

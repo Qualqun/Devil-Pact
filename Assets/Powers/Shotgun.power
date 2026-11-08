@@ -1,6 +1,7 @@
 {
   "Title": "Shotgun",
   "BoostType": "Shotgun",
+  "Rarity": "Epic",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

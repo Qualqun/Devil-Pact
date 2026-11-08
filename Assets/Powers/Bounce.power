@@ -1,6 +1,7 @@
 {
   "Title": "Ricochet",
   "BoostType": "Bounce",
+  "Rarity": "Rare",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

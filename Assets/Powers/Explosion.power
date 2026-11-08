@@ -1,6 +1,7 @@
 {
   "Title": "Explosive Rounds",
   "BoostType": "Explosion",
+  "Rarity": "Legendary",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",

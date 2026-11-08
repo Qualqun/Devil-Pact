@@ -1,6 +1,7 @@
 {
   "Title": "High Velocity",
   "BoostType": "BulletSpeed",
+  "Rarity": "Common",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",
