@@ -103,8 +103,6 @@ public class BaseEnemyBehaviour : Component
 
 		enemyPresentation?.TakeHit();
 
-
-
 		if ( hp <= 0f )
 		{
 			GameObject.Destroy();

@@ -78,7 +78,7 @@
         },
         "bullet": {
           "_type": "gameobject",
-          "prefab": "prefabs/enemies/enemybullet.prefab"
+          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
         },
         "bulletDamage": 6,
         "bulletDamagePerRound": 6,

@@ -1,0 +1,4 @@
+Layer0
+{
+	shader "art/fx/ai/thruster_flame.shader"
+}

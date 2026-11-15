@@ -14,11 +14,7 @@ public class BaseEnemyPresentation : Component
 	[Property, Group( "Visual hit" )] protected float visualHitDuration { get; set; } = 0.2f;
 	[Property, Group( "Visual hit" )] protected VibrationInfo vibration { get; set; }
 
-
-
-
 	[Property] protected SkinnedModelRenderer model { get; set; }
-
 
 	bool hit;
 	Task visualHitTask = null;
@@ -28,9 +24,8 @@ public class BaseEnemyPresentation : Component
 		base.OnStart();
 
 		if ( !model.IsValid() || model.MaterialOverride is null )
-		{
 			return;
-		}
+		
 
 		model.SceneObject.Batchable = false;
 	}
@@ -45,8 +40,7 @@ public class BaseEnemyPresentation : Component
 
 	protected virtual void AnimationUpdate()
 	{
-		model.Set( "EnemyHit", hit );
-
+		model.Animation.Parameters.Set( "EnemyHit", hit );
 		hit = false;
 	}
 
@@ -58,7 +52,7 @@ public class BaseEnemyPresentation : Component
 		if ( visualHitTask == null )
 		{
 			visualHitTask = VisualTakeHit();
-			_ = Shake( model.GameObject );
+			_ = Shake( model.GameObject );	
 		}
 	}
 

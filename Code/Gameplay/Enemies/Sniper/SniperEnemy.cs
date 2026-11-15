@@ -89,7 +89,7 @@ public class SniperEnemy : BaseEnemyBehaviour
 
 	void Shoot( Vector3 direction )
 	{
-		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
+		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition , Rotation.LookAt( direction.Normal ) );
 		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;

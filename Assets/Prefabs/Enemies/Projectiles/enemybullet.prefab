@@ -20,7 +20,7 @@
         "__guid": "ad008685-fbab-4528-9566-c2e790f788a9",
         "__enabled": true,
         "Flags": 0,
-        "noCollideTag": "enemy,bullet,ground",
+        "noCollideTag": "enemy,bullet,ground,invulnerability",
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,

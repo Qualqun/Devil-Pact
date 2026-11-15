@@ -78,8 +78,28 @@
         },
         "arcHeight": 800,
         "bombingDuration": 4,
+        "bullet": {
+          "_type": "gameobject",
+          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
+        },
+        "bulletDamage": 6,
+        "bulletSpeed": 500,
+        "collider": {
+          "_type": "component",
+          "component_id": "c2889749-06cd-4885-baf4-6b6e9d308f12",
+          "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
+          "component_type": "CapsuleCollider"
+        },
+        "dashDistance": 300,
+        "dashPaternDuration": 4,
+        "dashSpeed": 600,
         "durationShellTravel": 1.5,
         "enemyPresentation": null,
+        "fireRate": 5,
+        "gunPoint": {
+          "_type": "gameobject",
+          "go": "7aee19c9-d268-4074-a9d3-cd95c97daf1f"
+        },
         "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,
@@ -92,6 +112,7 @@
           "_type": "gameobject",
           "prefab": "prefabs/enemies/projectiles/shell.prefab"
         },
+        "nbDash": 3,
         "nbShell": 4,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
@@ -99,8 +120,13 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
+        "pivotGunPoint": {
+          "_type": "gameobject",
+          "go": "e9adf8b2-615f-4a5f-a745-eccde1c55aec"
+        },
         "rangeAttack": 300,
         "repathDistance": 64,
+        "rotationSpeed": 200,
         "showGizmo": true,
         "spawnType": "Doors"
       }
@@ -112,7 +138,7 @@
         "Flags": 0,
         "Name": "Body",
         "Position": "0,0,0",
-        "Rotation": "0,0,0,1",
+        "Rotation": "0,-0,-0.707106769,0.707106769",
         "Scale": "1,1,1",
         "Tags": "",
         "Enabled": true,
@@ -144,6 +170,10 @@
                 "__guid": "55877364-1eab-4af3-a53b-76223c029f8a",
                 "__enabled": true,
                 "Flags": 0,
+                "Animation": {
+                  "Graph": null,
+                  "Parameters": {}
+                },
                 "AnimationGraph": {
                   "Id": "ea57bafb-0f24-4615-b524-1965a19ba216",
                   "Path": "animgraphs/ennemi1.vanmgrph"
@@ -154,6 +184,7 @@
                 "CreateBoneObjects": false,
                 "DeformationMode": "Normal",
                 "LodOverride": null,
+                "LowDetailAnimation": false,
                 "MaterialGroup": null,
                 "MaterialOverride": {
                   "Id": "1460e9d3-9411-4841-9b92-1f21d09d5749",
@@ -161,8 +192,8 @@
                 },
                 "Materials": null,
                 "Model": {
-                  "Id": "a7ae34aa-b7b2-4001-886e-de5651cfd574",
-                  "Path": "art/asset/player/ennemi1.vmdl"
+                  "Id": "f37e0c7e-5f80-4dac-8baa-f0f69669c758",
+                  "Path": "art/asset/enemies/mainboss.vmdl"
                 },
                 "Morphs": {},
                 "OnComponentDestroy": null,
@@ -197,6 +228,43 @@
             "Flags": 0,
             "Name": "MortarPoint",
             "Position": "0,0,80",
+            "Rotation": "0,0,0,1",
+            "Scale": "1,1,1",
+            "Tags": "",
+            "Enabled": true,
+            "NetworkMode": 2,
+            "NetworkFlags": 0,
+            "NetworkOrphaned": 0,
+            "NetworkTransmit": true,
+            "OwnerTransfer": 1,
+            "Components": [],
+            "Children": []
+          }
+        ]
+      },
+      {
+        "__guid": "e9adf8b2-615f-4a5f-a745-eccde1c55aec",
+        "__version": 2,
+        "Flags": 0,
+        "Name": "PivotGun",
+        "Position": "21.8672104,33.7126045,99.0595398",
+        "Rotation": "0,0,0,1",
+        "Scale": "1,1,1",
+        "Tags": "",
+        "Enabled": true,
+        "NetworkMode": 2,
+        "NetworkFlags": 0,
+        "NetworkOrphaned": 0,
+        "NetworkTransmit": true,
+        "OwnerTransfer": 1,
+        "Components": [],
+        "Children": [
+          {
+            "__guid": "7aee19c9-d268-4074-a9d3-cd95c97daf1f",
+            "__version": 2,
+            "Flags": 0,
+            "Name": "GunPoint",
+            "Position": "0,35,0",
             "Rotation": "0,0,0,1",
             "Scale": "1,1,1",
             "Tags": "",

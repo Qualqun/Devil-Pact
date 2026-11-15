@@ -11,7 +11,7 @@ public sealed class EnemySpawner : Component
 	[Property, Group( "Stats" )] public float hightSpawnAirEnemies { get; set; } = 200f;
 
 	[Property, Group( "List Refs" )] public List<GameObject> enemiesPrefabs { get; set; }
-	[Property, Group( "List Refs" )] public List<GameObject> spawnPoints { get; set; }
+	[Property, Group( "List Refs" )] public GameObject spawnPoints { get; set; }
 
 	[Property, Group( "Debug" )] bool showGizmo = false;
 
@@ -35,7 +35,7 @@ public sealed class EnemySpawner : Component
 	void SpawnEnemy()
 	{
 		if ( enemiesPrefabs == null || enemiesPrefabs.Count == 0 ) return;
-		if ( spawnPoints == null || spawnPoints.Count == 0 ) return;
+		if ( spawnPoints == null || spawnPoints.Children.Count == 0 ) return;
 
 		int enemyType = Game.Random.Int( enemiesPrefabs.Count - 1 );
 		
@@ -75,8 +75,8 @@ public sealed class EnemySpawner : Component
 
 	Vector3 DoorSpawnPoint()
 	{
-		int spawnPoint = Game.Random.Int( spawnPoints.Count - 1 );
-		Vector3 position = spawnPoints[spawnPoint].WorldPosition;
+		int spawnPoint = Game.Random.Int( spawnPoints.Children.Count - 1 );
+		Vector3 position = spawnPoints.Children[spawnPoint].WorldPosition;
 		return position;
 	}
 

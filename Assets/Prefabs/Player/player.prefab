@@ -262,7 +262,7 @@
                 "__enabled": true,
                 "Flags": 0,
                 "consecutiveFreePositions": 4,
-                "distance": 150,
+                "distance": 175,
                 "height": 40,
                 "OnComponentDestroy": null,
                 "OnComponentDisabled": null,
@@ -271,7 +271,7 @@
                 "OnComponentStart": null,
                 "OnComponentUpdate": null,
                 "radius": 15,
-                "showGizmo": false,
+                "showGizmo": true,
                 "spacingMultiplier": 1.8,
                 "speedFactor": 0.9
               }
@@ -318,6 +318,10 @@
                 "__guid": "e5728d85-77e1-4852-a22c-6cda78821502",
                 "__enabled": true,
                 "Flags": 0,
+                "Animation": {
+                  "Graph": null,
+                  "Parameters": {}
+                },
                 "AnimationGraph": {
                   "Id": "6aed5cfd-190e-46f2-9cb2-f06709d0025a",
                   "Path": "animgraphs/player.vanmgrph"
@@ -328,6 +332,7 @@
                 "CreateBoneObjects": true,
                 "DeformationMode": "Normal",
                 "LodOverride": null,
+                "LowDetailAnimation": false,
                 "MaterialGroup": null,
                 "MaterialOverride": null,
                 "Materials": null,

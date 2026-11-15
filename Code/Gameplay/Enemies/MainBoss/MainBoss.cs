@@ -1,5 +1,5 @@
-using Sandbox;
-using System.Diagnostics;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 public sealed class MainBoss : BaseEnemyBehaviour
@@ -17,18 +17,29 @@ public sealed class MainBoss : BaseEnemyBehaviour
 
 	#endregion
 
-
 	#region Dash values
 	[Property, Group( "Dash" ), Order( 50 )] float dashPaternDuration { get; set; } = 4f;
 	[Property, Group( "Dash" ), Order( 50 )] float dashDistance { get; set; } = 100f;
 	[Property, Group( "Dash" ), Order( 50 )] float dashSpeed { get; set; } = 100f;
-
 	[Property, Group( "Dash" ), Order( 50 )] int nbDash { get; set; } = 1;
 
+	[Property, Group( "Dash" ), Order( 50 )] float rotationSpeed { get; set; } = 100f;
+	[Property, Group( "Dash" ), Order( 50 )] int fireRate { get; set; } = 5;
+
+	[Property, Group( "Refs" )] GameObject pivotGunPoint { get; set; }
 
 	#endregion
 
+	#region Default Patern value
+
+	#endregion
+
+	[Property, Group( "Stats" )] float bulletSpeed { get; set; } = 180f;
+	[Property, Group( "Stats" )] float bulletDamage { get; set; } = 6f;
+
 	[Property, Group( "Refs" )] GameObject gunPoint { get; set; }
+	[Property, Group( "Refs" )] GameObject bullet { get; set; }
+	[Property, Group( "Refs" )] CapsuleCollider collider { get; set; }
 
 	[Property, Group( "Debug" ), Order( 1000 )] bool showGizmo = true;
 
@@ -37,7 +48,6 @@ public sealed class MainBoss : BaseEnemyBehaviour
 
 	protected override void OnUpdate()
 	{
-
 		if ( paternTask == null )
 		{
 			base.OnUpdate();
@@ -46,7 +56,6 @@ public sealed class MainBoss : BaseEnemyBehaviour
 			{
 				ChoosePatern();
 			}
-
 		}
 
 		if ( canMove )
@@ -55,7 +64,6 @@ public sealed class MainBoss : BaseEnemyBehaviour
 		}
 
 	}
-
 	protected override void DrawGizmos()
 	{
 		base.DrawGizmos();
@@ -63,20 +71,38 @@ public sealed class MainBoss : BaseEnemyBehaviour
 		if ( showGizmo )
 		{
 			Gizmo.Transform = global::Transform.Zero;
-			Gizmo.Draw.LineSphere( WorldPosition.WithZ( 0 ) + Vector3.Up * arcHeight, 32f );
+			Gizmo.Draw.LineSphere( WorldPosition + Vector3.Up * arcHeight, 32f );
 
 			Gizmo.Draw.Color = Color.Orange;
-			Gizmo.Draw.LineSphere( WorldPosition.WithZ( 0 ), rangeAttack );
+			Gizmo.Draw.LineSphere( WorldPosition, rangeAttack );
+
 		}
 
 	}
 
+	void Shoot()
+	{
+		Vector3 dir = (gunPoint.WorldPosition - pivotGunPoint.WorldPosition).Normal;
+
+		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition, Rotation.LookAt( dir ) );
+		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
+
+		bulletBehaviour.speed = bulletSpeed;
+		bulletBehaviour.damage = bulletDamage;
+		bulletBehaviour.direction = dir;
+		bulletBehaviour.gameManager = gameManager;
+
+		newBullet.NetworkSpawn();
+	}
 	void ChoosePatern()
 	{
-		canMove = false;
-		paternTask = BombingPatern();
+		paternTask = DashPatern();
 	}
-
+	void StopMove()
+	{
+		canMove = false;
+		agent.Stop();
+	}
 
 	#region Bombing methods
 	void MortarShoot()
@@ -93,7 +119,7 @@ public sealed class MainBoss : BaseEnemyBehaviour
 	{
 		float durationShoot = bombingDuration / nbShell;
 
-		agent.Stop();
+		StopMove();
 
 		for ( int i = 0; i < nbShell; i++ )
 		{
@@ -104,7 +130,7 @@ public sealed class MainBoss : BaseEnemyBehaviour
 
 
 		paternTask = null;
-
+		canMove = true;
 	}
 
 	#endregion
@@ -112,27 +138,48 @@ public sealed class MainBoss : BaseEnemyBehaviour
 	#region Dash methods
 
 
+	async Task FireCover( CancellationToken token )
+	{
+		float timer = 0;
+		float shootTimer = 1f / Math.Clamp( fireRate, 1, int.MaxValue );
+
+		while ( !token.IsCancellationRequested )
+		{
+			timer += Time.Delta;
+
+			pivotGunPoint.WorldRotation = Rotation.FromYaw( rotationSpeed * Time.Delta ) * pivotGunPoint.WorldRotation;
+
+
+			if ( timer > shootTimer )
+			{
+				Shoot();
+				timer = 0;
+			}
+
+			await Task.FrameEnd();
+		}
+	}
+
 	async Task Dash()
 	{
-		Vector3 dirDash = (target.WorldPosition - WorldPosition).WithZ( 0 );
-		Ray ray = new Ray( WorldPosition + Vector3.Up * MathX.MeterToInch( 1f ), dirDash );
-		SceneTraceResult hit = Scene.Trace.Sphere( MathX.MeterToInch( 0.5f ), ray, dashDistance ).WithoutTags( "enemy" ).Run();
-
 		Vector3 startPosition = WorldPosition;
-		float dashDuration = Vector3.DistanceBetween( startPosition, hit.EndPosition.WithZ( 0 ) ) / dashSpeed;
+		Vector3 dirDash = (target.WorldPosition - startPosition).WithZ( 0 ).Normal;
 
+		Ray ray = new Ray( WorldPosition + Vector3.Up * collider.Radius, dirDash );
+		SceneTraceResult hit = Scene.Trace.Sphere( collider.Radius, ray, dashDistance ).WithoutTags( "enemy", "ground", "player" ).Run();
+
+		Vector3 endPosition = hit.EndPosition.WithZ( startPosition.z );
+
+		float dashDuration = Vector3.DistanceBetween( startPosition, endPosition ) / dashSpeed;
 		float timer = 0;
 
 		while ( timer < dashDuration )
 		{
-
 			timer += Time.Delta;
 
-			WorldPosition = Vector3.Lerp( startPosition, hit.EndPosition.WithZ( 0 ), timer / dashDuration );
+			agent.SetAgentPosition( Vector3.Lerp( startPosition, endPosition, timer / dashDuration ) );
 
 			await Task.FrameEnd();
-
-
 		}
 
 	}
@@ -154,21 +201,36 @@ public sealed class MainBoss : BaseEnemyBehaviour
 
 	}
 
-
 	async Task DashPatern()
 	{
+		CancellationTokenSource cancellation = new CancellationTokenSource();
 		float dashDuration = dashPaternDuration / nbDash;
 
+		StopMove();
+		_ = FireCover( cancellation.Token );
 
 		for ( int i = 0; i < nbDash; i++ )
 		{
 			await DashWait( dashDuration );
-
 		}
 
+		cancellation.Cancel();
+		cancellation.Dispose();
+		cancellation = null;
+
+		paternTask = null;
+		canMove = true;
 	}
 
 	#endregion
 
+	#region Default Patern value
+
+	async Task DefaultPatern()
+	{
+
+	}
+
+	#endregion
 
 }

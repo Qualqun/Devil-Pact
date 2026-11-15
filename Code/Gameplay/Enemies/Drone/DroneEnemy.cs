@@ -17,6 +17,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 	[Property, Group( "Stats" )] float fallDuration { get; set; } = 1f;
 	[Property, Group( "Stats" )] float heightFly { get; set; } = 100f;
 
+	[Property, Group( "Refs" )] new DronePresentation enemyPresentation { get; set; }
 	[Property, Group( "Refs" )] public GameObject gunPoint { get; set; }
 	[Property, Group( "Refs Objects" ), Order( 200 )] public GameObject bullet { get; set; }
 
@@ -29,13 +30,14 @@ public class DroneEnemy : BaseEnemyBehaviour
 	CancellationTokenSource cancellation;
 
 	bool canShoot = false;
-	int rotationDirection = 1;
+	int rotationDir = 0;
 	int iPos;
 
 	public override void InitEnemy( int roundNb )
 	{
 		base.InitEnemy( roundNb );
 
+		cancellation = new CancellationTokenSource();
 		fallTask = DroneFall();
 	}
 
@@ -53,7 +55,6 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 			FollowPlayer();
 
-
 			if ( isInsideDist )
 			{
 				Vector3 firstPosition;
@@ -64,9 +65,8 @@ public class DroneEnemy : BaseEnemyBehaviour
 				firstPosition = playerLocked.GetClosestPosition( WorldPosition, out iPos );
 
 				moveTask = GoTo( firstPosition, iPos );
-				cancellation = new CancellationTokenSource();
 
-				_ = AttackBehaviour( cancellation.Token );
+				AttackBehaviour( cancellation.Token );
 			}
 
 
@@ -77,10 +77,12 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 			if ( moveTask == null )
 			{
+				if ( rotationDir == 0 )
+					SetRotationDir( 1 );
+
 				if ( !GetNextPosition() )
-				{
 					FindNewPosition();
-				}
+
 			}
 		}
 	}
@@ -107,40 +109,23 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 	}
 
-	bool GetNextPosition()
+	#region Setters/Getters
+	void SetRotationDir( int newDir )
 	{
-		if ( playerLocked.NextPositionAvailable( iPos, rotationDirection, out int direction, out int iNextPos, out Vector3 nextPosition ) )
+		if ( newDir != rotationDir )
 		{
-			moveTask = GoTo( nextPosition, iNextPos );
-			rotationDirection = direction;
-			iPos = iNextPos;
-
-			return true;
-		}
-
-		return false;
-	}
-
-	void FindNewPosition()
-	{
-		if ( playerLocked.GetNewPosition( iPos, rotationDirection, out int iNewPos, out Vector3 newLocalPosition ) )
-		{
-			float distance = Vector3.DistanceBetween( newLocalPosition.WithZ( 0 ), LocalPosition.WithZ( 0 ) );
-
-			Vector3 droneLocalPositon = (WorldPosition - target.WorldPosition).WithZ( 0 );
-			Vector3 direction = (newLocalPosition - droneLocalPositon).WithZ( 0 ).Normal;
-			Vector3 control = droneLocalPositon + direction * distance / 2f + Vector3.Up * heightFly;
-
-			moveTask = GoToBezier( newLocalPosition, control, iNewPos );
-			iPos = iNewPos;
+			rotationDir = newDir;
+			enemyPresentation.Move( rotationDir );
 		}
 	}
+	#endregion
 
+	#region Damage methods
 	void Shoot()
 	{
 		Vector3 direction = target.WorldPosition.WithZ( 0 ) - WorldPosition.WithZ( 0 );
 
-		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
+		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition, Rotation.LookAt( direction.Normal ) );
 		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
@@ -150,50 +135,20 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 		newBullet.NetworkSpawn();
 	}
-
-	async Task DroneFall()
+	async void AttackBehaviour( CancellationToken token )
 	{
-		float timer = 0f;
-
-		Vector3 startPosition = WorldPosition;
-		Vector3 endPosition = WorldPosition.WithZ( 0 );
-
-		while ( timer <= fallDuration )
-		{
-			float t = timer / fallDuration;
-			float easedT = 1f - (float)Math.Pow( 1f - t, 3f );
-
-			WorldPosition = Vector3.Lerp( startPosition, endPosition, easedT );
-			timer += Time.Delta;
-
-			await Task.FrameEnd();
-		}
-
-		agent.Enabled = true;
-
-
-		WorldPosition = endPosition;
-		fallTask = null;
-	}
-
-	async Task AttackBehaviour( CancellationToken token )
-	{
-		Task burstShoot = null;
 		float timer = 0f;
 
 		while ( !token.IsCancellationRequested )
 		{
 			timer += canShoot ? Time.Delta : 0f;
 
-			if ( timer >= burstFrequency && burstShoot == null )
+			if ( timer >= burstFrequency )
 			{
-				burstShoot = BurstShoot();
+				await BurstShoot();
 
-				if ( burstShoot.IsCompleted )
-				{
-					timer = 0f;
-					burstShoot = null;
-				}
+				timer = 0f;
+				Log.Info( "Burst ended" );
 			}
 
 			await Task.FrameEnd();
@@ -224,6 +179,73 @@ public class DroneEnemy : BaseEnemyBehaviour
 			}
 
 			await Task.FrameEnd();
+		}
+	}
+
+	#endregion
+
+	#region Movement methods
+	async Task DroneFall()
+	{
+		float timer = 0f;
+
+		Vector3 startPosition = WorldPosition;
+		Vector3 endPosition = WorldPosition.WithZ( 0 );
+
+		enemyPresentation.VisualDroneFall( fallDuration );
+
+		Log.Info( "test 33 " );
+
+		while ( timer <= fallDuration )
+		{
+			float t = timer / fallDuration;
+			float easedT = 1f - (float)Math.Pow( 1f - t, 3f );
+
+			WorldPosition = Vector3.Lerp( startPosition, endPosition, easedT );
+			timer += Time.Delta;
+
+			await Task.FrameEnd();
+		}
+		Log.Info( "test 444 " );
+
+
+		agent.Enabled = true;
+		WorldPosition = endPosition;
+		fallTask = null;
+
+		_ = enemyPresentation.Hovering( cancellation.Token );
+
+		Log.Info( "test 1 " );
+
+	}
+
+	bool GetNextPosition()
+	{
+		if ( playerLocked.NextPositionAvailable( iPos, rotationDir, out int direction, out int iNextPos, out Vector3 nextPosition ) )
+		{
+
+			SetRotationDir( direction );
+
+			moveTask = GoTo( nextPosition, iNextPos );
+			iPos = iNextPos;
+
+			return true;
+		}
+
+		return false;
+	}
+	void FindNewPosition()
+	{
+		if ( playerLocked.GetNewPosition( iPos, rotationDir, out int iNewPos, out Vector3 newLocalPosition ) )
+		{
+			float distance = Vector3.DistanceBetween( newLocalPosition.WithZ( 0 ), LocalPosition.WithZ( 0 ) );
+
+			Vector3 droneLocalPositon = (WorldPosition - target.WorldPosition).WithZ( 0 );
+			Vector3 direction = (newLocalPosition - droneLocalPositon).WithZ( 0 ).Normal;
+			Vector3 control = droneLocalPositon + direction * distance / 2f + Vector3.Up * heightFly;
+
+			moveTask = GoToBezier( newLocalPosition, control, iNewPos );
+			iPos = iNewPos;
 		}
 	}
 
@@ -259,7 +281,6 @@ public class DroneEnemy : BaseEnemyBehaviour
 		moveTask = null;
 
 	}
-
 	async Task GoToBezier( Vector3 localTarget, Vector3 localControl, int iNextPos )
 	{
 		Vector3 startPosition = WorldPosition - target.WorldPosition;
@@ -292,6 +313,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 		WorldPosition = target.WorldPosition + localTarget;
 		moveTask = null;
 	}
+	#endregion
 
 
 
