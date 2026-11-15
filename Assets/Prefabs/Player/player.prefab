@@ -168,9 +168,7 @@
         "__guid": "28a22751-d9f3-44e3-b3e2-af68d1912b50",
         "__enabled": true,
         "Flags": 0,
-        "ActiveModifiers": [
-          "Uzi"
-        ],
+        "ActiveModifiers": [],
         "BaseBulletDamage": 15,
         "BaseBulletSize": 1,
         "BaseBulletSpeed": 700,

@@ -151,6 +151,78 @@ public sealed class PlayerState : Component
 		ActiveModifiers.Add( modifier );
 	}
 
+	#region Weapon slot
+
+	const float SniperBulletSpeed = 100f;
+
+	[Description( "Weapon held in the weapon slot, read from the active modifiers. Null when shooting the base gun." )]
+	public BoostType? CurrentWeapon
+	{
+		get
+		{
+			if ( ActiveModifiers.Contains( ModifierType.Shotgun ) ) return BoostType.Shotgun;
+			if ( ActiveModifiers.Contains( ModifierType.Uzi ) ) return BoostType.Uzi;
+			if ( ActiveModifiers.Contains( ModifierType.Sniper ) ) return BoostType.Sniper;
+			return null;
+		}
+	}
+
+	[Description( "Power held in a slot, null when the slot is empty or doesn't hold anything." )]
+	public BoostType? GetHeldPower( PowerSlot slot )
+	{
+		switch ( slot )
+		{
+			case PowerSlot.Weapon:
+				return CurrentWeapon;
+			default:
+				return null;
+		}
+	}
+
+	[Description( "Weapon that taking this boost would drop, null if the boost isn't a weapon or the slot is empty." )]
+	public BoostType? GetReplacedWeapon( BoostType boost )
+	{
+		if ( Power.GetSlot( boost ) != PowerSlot.Weapon )
+			return null;
+
+		return CurrentWeapon;
+	}
+
+	// Only weapons touch the multipliers, so dropping one brings them back to 1
+	void UnequipWeapon()
+	{
+		switch ( CurrentWeapon )
+		{
+			case BoostType.Shotgun:
+				ActiveModifiers.Remove( ModifierType.Shotgun );
+				break;
+			case BoostType.Uzi:
+				ActiveModifiers.Remove( ModifierType.Uzi );
+				break;
+			case BoostType.Sniper:
+				ActiveModifiers.Remove( ModifierType.Sniper );
+				ActiveModifiers.Remove( ModifierType.Percing );
+				BaseBulletSpeed -= SniperBulletSpeed;
+				break;
+		}
+
+		FireRateMultiplier = 1f;
+		DamageMultiplier = 1f;
+	}
+
+	static (float FireRate, float Damage) GetWeaponMultipliers( BoostType? weapon )
+	{
+		switch ( weapon )
+		{
+			case BoostType.Shotgun: return (0.75f, 0.75f);
+			case BoostType.Uzi: return (2f, 0.6f);
+			case BoostType.Sniper: return (0.4f, 1.9f);
+			default: return (1f, 1f);
+		}
+	}
+
+	#endregion
+
 	public void TakeDamage( float amount )
 	{
 		if ( !Networking.IsHost )
@@ -281,6 +353,15 @@ public sealed class PlayerState : Component
 		ClaimedBoosts.Add( boost );
 		RunAchievements.OnPowerClaimed( ClaimedBoosts );
 
+		if ( Power.GetSlot( boost ) == PowerSlot.Weapon )
+		{
+			UnequipWeapon();
+
+			var (fireRate, damage) = GetWeaponMultipliers( boost );
+			FireRateMultiplier = fireRate;
+			DamageMultiplier = damage;
+		}
+
 		switch ( boost )
 		{
 			case BoostType.Hp:
@@ -293,7 +374,7 @@ public sealed class PlayerState : Component
 				MoveSpeed += 25f;
 				break;
 			case BoostType.FireRate:
-				BaseFireRate += 0.25f;
+				BaseFireRate += 1f;
 				break;
 			case BoostType.TimeInvulnerability:
 				TimeInvulnerability += 1f;
@@ -305,20 +386,15 @@ public sealed class PlayerState : Component
 				BaseBulletSpeed += 100f;
 				break;
 
+			// Multipliers were set above with the weapon slot
 			case BoostType.Shotgun:
-				FireRateMultiplier *= 0.75f;
-				DamageMultiplier *= 0.75f;
 				AddModifier( ModifierType.Shotgun );
 				break;
 			case BoostType.Uzi:
-				FireRateMultiplier *= 2f;
-				DamageMultiplier *= 0.6f;
 				AddModifier( ModifierType.Uzi );
 				break;
 			case BoostType.Sniper:
-				FireRateMultiplier *= 0.4f;
-				DamageMultiplier *= 1.9f;
-				BaseBulletSpeed += 100f;
+				BaseBulletSpeed += SniperBulletSpeed;
 				AddModifier( ModifierType.Sniper );
 				AddModifier( ModifierType.Percing );
 				break;
@@ -361,7 +437,7 @@ public sealed class PlayerState : Component
 				Add( "Move Speed", MoveSpeed, MoveSpeed + 25f );
 				break;
 			case BoostType.FireRate:
-				Add( "Fire Rate", FireRate, (BaseFireRate + 0.25f) * FireRateMultiplier );
+				Add( "Fire Rate", FireRate, (BaseFireRate + 1f) * FireRateMultiplier );
 				break;
 			case BoostType.TimeInvulnerability:
 				Add( "Invulnerability", TimeInvulnerability, TimeInvulnerability + 1f );
@@ -373,19 +449,23 @@ public sealed class PlayerState : Component
 				Add( "Bullet Speed", BulletSpeed, BulletSpeed + 100f );
 				break;
 
+			// A weapon replaces the held one, so the new values start from the base gun
 			case BoostType.Shotgun:
-				Add( "Fire Rate", FireRate, FireRate * 0.75f );
-				Add( "Damage", BulletDamage, BulletDamage * 0.75f );
-				break;
 			case BoostType.Uzi:
-				Add( "Fire Rate", FireRate, FireRate * 2f );
-				Add( "Damage", BulletDamage, BulletDamage * 0.6f );
-				break;
 			case BoostType.Sniper:
-				Add( "Fire Rate", FireRate, FireRate * 0.4f );
-				Add( "Damage", BulletDamage, BulletDamage * 1.9f );
-				Add( "Bullet Speed", BulletSpeed, BulletSpeed + 100f );
+			{
+				var replaced = CurrentWeapon;
+				var (fireRate, damage) = GetWeaponMultipliers( boost );
+				Add( "Fire Rate", FireRate, BaseFireRate * fireRate );
+				Add( "Damage", BulletDamage, BaseBulletDamage * damage );
+
+				float baseSpeed = BulletSpeed - (replaced == BoostType.Sniper ? SniperBulletSpeed : 0f);
+				if ( boost == BoostType.Sniper )
+					Add( "Bullet Speed", BulletSpeed, baseSpeed + SniperBulletSpeed );
+				else if ( replaced == BoostType.Sniper )
+					Add( "Bullet Speed", BulletSpeed, baseSpeed );
 				break;
+			}
 
 			case BoostType.Percing:
 				AddStacks( ModifierType.Percing );

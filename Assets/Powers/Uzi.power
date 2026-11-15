@@ -40,7 +40,7 @@
     },
     "compiled": "textures/generated/imagefile/e26a852029b5ccfc.vtex"
   },
-  "Description": "Fire 100% faster, deal 60% less damage",
+  "Description": "Fire 100% faster, deal 40% less damage",
   "__references": [],
   "__version": 0
 }

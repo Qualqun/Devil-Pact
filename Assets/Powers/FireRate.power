@@ -1,7 +1,7 @@
 {
   "Title": "Rapid Fire",
   "BoostType": "FireRate",
-  "Rarity": "Common",
+  "Rarity": "Epic",
   "Image": {
     "$compiler": "texture",
     "$source": "imagefile",
@@ -40,7 +40,7 @@
     },
     "compiled": "textures/generated/imagefile/6a404e95476e1970.vtex"
   },
-  "Description": "+0.25 Fire Rate",
+  "Description": "+1 Fire Rate",
   "__references": [],
   "__version": 0
 }

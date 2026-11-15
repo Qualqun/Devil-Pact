@@ -20,13 +20,22 @@ public sealed class EnemySpawner : Component
 	public int NbEnemyThisRound => (int)(baseNbEnemy * MathF.Pow( factorEnemyPerRound, gameManager.GameState.CurrentRound - 1 ));
 
 
+	public int SpawnedThisRound { get; private set; }
+	public int EnemiesLeftToSpawn => Math.Max( 0, NbEnemyThisRound - SpawnedThisRound );
+
+
 	public async Task RoundSpawner( CancellationToken token )
 	{
-		float spawnDelay = gameManager.TimePerRound / NbEnemyThisRound;
+		int nbEnemy = NbEnemyThisRound;
+		float spawnDelay = gameManager.TimePerRound / nbEnemy;
 
-		while ( !token.IsCancellationRequested )
+		SpawnedThisRound = 0;
+
+		// Stop at the round's total so the "enemies remaining" count can include the ones still to come
+		while ( !token.IsCancellationRequested && SpawnedThisRound < nbEnemy )
 		{
 			SpawnEnemy();
+			SpawnedThisRound++;
 
 			await Task.DelaySeconds( spawnDelay );
 		}

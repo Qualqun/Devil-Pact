@@ -50,6 +50,11 @@
 							<div class="reward-title">@slot.Power.Title</div>
 							<div class="reward-rarity">@slot.Power.Rarity.ToString().ToUpperInvariant()</div>
 
+							@if (!string.IsNullOrEmpty(slot.SlotTag))
+							{
+								<div class="reward-slot-tag @(slot.Replaces ? "replaces" : "")">@slot.SlotTag</div>
+							}
+
 							<div class="reward-image">
 								<Image Texture="@slot.Power.Image" />
 							</div>
@@ -101,6 +106,10 @@
 	{
 		public Power Power;
 		public List<(string Label, string From, string To)> Preview;
+
+		// "WEAPON" on a slot card, or what it would replace when that slot is taken
+		public string SlotTag;
+		public bool Replaces;
 		public float DealAt;
 		public float FlipAt;
 		public bool Dealt;
@@ -183,6 +192,11 @@
 		Random rng = new Random();
 		var player = GetLocalPlayer();
 
+		// The held weapon can't be offered again, weapons only swap
+		var heldWeapon = player?.CurrentWeapon;
+		if (heldWeapon.HasValue)
+			pool.RemoveAll(p => p.BoostType == heldWeapon.Value);
+
 		Slots = new List<CardSlot>();
 		handTaps = 0;
 
@@ -191,9 +205,15 @@
 			var power = RollPower(pool, rng);
 			pool.Remove(power);
 
+			var replaced = player?.GetReplacedWeapon(power.BoostType);
+
 			Slots.Add(new CardSlot
 			{
 				Power = power,
+				SlotTag = replaced.HasValue
+					? $"REPLACES {Power.GetTitle(replaced.Value).ToUpperInvariant()}"
+					: power.Slot == PowerSlot.Weapon ? "WEAPON" : null,
+				Replaces = replaced.HasValue,
 				Preview = player?.GetBoostPreview(power.BoostType) ?? new List<(string Label, string From, string To)>(),
 				DealAt = DealDelay + i * DealStagger
 			});
@@ -397,7 +417,7 @@
 		if (!Slots[index].Dealt)
 			return $"transform: translateY(900px) rotate({offset * 25f}deg) scale(0.7); opacity: 0;";
 
-		return $"transform: translateY({MathF.Abs(offset) * 22f}px) rotate({offset * 6f}deg); opacity: 1;";
+		return $"transform: translateY({MathF.Abs(offset) * 14f}px) rotate({offset * 4f}deg); opacity: 1;";
 	}
 
 	protected override int BuildHash()
