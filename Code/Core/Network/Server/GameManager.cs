@@ -88,7 +88,10 @@ public sealed class GameManager : Component
 		if ( GameState.State != GameStateType.WaitingForPlayers )
 			GameState.Server_SetPhaseTimer( MathF.Max( 0f, GameState.PhaseTimer - FixedDeltaTime ) );
 
-		GameState.Server_SetEnemyCount( GameState.Enemies.Count( enemy => enemy != null && enemy.IsValid() ) );
+		// Alive enemies plus the ones the spawner still has to send this round (none once it is stopped)
+		int aliveEnemies = GameState.Enemies.Count( enemy => enemy != null && enemy.IsValid() );
+		int enemiesToCome = Cancellation != null ? EnemySpawner.EnemiesLeftToSpawn : 0;
+		GameState.Server_SetEnemyCount( aliveEnemies + enemiesToCome );
 
 		switch ( GameState.State )
 		{
