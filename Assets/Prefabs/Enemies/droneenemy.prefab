@@ -78,7 +78,7 @@
         },
         "bullet": {
           "_type": "gameobject",
-          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
+          "prefab": "prefabs/enemies/projectiles/pistolbullet.prefab"
         },
         "bulletDamage": 6,
         "bulletSpeed": 500,
@@ -91,15 +91,15 @@
           "component_type": "DronePresentation"
         },
         "fallDuration": 2,
+        "flightSpeed": 175,
         "gunPoint": {
           "_type": "gameobject",
           "go": "cad6d1e8-8a64-4022-aa07-2d709ef97ad2"
         },
-        "heightFly": 150,
-        "hp": 2500,
+        "heightFly": 200,
+        "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,
-        "meleDamagePerRound": 6,
         "nbBulletBurst": 3,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
@@ -824,7 +824,7 @@
                 "Scale": "1,1,1",
                 "Tags": "",
                 "Enabled": true,
-                "NetworkMode": 0,
+                "NetworkMode": 2,
                 "NetworkFlags": 0,
                 "NetworkOrphaned": 0,
                 "NetworkTransmit": true,
@@ -860,7 +860,7 @@
                 "Scale": "1,1,1",
                 "Tags": "",
                 "Enabled": true,
-                "NetworkMode": 0,
+                "NetworkMode": 2,
                 "NetworkFlags": 0,
                 "NetworkOrphaned": 0,
                 "NetworkTransmit": true,
@@ -891,7 +891,7 @@
                 "__version": 2,
                 "Flags": 0,
                 "Name": "GunPoint",
-                "Position": "0,33.3636742,61.3313141",
+                "Position": "0,33.363678,62.8192749",
                 "Rotation": "0,0,0.707106829,0.707106829",
                 "Scale": "1,1,1",
                 "Tags": "",

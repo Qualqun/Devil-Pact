@@ -16,8 +16,8 @@ public class BaseEnemyPresentation : Component
 
 	[Property] protected SkinnedModelRenderer model { get; set; }
 
-	bool hit;
-	Task visualHitTask = null;
+	protected Task visualHitTask = null;
+	protected bool hit;
 
 	protected override void OnStart()
 	{
@@ -26,7 +26,6 @@ public class BaseEnemyPresentation : Component
 		if ( !model.IsValid() || model.MaterialOverride is null )
 			return;
 		
-
 		model.SceneObject.Batchable = false;
 	}
 
@@ -37,12 +36,12 @@ public class BaseEnemyPresentation : Component
 		AnimationUpdate();
 	}
 
-
 	protected virtual void AnimationUpdate()
 	{
-		model.Animation.Parameters.Set( "EnemyHit", hit );
+		model.Set( "EnemyHit", hit );
 		hit = false;
 	}
+
 
 	[Rpc.Broadcast]
 	public virtual void TakeHit()
@@ -56,7 +55,7 @@ public class BaseEnemyPresentation : Component
 		}
 	}
 
-	async Task VisualTakeHit()
+	protected async Task VisualTakeHit()
 	{
 		float timer = 0f;
 
@@ -72,7 +71,6 @@ public class BaseEnemyPresentation : Component
 
 		while ( timer >= 0 )
 		{
-
 			model.Attributes.Set( "PercentFlash", (timer / visualHitDuration).Clamp( 0f, 1f ) );
 			timer -= Time.Delta * 2f;
 
@@ -83,7 +81,7 @@ public class BaseEnemyPresentation : Component
 		visualHitTask = null;
 	}
 
-	async Task Shake( GameObject obj )
+	protected async Task Shake( GameObject obj )
 	{
 		float timePerVibration = vibration.time / vibration.nbVibration;
 		float timer = 0f;

@@ -1,0 +1,92 @@
+{
+  "RootObject": {
+    "__guid": "7243abd5-9276-4204-abf6-7a8fa64e1add",
+    "__version": 2,
+    "Flags": 0,
+    "Name": "pistolbullet",
+    "Position": "0,0,0",
+    "Rotation": "0,0,0,1",
+    "Scale": "1,1,1",
+    "Tags": "bullet",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "NetworkFlags": 0,
+    "NetworkOrphaned": 0,
+    "NetworkTransmit": true,
+    "OwnerTransfer": 1,
+    "Components": [
+      {
+        "__type": "EnemyBullet",
+        "__guid": "ad008685-fbab-4528-9566-c2e790f788a9",
+        "__enabled": true,
+        "Flags": 0,
+        "noCollideTag": "enemy,bullet,ground,invulnerability",
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "size": 8
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "3c42d765-5ad5-4438-b639-300b791c53d1",
+        "__version": 2,
+        "__Prefab": {
+          "Id": "cd48208b-5658-42e1-b75c-9fe0a2c1fa5e",
+          "Path": "art/prefabs/map/bullet/bulletsniper.prefab"
+        },
+        "__PrefabInstancePatch": {
+          "AddedObjects": [],
+          "RemovedObjects": [],
+          "PropertyOverrides": [
+            {
+              "Target": {
+                "Type": "GameObject",
+                "IdValue": "86f0a23e-093b-447b-ade4-ecf60c9ca47f"
+              },
+              "Property": "Scale",
+              "Value": "0.5,1,1"
+            }
+          ],
+          "MovedObjects": []
+        },
+        "__PrefabIdToInstanceId": {
+          "86f0a23e-093b-447b-ade4-ecf60c9ca47f": "3c42d765-5ad5-4438-b639-300b791c53d1",
+          "cbe36ccb-c522-410c-94a3-de0e28c9190b": "1472764d-3ce3-4dbb-abd8-839c8231912c"
+        }
+      }
+    ],
+    "__properties": {
+      "NetworkInterpolation": true,
+      "PhysicsMode": "Physics3D",
+      "TimeScale": 1,
+      "WantsSystemScene": true,
+      "Metadata": {},
+      "NavMesh": {
+        "Enabled": false,
+        "IncludeStaticBodies": true,
+        "IncludeKeyframedBodies": true,
+        "EditorAutoUpdate": false,
+        "AgentHeight": 64,
+        "AgentRadius": 16,
+        "AgentStepSize": 18,
+        "AgentMaxSlope": 40,
+        "ExcludedBodies": "",
+        "IncludedBodies": "",
+        "DeferGeneration": false,
+        "CustomBounds": false
+      }
+    },
+    "__variables": []
+  },
+  "ResourceVersion": 2,
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "DontBreakAsTemplate": false,
+  "__references": [],
+  "__version": 2
+}

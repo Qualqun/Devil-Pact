@@ -11,7 +11,6 @@ public class PistolEnemy : BaseEnemyBehaviour
 	[Property, Group( "Stats" )] public float burstDuration { get; set; } = 3;
 	[Property, Group( "Stats" )] public int nbBulletBurst { get; set; } = 3;
 
-	[Property, Group( "Growth stats" )] public float bulletDamagePerRound { get; set; } = 6f;
 
 
 	[Property, Group( "Refs" )] public GameObject gunPoint { get; set; }

@@ -21,9 +21,9 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	[Property, Group( "Refs" )] PlayerUI playerUI { get; set; }
 	[Property, Group( "Refs" )] MPlayerController controller { get; set; }
 
-
-	public PoolManager poolManager { get; set; }
 	public DroneInteraction droneInteraction { get; set; }
+
+	PoolManager poolManager { get; set; }
 	bool canShoot = true;
 	CancellationTokenSource cancellation;
 
@@ -32,9 +32,7 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 		if ( State == null )
 			State = Components.Get<PlayerState>();
 
-
 		droneInteraction = GetComponentInChildren<DroneInteraction>();
-
 
 		if ( IsProxy )
 		{
@@ -47,6 +45,9 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 			playerUI.GameState = gameManager.GameState;
 			playerUI?.SetHealth( State.Hp, State.MaxHp );
 			playerUI?.ShowArrowToWorldPosition( gameManager.StartZonePoint.WorldPosition );
+
+			poolManager = gameManager.PoolManager;
+
 		}
 
 		base.OnStart();

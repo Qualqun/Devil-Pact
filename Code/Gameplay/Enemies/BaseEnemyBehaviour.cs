@@ -24,7 +24,6 @@ public class BaseEnemyBehaviour : Component
 	[Property, Group( "Base stats" )] protected float repathDistance { get; set; } = 64f;
 
 	[Property, Group( "Growth stats" ), Order( 30 )] public float hpPerRound { get; set; } = 25f;
-	[Property, Group( "Growth stats" )] public float meleDamagePerRound { get; set; } = 6f;
 
 	[Property, Group( "Refs" ), Order( 100 )] protected NavMeshAgent agent { get; set; }
 	[Property, Group( "Refs" )] protected BaseEnemyPresentation enemyPresentation { get; set; }
@@ -94,7 +93,6 @@ public class BaseEnemyBehaviour : Component
 		roundNb -= 1;
 
 		hp += hpPerRound * roundNb;
-		meleDamage += meleDamagePerRound * roundNb;
 	}
 
 	public virtual void TakeDamage( float amount )

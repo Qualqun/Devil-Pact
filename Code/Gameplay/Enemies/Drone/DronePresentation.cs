@@ -29,8 +29,28 @@ public class DronePresentation : BaseEnemyPresentation
 
 	[Property, Group( "Debug" ), Order( 100 )] bool showGizmo { get; set; } = true;
 
+	[Sync] float leftFlamePower { get; set; }
+	[Sync] float rightFlamePower { get; set; }
 
-	protected override void OnUpdate() { }
+	[Sync] Angles visualModelAngles { get; set; }
+	[Sync] Vector3 visualModelPosition { get; set; }
+
+
+	protected override void OnStart()
+	{
+		base.OnStart();
+
+		visualModelAngles = model.LocalRotation.Angles();
+	}
+
+	protected override void OnUpdate()
+	{
+		leftFlame.ThrustPower = leftFlamePower;
+		rightFlame.ThrustPower = rightFlamePower;
+
+		model.LocalRotation = visualModelAngles.ToRotation();
+		model.LocalPosition = visualModelPosition;
+	}
 
 	protected override void DrawGizmos()
 	{
@@ -47,6 +67,18 @@ public class DronePresentation : BaseEnemyPresentation
 		}
 	}
 
+	[Rpc.Broadcast]
+	public override void TakeHit()
+	{
+		hit = true;
+
+		if ( visualHitTask == null )
+		{
+			visualHitTask = VisualTakeHit();
+			_ = Shake( model.GameObject.Parent );
+		}
+	}
+
 
 	public async void VisualDroneFall( float duration )
 	{
@@ -58,8 +90,8 @@ public class DronePresentation : BaseEnemyPresentation
 		{
 			float amount = (timer / duration).Clamp( 0f, 1f );
 
-			leftFlame.ThrustPower = float.Lerp( startFallPowerFlame, endFallPowerFlame, amount );
-			rightFlame.ThrustPower = float.Lerp( startFallPowerFlame, endFallPowerFlame, amount );
+			leftFlamePower = float.Lerp( startFallPowerFlame, endFallPowerFlame, amount );
+			rightFlamePower = float.Lerp( startFallPowerFlame, endFallPowerFlame, amount );
 
 			timer += Time.Delta;
 
@@ -72,8 +104,8 @@ public class DronePresentation : BaseEnemyPresentation
 		{
 			float amount = (timer / flameResetDuration).Clamp( 0f, 1f );
 
-			leftFlame.ThrustPower = float.Lerp( endFallPowerFlame, normalPowerFlame, amount );
-			rightFlame.ThrustPower = float.Lerp( endFallPowerFlame, normalPowerFlame, amount );
+			leftFlamePower = float.Lerp( endFallPowerFlame, normalPowerFlame, amount );
+			rightFlamePower = float.Lerp( endFallPowerFlame, normalPowerFlame, amount );
 
 			timer += Time.Delta;
 
@@ -92,7 +124,6 @@ public class DronePresentation : BaseEnemyPresentation
 		Angles angles = model.LocalRotation.Angles();
 		float startPitch = angles.pitch;
 
-
 		while ( timer <= moveDuration )
 		{
 			float amount = (timer / float.Max( moveDuration, 0.01f )).Clamp( 0f, 1f );
@@ -100,12 +131,11 @@ public class DronePresentation : BaseEnemyPresentation
 			float endPercentLeft = direction == 1 ? maxMovePowerFlame : minMovePowerFlame;
 			float endPercentRight = direction == 1 ? minMovePowerFlame : maxMovePowerFlame;
 
-			leftFlame.ThrustPower = float.Lerp( startPercentLeft, endPercentLeft, amount );
-			rightFlame.ThrustPower = float.Lerp( startPercentRight, endPercentRight, amount );
+			leftFlamePower = float.Lerp( startPercentLeft, endPercentLeft, amount );
+			rightFlamePower = float.Lerp( startPercentRight, endPercentRight, amount );
 
 			angles.pitch = float.Lerp( startPitch, moveRotation * direction, amount );
-
-			model.LocalRotation = angles.ToRotation();
+			visualModelAngles = angles;
 
 			timer += Time.Delta;
 
@@ -113,17 +143,59 @@ public class DronePresentation : BaseEnemyPresentation
 		}
 	}
 
+	public async void FlyOverHead( float duration )
+	{
+		float timer = 0.01f;
+
+		float halfFlyDuration = duration / 2f;
+
+		float startPercentLeft = leftFlame.ThrustPower;
+		float startPercentRight = rightFlame.ThrustPower;
+
+		Angles angles = visualModelAngles;
+		float startPitch = angles.pitch;
+
+		while ( timer < halfFlyDuration )
+		{
+			float amount = (timer / float.Max( halfFlyDuration, 0.01f )).Clamp( 0f, 1f );
+
+			leftFlamePower = float.Lerp( startPercentLeft, maxMovePowerFlame, amount );
+			rightFlamePower = float.Lerp( startPercentRight, maxMovePowerFlame, amount );
+
+			angles.pitch = float.Lerp( startPitch, 0f, amount );
+			visualModelAngles = angles;
+
+
+			timer += Time.Delta;
+
+			await Task.FrameEnd();
+		}
+
+		timer = 0;
+
+		while ( timer < halfFlyDuration )
+		{
+			float amount = (timer / float.Max( halfFlyDuration, 0.01f )).Clamp( 0f, 1f );
+
+			leftFlamePower = float.Lerp( maxMovePowerFlame, normalPowerFlame, amount );
+			rightFlamePower = float.Lerp( maxMovePowerFlame, normalPowerFlame, amount );
+
+			timer += Time.Delta;
+
+			await Task.FrameEnd();
+		}
+
+	}
+
 	public async Task Hovering( CancellationToken token )
 	{
 		float timer = 0;
-		Log.Info( "test 2 " );
-
 
 		while ( !token.IsCancellationRequested )
 		{
-			float amplitude = (float) Math.Sin( timer / 0.25f ) * hoverAmplitude;
-			
-			model.LocalPosition = Vector3.Up * amplitude;
+			float amplitude = (float)Math.Sin( timer / 0.25f ) * hoverAmplitude;
+
+			visualModelPosition = Vector3.Up * amplitude;
 			timer += Time.Delta;
 
 			await Task.FrameEnd();

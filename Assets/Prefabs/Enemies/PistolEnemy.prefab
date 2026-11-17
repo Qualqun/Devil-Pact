@@ -81,7 +81,6 @@
           "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
         },
         "bulletDamage": 6,
-        "bulletDamagePerRound": 6,
         "bulletSpeed": 500,
         "burstDuration": 3,
         "burstFrequency": 1.2,
@@ -93,7 +92,6 @@
         "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,
-        "meleDamagePerRound": 6,
         "nbBulletBurst": 3,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,

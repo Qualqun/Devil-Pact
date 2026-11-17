@@ -14,6 +14,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 
 	[Property, Group( "Stats" ), Order( 20 )] float rotationSpeed { get; set; } = 500f;
+	[Property, Group( "Stats" )] float flightSpeed { get; set; } = 500f;
 	[Property, Group( "Stats" )] float fallDuration { get; set; } = 1f;
 	[Property, Group( "Stats" )] float heightFly { get; set; } = 100f;
 
@@ -194,8 +195,6 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 		enemyPresentation.VisualDroneFall( fallDuration );
 
-		Log.Info( "test 33 " );
-
 		while ( timer <= fallDuration )
 		{
 			float t = timer / fallDuration;
@@ -206,16 +205,12 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 			await Task.FrameEnd();
 		}
-		Log.Info( "test 444 " );
-
 
 		agent.Enabled = true;
 		WorldPosition = endPosition;
 		fallTask = null;
 
 		_ = enemyPresentation.Hovering( cancellation.Token );
-
-		Log.Info( "test 1 " );
 
 	}
 
@@ -244,7 +239,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 			Vector3 direction = (newLocalPosition - droneLocalPositon).WithZ( 0 ).Normal;
 			Vector3 control = droneLocalPositon + direction * distance / 2f + Vector3.Up * heightFly;
 
-			moveTask = GoToBezier( newLocalPosition, control, iNewPos );
+			moveTask = GoToHoverHead( newLocalPosition, control, iNewPos );
 			iPos = iNewPos;
 		}
 	}
@@ -281,20 +276,22 @@ public class DroneEnemy : BaseEnemyBehaviour
 		moveTask = null;
 
 	}
-	async Task GoToBezier( Vector3 localTarget, Vector3 localControl, int iNextPos )
+	async Task GoToHoverHead( Vector3 localTarget, Vector3 localControl, int iNextPos )
 	{
 		Vector3 startPosition = WorldPosition - target.WorldPosition;
 		Vector3 endPosition = localTarget;
 
 		float timer = 0f;
-		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / rotationSpeed;
+		float duration = Vector3.DistanceBetween( startPosition, endPosition ) / flightSpeed;
+
+		enemyPresentation.FlyOverHead( duration );
 
 		while ( timer <= duration )
 		{
 			float t = timer / duration;
 			float easedT = 1f - (float)Math.Pow( 1f - t, 3f );
 
-			WorldPosition = target.WorldPosition + Vector3.CubicBezier( startPosition, endPosition, localControl, localControl, easedT );
+			WorldPosition = target.WorldPosition + Vector3.CubicBezier( startPosition, endPosition, localControl, localControl, t );
 
 			timer += Time.Delta;
 			canShoot = false;
@@ -309,6 +306,8 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 			await Task.FrameEnd();
 		}
+
+		enemyPresentation.Move( rotationDir );
 
 		WorldPosition = target.WorldPosition + localTarget;
 		moveTask = null;

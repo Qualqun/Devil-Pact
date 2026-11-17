@@ -15,8 +15,8 @@ public class SniperEnemyPresentation : BaseEnemyPresentation
 	protected override void AnimationUpdate()
 	{
 
-		model.Animation.Parameters.Set( "Standing", stand );
-		model.Animation.Parameters.Set( "Shoot", shoot );
+		model.Set( "Standing", stand );
+		model.Set( "Shoot", shoot );
 
 		shoot = false;
 	}

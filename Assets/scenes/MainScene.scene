@@ -139,7 +139,7 @@
             "go": "711ae739-446a-4399-9500-4a56651dbe5f",
             "component_type": "EnemySpawner"
           },
-          "ExperienceBase": 200,
+          "ExperienceBase": 150,
           "ExperiencePerRound": 50,
           "ExperienceSpawnDist": 32,
           "GameState": {
@@ -171,7 +171,7 @@
           "TimeGameOver": 5,
           "TimePerRound": 30,
           "TimePerWaitingRound": 5,
-          "TimeStart": 0,
+          "TimeStart": 3,
           "UiManager": {
             "_type": "component",
             "component_id": "5d508ba5-953d-4fa7-8cf4-5a0b37c23fdd",
@@ -202,8 +202,12 @@
               "__guid": "090794a4-6a4e-4a5c-8f18-6b0361192de1",
               "__enabled": true,
               "Flags": 0,
-              "baseNbEnemy": 1,
+              "baseNbEnemy": 5,
               "enemiesPrefabs": [
+                {
+                  "_type": "gameobject",
+                  "prefab": "prefabs/enemies/droneenemy.prefab"
+                },
                 {
                   "_type": "gameobject",
                   "prefab": "prefabs/enemies/meleeenemy.prefab"
@@ -213,7 +217,7 @@
                   "prefab": "prefabs/enemies/sniperenemy.prefab"
                 }
               ],
-              "factorEnemyPerRound": 0,
+              "factorEnemyPerRound": 1.4,
               "hightSpawnAirEnemies": 400,
               "OnComponentDestroy": null,
               "OnComponentDisabled": null,
@@ -26720,7 +26724,7 @@
               "ScaleStrategy": "ConsistentHeight",
               "TargetCamera": null,
               "Timing": "AfterPostProcess",
-              "ZIndex": 100
+              "ZIndex": 120
             },
             {
               "__type": "Sandbox.GameHUD",
@@ -26778,7 +26782,7 @@
               "ScaleStrategy": "ConsistentHeight",
               "TargetCamera": null,
               "Timing": "AfterPostProcess",
-              "ZIndex": 100
+              "ZIndex": 140
             },
             {
               "__type": "Sandbox.DeathRewards",
@@ -26829,7 +26833,7 @@
               "ScaleStrategy": "ConsistentHeight",
               "TargetCamera": null,
               "Timing": "AfterPostProcess",
-              "ZIndex": 100
+              "ZIndex": 130
             },
             {
               "__type": "Sandbox.ContinuePrompt",

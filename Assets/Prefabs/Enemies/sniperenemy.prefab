@@ -79,10 +79,9 @@
         "aimTime": 0.4,
         "bullet": {
           "_type": "gameobject",
-          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
+          "prefab": "prefabs/enemies/projectiles/normalbullet.prefab"
         },
         "bulletDamage": 6,
-        "bulletDamagePerRound": 6,
         "bulletSpeed": 750,
         "enemyPresentation": {
           "_type": "component",
@@ -97,7 +96,6 @@
         "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,
-        "meleDamagePerRound": 6,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -182,6 +180,10 @@
                 "__guid": "55877364-1eab-4af3-a53b-76223c029f8a",
                 "__enabled": true,
                 "Flags": 0,
+                "Animation": {
+                  "Graph": null,
+                  "Parameters": {}
+                },
                 "AnimationGraph": {
                   "Id": "79d7bafa-7b1a-4499-bfed-3a85a21097c5",
                   "Path": "animgraphs/ennemi2.vanmgrph"
@@ -192,6 +194,7 @@
                 "CreateBoneObjects": true,
                 "DeformationMode": "Normal",
                 "LodOverride": null,
+                "LowDetailAnimation": false,
                 "MaterialGroup": null,
                 "MaterialOverride": {
                   "Id": "1460e9d3-9411-4841-9b92-1f21d09d5749",
@@ -200,7 +203,7 @@
                 "Materials": null,
                 "Model": {
                   "Id": "e10e4c98-f1f3-43c1-9e69-c1703bf87cf3",
-                  "Path": "art/asset/player/ennemi2.vmdl"
+                  "Path": "art/asset/enemies/sniper.vmdl"
                 },
                 "Morphs": {},
                 "OnComponentDestroy": null,

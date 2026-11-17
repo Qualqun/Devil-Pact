@@ -85,7 +85,6 @@
         "hp": 35,
         "hpPerRound": 12,
         "meleDamage": 8,
-        "meleDamagePerRound": 6,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,

@@ -103,7 +103,6 @@
         "hp": 25,
         "hpPerRound": 25,
         "meleDamage": 8,
-        "meleDamagePerRound": 6,
         "mortarPoint": {
           "_type": "gameobject",
           "go": "4a3646bb-9273-4ecd-b9a4-4535d91f5704"

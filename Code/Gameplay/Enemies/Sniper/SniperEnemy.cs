@@ -12,7 +12,6 @@ public class SniperEnemy : BaseEnemyBehaviour
 	[Property, Group( "Stats" )] float shootTime { get; set; } = 1.2f;
 	[Property, Group( "Stats" )] float reloadTime { get; set; } = 1.4f;
 
-	[Property, Group( "Growth stats" )] float bulletDamagePerRound { get; set; } = 6f;
 
 	[Property, Group( "Refs" )] new SniperEnemyPresentation enemyPresentation { get; set; }
 	[Property, Group( "Refs" )] GameObject gunPoint { get; set; }
@@ -150,12 +149,6 @@ public class SniperEnemy : BaseEnemyBehaviour
 
 		WorldRotation = targetRotation;
 
-	}
-
-	public override void InitEnemy( int roundNb )
-	{
-		base.InitEnemy( roundNb );
-		bulletDamage += bulletDamagePerRound * roundNb;
 	}
 
 	protected override void DrawGizmos()

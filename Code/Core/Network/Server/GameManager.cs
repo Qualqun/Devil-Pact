@@ -34,8 +34,8 @@ public sealed class GameManager : Component
 
 	[Property, Group( "Refs" )] public GameState GameState { get; set; }
 	[Property, Group( "Refs" )] public UIManager UiManager { get; set; }
+	[Property, Group( "Refs" )] public PoolManager PoolManager { get; set; }
 	[Property, Group( "Refs" )] EnemySpawner EnemySpawner { get; set; }
-	[Property, Group( "Refs" )] PoolManager PoolManager { get; set; }
 
 	[Property, Group( "Refs" )] public GameObject StartZonePoint { get; set; }
 
@@ -238,7 +238,6 @@ public sealed class GameManager : Component
 		GameState.Server_AddPlayer( playerBehaviour );
 
 		playerBehaviour.gameManager = this;
-		playerBehaviour.poolManager = PoolManager;
 
 		player.NetworkSpawn( connection );
 		Log.Info( $"[GameManager] Spawned player for {connection.DisplayName}" );

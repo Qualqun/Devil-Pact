@@ -21,7 +21,6 @@ public sealed class PlayerPresentation : Component
 	bool shootAnim = false;
 	bool dashAnim = false;
 
-
 	protected override void OnStart()
 	{
 		base.OnStart();
