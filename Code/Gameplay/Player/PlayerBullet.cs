@@ -57,7 +57,7 @@ public struct BulletInfo
 public sealed class PlayerBullet : Component
 {
 	[Property, WideMode] TagSet noCollideTag { get; set; }
-	[Property] GameObject HitFX;
+	[Property] GameObject hitFX;
 
 	[Property] float size { get; set; } = 32f;
 
@@ -112,7 +112,7 @@ public sealed class PlayerBullet : Component
 
 
 
-			if ( bulletInfo.endModifiers != null && bulletInfo.endModifiers.Count > 0  )
+			if ( bulletInfo.endModifiers != null && bulletInfo.endModifiers.Count > 0 )
 			{
 				foreach ( EndModifier modifier in bulletInfo.endModifiers )
 				{
@@ -133,11 +133,17 @@ public sealed class PlayerBullet : Component
 
 			if ( isEnemy && !alreadyHitEnemy )
 			{
-				Log.Info( "hit" );
+				Vector3 dirFX = WorldPosition - traceResult.HitPosition;
+				GameObject hitFx = hitFX.Clone( traceResult.HitPosition, Rotation.LookAt( dirFX ) );
+
+
 				enemyHit.Add( collideObj );
 				gameManager.EnemyTakeDamage( collideObj, bulletInfo.damage );
 				gameManager.UiManager.HitNumbers.ShowNumberForEnemy( bulletInfo.damage, traceResult.HitPosition, collideObj );
+
 				bulletInfo.shooter?.AddDamageDealt( bulletInfo.damage );
+
+
 			}
 
 			if ( updateNextStep )

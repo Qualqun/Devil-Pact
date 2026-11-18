@@ -20,6 +20,10 @@
         "__guid": "03b1697f-4c77-4215-9e98-ad3e668fcb4f",
         "__enabled": true,
         "Flags": 0,
+        "hitFX": {
+          "_type": "gameobject",
+          "prefab": "art/fx/prefab/gunhit.prefab"
+        },
         "noCollideTag": "player,ground,bullet",
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,

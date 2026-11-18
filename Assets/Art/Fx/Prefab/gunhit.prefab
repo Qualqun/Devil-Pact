@@ -3,7 +3,7 @@
     "__guid": "3caee574-0d4d-47d2-92e3-444bf00624d3",
     "__version": 2,
     "Flags": 0,
-    "Name": "gunit",
+    "Name": "gunhit",
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
@@ -65,7 +65,7 @@
         "Brightness": 90,
         "Bumpiness": 0,
         "Collision": true,
-        "CollisionIgnore": null,
+        "CollisionIgnore": "enemy",
         "CollisionPrefab": null,
         "CollisionPrefabAlign": false,
         "CollisionPrefabChance": 1,
@@ -193,6 +193,7 @@
         "LeadingTrail": true,
         "Lighting": true,
         "MotionBlur": true,
+        "NormalTexture": null,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -201,6 +202,8 @@
         "OnComponentUpdate": null,
         "Opaque": false,
         "PlaybackSpeed": 1,
+        "Refraction": false,
+        "RefractionStrength": 8,
         "RenderOptions": {
           "GameLayer": true,
           "OverlayLayer": false,
@@ -225,7 +228,10 @@
                 "LoopEnd": -1,
                 "Frames": [
                   {
-                    "Texture": "textures/particles/particle_modulate_01.vtex",
+                    "Texture": {
+                      "Id": "6cd1993d-65da-4e92-a37e-d0ff4e5f4074",
+                      "Path": "textures/particles/particle_modulate_01.vtex"
+                    },
                     "BroadcastMessages": []
                   }
                 ]
@@ -250,10 +256,10 @@
         "ConeFar": 2,
         "ConeNear": 1,
         "Delay": 0,
-        "DestroyOnEnd": false,
+        "DestroyOnEnd": true,
         "Duration": 3,
         "InVolume": false,
-        "Loop": true,
+        "Loop": false,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -296,8 +302,6 @@
   "MenuPath": null,
   "MenuIcon": null,
   "DontBreakAsTemplate": false,
-  "__references": [
-    "facepunch.impactfleshmist#110498"
-  ],
+  "__references": [],
   "__version": 2
 }
