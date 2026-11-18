@@ -77,10 +77,6 @@
           "component_type": "NavMeshAgent"
         },
         "aimTime": 0.4,
-        "bullet": {
-          "_type": "gameobject",
-          "prefab": "prefabs/enemies/projectiles/normalbullet.prefab"
-        },
         "bulletDamage": 6,
         "bulletSpeed": 750,
         "enemyPresentation": {
@@ -95,6 +91,10 @@
         },
         "hp": 25,
         "hpPerRound": 25,
+        "lineOfSightOrigin": {
+          "_type": "gameobject",
+          "go": "68a4fc6b-f2e6-4808-8678-b148936bfeec"
+        },
         "meleDamage": 8,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
@@ -102,10 +102,12 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
+        "projectileType": "NORMAL",
         "range": 300,
         "reloadTime": 1.4,
         "repathDistance": 64,
         "shootTime": 1.2,
+        "sizeShootCheck": 32,
         "spawnType": "Doors"
       },
       {
@@ -866,6 +868,24 @@
                 ]
               }
             ]
+          },
+          {
+            "__guid": "68a4fc6b-f2e6-4808-8678-b148936bfeec",
+            "__version": 2,
+            "Flags": 0,
+            "Name": "LineOfSightOrigin",
+            "Position": "0,0,50",
+            "Rotation": "0,0,0,1",
+            "Scale": "1,1,1",
+            "Tags": "",
+            "Enabled": true,
+            "NetworkMode": 2,
+            "NetworkFlags": 0,
+            "NetworkOrphaned": 0,
+            "NetworkTransmit": true,
+            "OwnerTransfer": 1,
+            "Components": [],
+            "Children": []
           }
         ]
       }

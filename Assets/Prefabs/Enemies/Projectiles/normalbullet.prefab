@@ -3,7 +3,7 @@
     "__guid": "7243abd5-9276-4204-abf6-7a8fa64e1add",
     "__version": 2,
     "Flags": 0,
-    "Name": "enemybullet",
+    "Name": "normalbullet",
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
@@ -27,7 +27,8 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
-        "size": 16
+        "size": 12,
+        "type": "NORMAL"
       }
     ],
     "Children": [

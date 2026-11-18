@@ -57,8 +57,9 @@ public struct BulletInfo
 public sealed class PlayerBullet : Component
 {
 	[Property, WideMode] TagSet noCollideTag { get; set; }
-	[Property] float size { get; set; } = 32f;
+	[Property] GameObject HitFX;
 
+	[Property] float size { get; set; } = 32f;
 
 	public BulletInfo bulletInfo { get; set; }
 	public GameManager gameManager { get; set; }
@@ -146,7 +147,7 @@ public sealed class PlayerBullet : Component
 
 			if ( destroyBullet )
 			{
-				poolManager.DisposeBullet( GameObject );
+				poolManager.playerBullet.DisposeObject( GameObject );
 				return;
 			}
 		}

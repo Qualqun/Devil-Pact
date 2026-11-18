@@ -1,9 +1,18 @@
 using Sandbox;
 using static Sandbox.Services.Stats;
 
+public enum EnemyProjectile
+{
+	NORMAL,
+	PISTOL,
+
+	[Hide] NB_PROJECTILE
+}
+
 public sealed class EnemyBullet : Component
 {
 	[Property, WideMode] TagSet noCollideTag { get; set; }
+	[Property] EnemyProjectile type { get; set; }
 	[Property] public float size { get; set; } = 32f;
 
 	public float speed { get; set; }
@@ -15,8 +24,13 @@ public sealed class EnemyBullet : Component
 	protected override void OnStart()
 	{
 		base.OnStart();
-		WorldRotation = Rotation.LookAt( direction );
+		
+		if(IsProxy)
+		{
+			Destroy();
+		}
 	}
+
 	protected override void OnUpdate()
 	{
 		LinearDirection();
@@ -37,8 +51,7 @@ public sealed class EnemyBullet : Component
 					gameManager.PlayerTakeDamage( player, damage );
 			}
 
-			GameObject.Destroy();
-
+			gameManager.PoolManager.enemyProjectile[(int)type].DisposeObject( GameObject );
 			return;
 		}
 

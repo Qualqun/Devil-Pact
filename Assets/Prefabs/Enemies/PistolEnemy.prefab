@@ -76,10 +76,7 @@
           "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
           "component_type": "NavMeshAgent"
         },
-        "bullet": {
-          "_type": "gameobject",
-          "prefab": "prefabs/enemies/projectiles/enemybullet.prefab"
-        },
+        "projectileType": "NORMAL",
         "bulletDamage": 6,
         "bulletSpeed": 500,
         "burstDuration": 3,

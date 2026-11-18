@@ -71,7 +71,7 @@
         "OnObjectTriggerExit": null,
         "OnTriggerEnter": null,
         "OnTriggerExit": null,
-        "Radius": 8,
+        "Radius": 12,
         "RollingResistance": null,
         "Start": "0,0,12",
         "Static": false,

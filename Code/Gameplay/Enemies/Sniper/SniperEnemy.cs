@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 
 public class SniperEnemy : BaseEnemyBehaviour
 {
+	[Property, Group( "Shoot" )] EnemyProjectile projectileType { get; set; }
+	[Property, Group( "Shoot" )] float sizeShootCheck { get; set; } = 32f;
+	[Property, Group( "Shoot" )] GameObject lineOfSightOrigin { get; set; }
+
 
 	[Property, Group( "Stats" ), Order( 20 )] float range { get; set; } = 100f;
 	[Property, Group( "Stats" )] float bulletSpeed { get; set; } = 180f;
@@ -16,18 +20,7 @@ public class SniperEnemy : BaseEnemyBehaviour
 	[Property, Group( "Refs" )] new SniperEnemyPresentation enemyPresentation { get; set; }
 	[Property, Group( "Refs" )] GameObject gunPoint { get; set; }
 
-	[Property, Group( "Refs Prefabs" ), Order( 200 )] GameObject bullet { get; set; }
-
-
 	Task attackTask;
-	float bulletSize;
-
-	protected override void OnStart()
-	{
-		base.OnStart();
-
-		bulletSize = bullet.GetComponent<EnemyBullet>().size;
-	}
 
 
 	protected override void OnUpdate()
@@ -42,8 +35,8 @@ public class SniperEnemy : BaseEnemyBehaviour
 
 		if ( !noTarget )
 		{
-			bool canShoot = CanShoot();
-			
+			bool canShoot = CheckLineOfSight();
+
 			enemyPresentation.stand = canShoot || attackTask != null;
 
 			if ( canShoot || attackTask != null )
@@ -63,15 +56,16 @@ public class SniperEnemy : BaseEnemyBehaviour
 		}
 	}
 
-	bool CanShoot()
+	bool CheckLineOfSight()
 	{
 		bool canShoot = targetDist < range && attackTask == null;
 
 		if ( canShoot )
 		{
-			SceneTraceResult hit = Scene.Trace
-				.Sphere( bulletSize, gunPoint.WorldPosition, target.WorldPosition + Vector3.Up * 32f )
-				.WithoutTags( "enemy" ).Run();
+			Vector3 dir = (target.WorldPosition - WorldPosition).WithZ( 0 );
+			Ray shootRay = new Ray( lineOfSightOrigin.WorldPosition, dir.Normal );
+
+			SceneTraceResult hit = Scene.Trace.Sphere( sizeShootCheck, shootRay, dir.Length ).WithoutTags( "enemy" ).Run();
 
 			canShoot = false;
 
@@ -88,7 +82,7 @@ public class SniperEnemy : BaseEnemyBehaviour
 
 	void Shoot( Vector3 direction )
 	{
-		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition , Rotation.LookAt( direction.Normal ) );
+		GameObject newBullet = gameManager.PoolManager.enemyProjectile[(int)projectileType].GetObject( gunPoint.WorldPosition, Rotation.LookAt( direction.Normal ) );
 		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
@@ -123,6 +117,7 @@ public class SniperEnemy : BaseEnemyBehaviour
 		await Task.DelaySeconds( reloadTime );
 
 		attackTask = null;
+
 	}
 
 

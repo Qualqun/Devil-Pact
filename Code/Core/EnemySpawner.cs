@@ -13,8 +13,7 @@ public sealed class EnemySpawner : Component
 	[Property, Group( "List Refs" )] public List<GameObject> enemiesPrefabs { get; set; }
 	[Property, Group( "List Refs" )] public GameObject spawnPoints { get; set; }
 
-	[Property, Group( "Debug" )] bool showGizmo = false;
-
+	[Property, Group( "Debug" ), Order(100)] bool showGizmo = false;
 
 	public GameManager gameManager { get; set; }
 	public int NbEnemyThisRound => (int)(baseNbEnemy * MathF.Pow( factorEnemyPerRound, gameManager.GameState.CurrentRound - 1 ));

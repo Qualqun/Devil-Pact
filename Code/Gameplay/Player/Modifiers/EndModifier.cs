@@ -151,7 +151,7 @@ public class EndExplosion : EndModifier
 
 			for ( int i = 0; i < nbBullets; i++ )
 			{
-				GameObject newBullet = bullet.poolManager.GetBullet();
+				GameObject newBullet = bullet.poolManager.playerBullet.GetObject();
 				PlayerBullet bulletBehaviour = newBullet.GetComponent<PlayerBullet>();
 
 				newBullet.WorldPosition = bulletObj.WorldPosition;

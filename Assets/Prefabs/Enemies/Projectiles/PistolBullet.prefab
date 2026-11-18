@@ -27,7 +27,8 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
-        "size": 8
+        "size": 8,
+        "type": "PISTOL"
       }
     ],
     "Children": [

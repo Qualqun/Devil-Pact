@@ -14,7 +14,7 @@ public class PistolEnemy : BaseEnemyBehaviour
 
 
 	[Property, Group( "Refs" )] public GameObject gunPoint { get; set; }
-	[Property, Group( "Refs Prefabs" ), Order( 200 )] public GameObject bullet { get; set; }
+	[Property, Group( "Shoot" )] EnemyProjectile projectileType { get; set; }
 
 
 	Task attackTask;
@@ -23,11 +23,11 @@ public class PistolEnemy : BaseEnemyBehaviour
 	float timerBurst = 0;
 
 
-	protected override void OnStart()
+	public override void InitEnemy( int roundNb )
 	{
-		base.OnStart();
+		base.InitEnemy( roundNb );
 
-		bulletSize = bullet.GetComponent<EnemyBullet>().size;
+		bulletSize = gameManager.PoolManager.enemyProjectile[(int)projectileType].item.GetComponent<EnemyBullet>().size;
 	}
 
 	protected override void OnUpdate()
@@ -139,15 +139,13 @@ public class PistolEnemy : BaseEnemyBehaviour
 		Vector3 shootPosition = target.WorldPosition + target.State.Velocity * CalculateInterceptTime();
 		Vector3 direction = (shootPosition - gunPoint.WorldPosition).WithZ( 0 );
 
-		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition );
+		GameObject newBullet = gameManager.PoolManager.enemyProjectile[(int)projectileType].GetObject( gunPoint.WorldPosition, Rotation.LookAt( direction.Normal ) );
 		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
 		bulletBehaviour.damage = bulletDamage;
 		bulletBehaviour.direction = direction.Normal;
 		bulletBehaviour.gameManager = gameManager;
-
-		newBullet.NetworkSpawn();
 
 		WorldRotation = Rotation.LookAt( direction );
 	}

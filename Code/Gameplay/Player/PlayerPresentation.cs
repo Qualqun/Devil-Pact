@@ -17,7 +17,6 @@ public sealed class PlayerPresentation : Component
 
 	#endregion
 
-
 	bool shootAnim = false;
 	bool dashAnim = false;
 
@@ -31,12 +30,10 @@ public sealed class PlayerPresentation : Component
 		}
 
 	}
-
 	protected override void OnUpdate()
 	{
 		AnimationUpdate();
 	}
-
 	void AnimationUpdate()
 	{
 		model.Set( "move_x", move.x );
@@ -71,7 +68,6 @@ public sealed class PlayerPresentation : Component
 
 
 	#region Visuals
-
 	public void InvulnerabilityTint( bool mode, bool dash = false )
 	{
 		Color colorTint;

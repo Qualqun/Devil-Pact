@@ -20,7 +20,7 @@ public class DroneEnemy : BaseEnemyBehaviour
 
 	[Property, Group( "Refs" )] new DronePresentation enemyPresentation { get; set; }
 	[Property, Group( "Refs" )] public GameObject gunPoint { get; set; }
-	[Property, Group( "Refs Objects" ), Order( 200 )] public GameObject bullet { get; set; }
+	[Property, Group( "Shoot" )] EnemyProjectile projectileType { get; set; } = EnemyProjectile.PISTOL;
 
 	[Property, Group( "Debug" ), Order( 1000 )] bool showGizmo = false;
 
@@ -124,17 +124,15 @@ public class DroneEnemy : BaseEnemyBehaviour
 	#region Damage methods
 	void Shoot()
 	{
-		Vector3 direction = target.WorldPosition.WithZ( 0 ) - WorldPosition.WithZ( 0 );
+		Vector3 direction = (target.WorldPosition - WorldPosition).WithZ( 0 );
 
-		GameObject newBullet = bullet.Clone( gunPoint.WorldPosition, Rotation.LookAt( direction.Normal ) );
+		GameObject newBullet = gameManager.PoolManager.enemyProjectile[(int)projectileType].GetObject( gunPoint.WorldPosition, Rotation.LookAt( direction.Normal ) );
 		EnemyBullet bulletBehaviour = newBullet.GetComponent<EnemyBullet>();
 
 		bulletBehaviour.speed = bulletSpeed;
 		bulletBehaviour.damage = bulletDamage;
 		bulletBehaviour.direction = direction.Normal;
 		bulletBehaviour.gameManager = gameManager;
-
-		newBullet.NetworkSpawn();
 	}
 	async void AttackBehaviour( CancellationToken token )
 	{
@@ -149,7 +147,6 @@ public class DroneEnemy : BaseEnemyBehaviour
 				await BurstShoot();
 
 				timer = 0f;
-				Log.Info( "Burst ended" );
 			}
 
 			await Task.FrameEnd();
