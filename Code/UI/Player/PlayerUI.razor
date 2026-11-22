@@ -81,6 +81,13 @@
 		</div>
 	}
 
+	@if (laserGaugeVisible)
+	{
+		<div class="laser-gauge @LaserGaugeClass" style="@laserGaugeStyle">
+			<div class="laser-gauge-fill" style="width: @((LocalBehaviour.LaserCharge * 100f).ToString("0.##", CultureInfo.InvariantCulture))%"></div>
+		</div>
+	}
+
 	@foreach (var notification in xpNotifications)
 	{
 			@if (notification.Visible)
@@ -134,6 +141,64 @@
 			float current = PlayerState?.Experience ?? 0f;
 			return (current / max).Clamp(0f, 1f);
 		}
+	}
+
+	PlayerBehaviour LocalBehaviour => PlayerState?.Components.Get<PlayerBehaviour>();
+
+	// Laser gauge: a small pill under the player's feet, only shown while the laser isn't full
+	const float LaserGaugeOffset = 34f;
+	const float LaserGaugeLowCharge = 0.3f;
+
+	float laserGaugeAlpha;
+	bool laserGaugeVisible;
+	string laserGaugeStyle;
+
+	string LaserGaugeClass =>
+		LocalBehaviour == null ? "" :
+		LocalBehaviour.LaserOverheated ? "overheated" :
+		LocalBehaviour.LaserCharge < LaserGaugeLowCharge ? "low" : "";
+
+	void UpdateLaserGauge()
+	{
+		bool wasVisible = laserGaugeVisible;
+		var behaviour = LocalBehaviour;
+		CameraComponent camera = Scene.Camera;
+
+		bool hasLaser = PlayerState?.HasLaser == true && behaviour != null;
+		bool needed = hasLaser && (behaviour.LaserFiring || behaviour.LaserOverheated || behaviour.LaserCharge < 0.999f);
+
+		// Pops in quickly when firing, fades out slowly once the gauge is full again
+		laserGaugeAlpha = laserGaugeAlpha.Approach(needed ? 1f : 0f, Time.Delta * (needed ? 8f : 2.5f));
+		laserGaugeVisible = hasLaser && laserGaugeAlpha > 0.01f && camera.IsValid();
+
+		if (laserGaugeVisible)
+		{
+			Vector2 screen = camera.PointToScreenNormal(behaviour.WorldPosition);
+
+			if (!float.IsFinite(screen.x) || !float.IsFinite(screen.y))
+			{
+				laserGaugeVisible = false;
+			}
+			else
+			{
+				laserGaugeStyle = FormattableString.Invariant(
+					$"left: {screen.x * 100f:0.###}%; top: {screen.y * 100f:0.###}%; margin-top: {LaserGaugeOffset:0.###}px; opacity: {laserGaugeAlpha:0.###};");
+			}
+		}
+
+		if (laserGaugeVisible || wasVisible)
+			StateHasChanged();
+	}
+
+	// Charge in whole percents, so the gauge redraws as it moves without rebuilding every frame
+	int LaserHash()
+	{
+		var behaviour = LocalBehaviour;
+
+		if (PlayerState?.HasLaser != true || behaviour == null)
+			return 0;
+
+		return HashCode.Combine((int)(behaviour.LaserCharge * 100f), behaviour.LaserOverheated);
 	}
 
 	List<PlayerBehaviour> Teammates =>
@@ -239,6 +304,7 @@
 
 		UpdateWorldArrow();
 		UpdateXpNotifications();
+		UpdateLaserGauge();
 	}
 
 	void UpdateXpNotifications()
@@ -343,7 +409,8 @@
 			arrowVisible,
 			arrowStyle
 		),
-		TeammatesHash()
+		TeammatesHash(),
+		LaserHash()
 	);
 
 	protected override void OnDisabled()

@@ -38,7 +38,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "art/asset/player/ennemi2.fbx"
+						filename = "art/asset/enemies/sniper.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0

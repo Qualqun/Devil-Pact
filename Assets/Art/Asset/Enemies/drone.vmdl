@@ -38,7 +38,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "art/asset/player/ennemi3.fbx"
+						filename = "art/asset/enemies/drone.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0

@@ -60,20 +60,42 @@
           "__guid": "b970b551-97fc-4895-98c8-a4bc3eaa18dc",
           "__enabled": true,
           "Flags": 0,
-          "bulletPool": {
-            "item": {
-              "_type": "gameobject",
-              "prefab": "prefabs/player/playerbullet.prefab"
+          "enemyProjectile": [
+            {
+              "item": {
+                "_type": "gameobject",
+                "prefab": "prefabs/enemies/projectiles/normalbullet.prefab"
+              },
+              "parent": null,
+              "baseAmount": 50,
+              "itemStack": null
             },
-            "baseAmount": 100,
-            "itemStack": []
-          },
+            {
+              "item": {
+                "_type": "gameobject",
+                "prefab": "prefabs/enemies/projectiles/pistolbullet.prefab"
+              },
+              "parent": null,
+              "baseAmount": 50,
+              "itemStack": null
+            }
+          ],
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
           "OnComponentEnabled": null,
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
-          "OnComponentUpdate": null
+          "OnComponentUpdate": null,
+          "pistolEnemyBullet": null,
+          "playerBullet": {
+            "item": {
+              "_type": "gameobject",
+              "prefab": "prefabs/player/playerbullet.prefab"
+            },
+            "parent": null,
+            "baseAmount": 100,
+            "itemStack": null
+          }
         }
       ],
       "Children": []

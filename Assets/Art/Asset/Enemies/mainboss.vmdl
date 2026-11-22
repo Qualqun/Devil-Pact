@@ -38,7 +38,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "art/asset/player/ennemiboss.fbx"
+						filename = "art/asset/enemies/mainboss.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0
