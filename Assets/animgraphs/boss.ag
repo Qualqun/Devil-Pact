@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "nodes": [
+    {
+      "_class": "PoseResultNode",
+      "Pose": {
+        "Identifier": null,
+        "Output": null
+      },
+      "Identifier": "f1fbb6c6-b502-4485-8e2b-e8a96246d25d",
+      "Position": "396,0",
+      "HandleOffsets": {}
+    }
+  ],
+  "Model": "art/asset/enemies/boss.vmdl",
+  "Skeleton": "art/asset/enemies/boss.skel",
+  "parameters": [],
+  "virtualParameters": []
+}
