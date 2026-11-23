@@ -148,7 +148,7 @@
         "PerParticleTimeScale": 1,
         "Pitch": 0,
         "PreWarm": 0,
-        "PushStrength": 100000,
+        "PushStrength": 0,
         "Roll": 0,
         "Scale": {
           "Type": "Range",

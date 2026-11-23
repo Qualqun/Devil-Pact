@@ -50,9 +50,9 @@
 							<div class="reward-title">@slot.Power.Title</div>
 							<div class="reward-rarity">@slot.Power.Rarity.ToString().ToUpperInvariant()</div>
 
-							@if (!string.IsNullOrEmpty(slot.SlotTag))
+							@if (!string.IsNullOrEmpty(slot.Tag))
 							{
-								<div class="reward-slot-tag @(slot.Replaces ? "replaces" : "")">@slot.SlotTag</div>
+								<div class="reward-tag">@slot.Tag</div>
 							}
 
 							<div class="reward-image">
@@ -102,14 +102,30 @@
 {
 	[Property] public PlayerState PlayerState { get; set; }
 
+	// "REMOVES UZI · RICOCHET" on the laser card when the player holds powers it doesn't work with
+	private static string LaserRemovalTag(PlayerState player, Power power)
+	{
+		if (player == null || power.BoostType != BoostType.Laser)
+			return null;
+
+		var removals = player.GetLaserRemovals();
+
+		if (removals.Count == 0)
+			return null;
+
+		var powers = ResourceLibrary.GetAll<Power>().Where(p => p != null).ToList();
+		var titles = removals.Select(boost => powers.FirstOrDefault(p => p.BoostType == boost)?.Title ?? boost.ToString());
+
+		return $"REMOVES {string.Join(" · ", titles).ToUpperInvariant()}";
+	}
+
 	private class CardSlot
 	{
 		public Power Power;
 		public List<(string Label, string From, string To)> Preview;
 
-		// "WEAPON" on a slot card, or what it would replace when that slot is taken
-		public string SlotTag;
-		public bool Replaces;
+		// Red warning under the rarity, set when the card would remove powers the player holds
+		public string Tag;
 		public float DealAt;
 		public float FlipAt;
 		public bool Dealt;
@@ -192,10 +208,9 @@
 		Random rng = new Random();
 		var player = GetLocalPlayer();
 
-		// The held weapon can't be offered again, weapons only swap
-		var heldWeapon = player?.CurrentWeapon;
-		if (heldWeapon.HasValue)
-			pool.RemoveAll(p => p.BoostType == heldWeapon.Value);
+		// With the laser, bullet powers do nothing, and the laser itself only needs taking once
+		if (player != null && player.HasLaser)
+			pool.RemoveAll(p => p.BoostType == BoostType.Laser || PlayerState.IsIncompatibleWithLaser(p.BoostType));
 
 		Slots = new List<CardSlot>();
 		handTaps = 0;
@@ -205,15 +220,10 @@
 			var power = RollPower(pool, rng);
 			pool.Remove(power);
 
-			var replaced = player?.GetReplacedWeapon(power.BoostType);
-
 			Slots.Add(new CardSlot
 			{
 				Power = power,
-				SlotTag = replaced.HasValue
-					? $"REPLACES {Power.GetTitle(replaced.Value).ToUpperInvariant()}"
-					: power.Slot == PowerSlot.Weapon ? "WEAPON" : null,
-				Replaces = replaced.HasValue,
+				Tag = LaserRemovalTag(player, power),
 				Preview = player?.GetBoostPreview(power.BoostType) ?? new List<(string Label, string From, string To)>(),
 				DealAt = DealDelay + i * DealStagger
 			});

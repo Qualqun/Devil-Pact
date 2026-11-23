@@ -734,10 +734,10 @@
                                 ]
                               },
                               {
-                                "__guid": "9fce0738-e352-427d-84ce-5af80bcaca94",
+                                "__guid": "b9adec21-55a6-4813-bc5f-e30ff48a9bb4",
                                 "__version": 2,
                                 "Flags": 0,
-                                "Name": "3rdArmPart1",
+                                "Name": "Rotation",
                                 "Position": "0,0,0",
                                 "Rotation": "0,0,0,1",
                                 "Scale": "1,1,1",
@@ -751,10 +751,10 @@
                                 "Components": [],
                                 "Children": [
                                   {
-                                    "__guid": "c818bd10-7dbb-4f43-be37-ebf0aadd2d45",
+                                    "__guid": "9fce0738-e352-427d-84ce-5af80bcaca94",
                                     "__version": 2,
                                     "Flags": 0,
-                                    "Name": "3rdArmPart2",
+                                    "Name": "3rdArmPart1",
                                     "Position": "0,0,0",
                                     "Rotation": "0,0,0,1",
                                     "Scale": "1,1,1",
@@ -768,10 +768,10 @@
                                     "Components": [],
                                     "Children": [
                                       {
-                                        "__guid": "c04c2608-1a82-4ab8-bd13-666cf2ec872c",
+                                        "__guid": "c818bd10-7dbb-4f43-be37-ebf0aadd2d45",
                                         "__version": 2,
                                         "Flags": 0,
-                                        "Name": "3rdArmPart3",
+                                        "Name": "3rdArmPart2",
                                         "Position": "0,0,0",
                                         "Rotation": "0,0,0,1",
                                         "Scale": "1,1,1",
@@ -785,10 +785,10 @@
                                         "Components": [],
                                         "Children": [
                                           {
-                                            "__guid": "5585870d-1908-40b5-9126-5154b87f3575",
+                                            "__guid": "c04c2608-1a82-4ab8-bd13-666cf2ec872c",
                                             "__version": 2,
                                             "Flags": 0,
-                                            "Name": "3rdArmPart4",
+                                            "Name": "3rdArmPart3",
                                             "Position": "0,0,0",
                                             "Rotation": "0,0,0,1",
                                             "Scale": "1,1,1",
@@ -802,12 +802,12 @@
                                             "Components": [],
                                             "Children": [
                                               {
-                                                "__guid": "4da7d666-9abb-84c8-8d46-b24dfdbe0ffd",
+                                                "__guid": "5585870d-1908-40b5-9126-5154b87f3575",
                                                 "__version": 2,
                                                 "Flags": 0,
-                                                "Name": "GunPoint",
-                                                "Position": "11.1748581,33.1834679,-8.58306885E-06",
-                                                "Rotation": "0.49999997,0.49999997,0.49999997,0.49999997",
+                                                "Name": "3rdArmPart4",
+                                                "Position": "0,0,0",
+                                                "Rotation": "0,0,0,1",
                                                 "Scale": "1,1,1",
                                                 "Tags": "",
                                                 "Enabled": true,
@@ -817,7 +817,26 @@
                                                 "NetworkTransmit": true,
                                                 "OwnerTransfer": 1,
                                                 "Components": [],
-                                                "Children": []
+                                                "Children": [
+                                                  {
+                                                    "__guid": "4da7d666-9abb-84c8-8d46-b24dfdbe0ffd",
+                                                    "__version": 2,
+                                                    "Flags": 0,
+                                                    "Name": "GunPoint",
+                                                    "Position": "11.1748581,33.1834679,-8.58306885E-06",
+                                                    "Rotation": "0.49999997,0.49999997,0.49999997,0.49999997",
+                                                    "Scale": "1,1,1",
+                                                    "Tags": "",
+                                                    "Enabled": true,
+                                                    "NetworkMode": 2,
+                                                    "NetworkFlags": 0,
+                                                    "NetworkOrphaned": 0,
+                                                    "NetworkTransmit": true,
+                                                    "OwnerTransfer": 1,
+                                                    "Components": [],
+                                                    "Children": []
+                                                  }
+                                                ]
                                               }
                                             ]
                                           }

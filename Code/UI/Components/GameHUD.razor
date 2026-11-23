@@ -316,28 +316,10 @@
 						}
 					</div>
 
-					<div class="pause-slots">
-						@foreach (var slot in PowerSlots)
-						{
-							<div class="pause-slot @(slot.Power == null ? "empty" : "")">
-								<div class="pause-slot-icon">
-									@if (slot.Power != null)
-									{
-										<Image class="run-power-icon" Texture="@slot.Power.Image" />
-									}
-								</div>
-								<div class="pause-slot-text">
-									<span class="pause-chip-label">@slot.Label</span>
-									<span class="pause-slot-name">@slot.Name</span>
-								</div>
-							</div>
-						}
-					</div>
-
-					@if (StackedPowers.Count > 0)
+					@if (ClaimedPowers.Count > 0)
 					{
 						<div class="run-powers">
-							@foreach (var claimed in StackedPowers)
+							@foreach (var claimed in ClaimedPowers)
 							{
 								<div class="run-power">
 									<Image class="run-power-icon" Texture="@claimed.Power.Image" />
@@ -452,46 +434,16 @@
 		get
 		{
 			var powers = ResourceLibrary.GetAll<Power>().Where(p => p != null && p.Image != null).ToList();
-			var player = LocalPlayer;
+			bool hasLaser = LocalPlayer.HasLaser;
 
-			// A slot power that was replaced is gone, and the one still held only counts once
-			return player.ClaimedBoosts
+			// Taking the laser removed the bullet powers, so they're no longer part of the build
+			return LocalPlayer.ClaimedBoosts
+				.Where(boost => !hasLaser || !PlayerState.IsIncompatibleWithLaser(boost))
 				.GroupBy(boost => boost)
 				.Select(group => (Power: powers.FirstOrDefault(p => p.BoostType == group.Key), Count: group.Count()))
 				.Where(claimed => claimed.Power != null)
-				.Where(claimed => claimed.Power.Slot == PowerSlot.None || player.GetHeldPower(claimed.Power.Slot) == claimed.Power.BoostType)
-				.Select(claimed => claimed.Power.Slot == PowerSlot.None ? claimed : (Power: claimed.Power, Count: 1))
 				.OrderByDescending(claimed => claimed.Count)
 				.ToList();
-		}
-	}
-
-	// Pause menu: slot powers get their own row, so this list keeps only the ones that stack
-	private List<(Power Power, int Count)> StackedPowers =>
-		ClaimedPowers.Where(claimed => claimed.Power.Slot == PowerSlot.None).ToList();
-
-	private List<(string Label, string Name, Power Power)> PowerSlots
-	{
-		get
-		{
-			var player = LocalPlayer;
-			var slots = new List<(string Label, string Name, Power Power)>();
-
-			foreach (var slot in Enum.GetValues<PowerSlot>())
-			{
-				if (slot == PowerSlot.None)
-					continue;
-
-				var held = player.GetHeldPower(slot);
-				var power = held.HasValue
-					? ResourceLibrary.GetAll<Power>().FirstOrDefault(p => p != null && p.BoostType == held.Value && p.Image != null)
-					: null;
-
-				string name = power?.Title ?? (slot == PowerSlot.Weapon ? "Pistol" : "Empty");
-				slots.Add((slot.ToString().ToUpperInvariant(), name, power));
-			}
-
-			return slots;
 		}
 	}
 

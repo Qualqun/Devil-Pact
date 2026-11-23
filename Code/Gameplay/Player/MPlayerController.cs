@@ -112,11 +112,17 @@ public sealed class MPlayerController : Component
 
 	async Task Dash( Vector3 velocity )
 	{
-		rigidbody.Velocity = velocity * dashSpeed;
 		dashEnd = false;
 		playerBehaviour.Broadcast_SetInvulnerability( true, true );
 
-		await Task.DelaySeconds( dashDuration );
+		// Hold the dash speed every frame: set once, ground friction on the player's capsule ate most of the dash
+		TimeSince sinceDash = 0f;
+
+		while ( sinceDash < dashDuration )
+		{
+			rigidbody.Velocity = velocity * dashSpeed;
+			await Task.Frame();
+		}
 
 		rigidbody.Velocity = Vector3.Zero;
 		dashEnd = true;

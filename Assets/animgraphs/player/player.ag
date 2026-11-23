@@ -1,0 +1,1288 @@
+{
+  "Version": 1,
+  "nodes": [
+    {
+      "_class": "PoseResultNode",
+      "Pose": {
+        "Identifier": "febd46d2-ca07-4252-9ebc-9cf3b8b5add5",
+        "Output": "Result"
+      },
+      "Identifier": "4d9e0d9c-5027-4c49-a163-1b36e3e51f0a",
+      "Position": "1280,0",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "StateMachineNode",
+      "States": [
+        {
+          "Name": "Move",
+          "Type": "BlendTree",
+          "Events": [],
+          "TimedEvents": [],
+          "UseActualElapsedTimeInStateForTimedEvents": false,
+          "TransitionOrder": [],
+          "Position": "0,0",
+          "Graph": {
+            "Version": 1,
+            "nodes": [
+              {
+                "_class": "PoseResultNode",
+                "Pose": {
+                  "Identifier": "c223639e-31e5-4b5e-b1a4-042efa230dff",
+                  "Output": "Result"
+                },
+                "Identifier": "d190a8d3-16ef-4de6-bdda-5c12b47386a9",
+                "Position": "960,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "FloatParameterNode",
+                "ParameterIdentifier": "3cb39b57-5c09-4456-9e2e-15f009846dcd",
+                "ParameterName": "move_x",
+                "Identifier": "81072d1b-5809-4939-9a48-b38389cfdc4f",
+                "Position": "0,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "FloatParameterNode",
+                "ParameterIdentifier": "4839b340-8506-46ab-8cdc-73fa2d78f90f",
+                "ParameterName": "move_y",
+                "Identifier": "2ce25afc-61f9-4625-b276-2a3594eac029",
+                "Position": "0,130",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "FloatSpringNode",
+                "Value": {
+                  "Identifier": "81072d1b-5809-4939-9a48-b38389cfdc4f",
+                  "Output": "Value"
+                },
+                "Hertz": 3.5,
+                "DampingRatio": 1,
+                "UseStartValue": false,
+                "StartValue": 0,
+                "Identifier": "6ca381e7-0c72-4322-a951-0d460ef8705c",
+                "Position": "320,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "FloatSpringNode",
+                "Value": {
+                  "Identifier": "2ce25afc-61f9-4625-b276-2a3594eac029",
+                  "Output": "Value"
+                },
+                "Hertz": 3.5,
+                "DampingRatio": 1,
+                "UseStartValue": false,
+                "StartValue": 0,
+                "Identifier": "dc326770-91ad-44df-830a-4ab0fc2d28ed",
+                "Position": "320,130",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "Blend2DNode",
+                "X": {
+                  "Identifier": "6ca381e7-0c72-4322-a951-0d460ef8705c",
+                  "Output": "Result"
+                },
+                "Y": {
+                  "Identifier": "dc326770-91ad-44df-830a-4ab0fc2d28ed",
+                  "Output": "Result"
+                },
+                "Points": [
+                  {
+                    "Name": "Idle",
+                    "Position": "0,0",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "19d8824b-9aac-46a8-ab6a-f6ad9f64cb41",
+                            "Output": "Result"
+                          },
+                          "Identifier": "83658702-9c57-4b89-8d1b-e8aeeee7439b",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": true,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "4171070a-67d4-4cad-82a4-9e6ff8b29525",
+                              "Path": "animgraphs/player/clips/idle.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "19d8824b-9aac-46a8-ab6a-f6ad9f64cb41",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "Front",
+                    "Position": "0,1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "abd90ff0-1b9b-45b1-9adb-175ad1b14259",
+                            "Output": "Result"
+                          },
+                          "Identifier": "6da69583-4a36-4ccb-9331-2cc9ce4c620a",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": true,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "c6e39418-5bc7-4da4-85ea-d8bd297c64c6",
+                              "Path": "animgraphs/player/clips/front.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "abd90ff0-1b9b-45b1-9adb-175ad1b14259",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "Back",
+                    "Position": "0,-1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "1ca07fea-f28e-415d-b87f-5f7f9bb113c7",
+                            "Output": "Result"
+                          },
+                          "Identifier": "196be596-1821-4060-a118-16d9cfcac563",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": true,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "ad6f3435-a2bb-4285-952a-53facb7a46c4",
+                              "Path": "animgraphs/player/clips/back.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "1ca07fea-f28e-415d-b87f-5f7f9bb113c7",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "Left",
+                    "Position": "-1,0",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "3e045712-7ef1-4de4-bce4-96cfc4417840",
+                            "Output": "Result"
+                          },
+                          "Identifier": "db14abc8-c57f-494f-8ea2-d5b177043c99",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": true,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "1ec436e7-4cf2-416d-af8c-759b7c7507c2",
+                              "Path": "animgraphs/player/clips/left.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "3e045712-7ef1-4de4-bce4-96cfc4417840",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "Right",
+                    "Position": "1,0",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "8376de5b-02a9-4598-a1d1-92cf17413e62",
+                            "Output": "Result"
+                          },
+                          "Identifier": "20e24526-319a-4583-a764-e5a1722c35ea",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": true,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "0007a52e-9f50-462f-b0a1-1b06005ed367",
+                              "Path": "animgraphs/player/clips/right.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "8376de5b-02a9-4598-a1d1-92cf17413e62",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  }
+                ],
+                "Loop": true,
+                "Identifier": "c223639e-31e5-4b5e-b1a4-042efa230dff",
+                "Position": "640,0",
+                "HandleOffsets": {}
+              }
+            ]
+          },
+          "LayerGraph": {
+            "Version": 1,
+            "nodes": [
+              {
+                "_class": "StateLayerDataNode",
+                "LayerWeight": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "RootMotionWeight": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "BoneMask": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "Identifier": "67f16e36-e0c5-45c2-9a5e-73b105041d97",
+                "Position": "0,0",
+                "HandleOffsets": {}
+              }
+            ],
+            "Kind": "LayerData"
+          }
+        },
+        {
+          "Name": "Dash",
+          "Type": "BlendTree",
+          "Events": [],
+          "TimedEvents": [],
+          "UseActualElapsedTimeInStateForTimedEvents": false,
+          "TransitionOrder": [],
+          "Position": "400,0",
+          "Graph": {
+            "Version": 1,
+            "nodes": [
+              {
+                "_class": "PoseResultNode",
+                "Pose": {
+                  "Identifier": "231fdba0-8bfe-4523-8bcb-28df26580467",
+                  "Output": "Result"
+                },
+                "Identifier": "5c376291-ec6c-4338-9f8a-492fc649b7a4",
+                "Position": "640,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "FloatParameterNode",
+                "ParameterIdentifier": "3cb39b57-5c09-4456-9e2e-15f009846dcd",
+                "ParameterName": "move_x",
+                "Identifier": "08008fc1-9aac-4e47-9e3e-ce9f5e6f43c3",
+                "Position": "0,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "FloatParameterNode",
+                "ParameterIdentifier": "4839b340-8506-46ab-8cdc-73fa2d78f90f",
+                "ParameterName": "move_y",
+                "Identifier": "736da5e9-443f-48af-bea0-404c55162469",
+                "Position": "0,130",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "Blend2DNode",
+                "X": {
+                  "Identifier": "08008fc1-9aac-4e47-9e3e-ce9f5e6f43c3",
+                  "Output": "Value"
+                },
+                "Y": {
+                  "Identifier": "736da5e9-443f-48af-bea0-404c55162469",
+                  "Output": "Value"
+                },
+                "Points": [
+                  {
+                    "Name": "N",
+                    "Position": "0,1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "7bac1788-78c2-4957-8a4f-e035534aedc0",
+                            "Output": "Result"
+                          },
+                          "Identifier": "c596f37e-7cf1-4a06-bb85-00f9f5a9d69c",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "8e16af05-edfe-4f8f-bb0a-c0386a30c7e1",
+                              "Path": "animgraphs/player/clips/slide_n.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "7bac1788-78c2-4957-8a4f-e035534aedc0",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "S",
+                    "Position": "0,-1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "86bccd9d-9c98-4ccc-b21d-7cd3a3945b1d",
+                            "Output": "Result"
+                          },
+                          "Identifier": "8e22f996-b034-47a3-a86b-1a621708ce7b",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "90423a5e-704f-4d36-9873-e1be07e19322",
+                              "Path": "animgraphs/player/clips/slide_s.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "86bccd9d-9c98-4ccc-b21d-7cd3a3945b1d",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "W",
+                    "Position": "1,0",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "055d51cf-635a-42c2-b95a-e017956aa9f3",
+                            "Output": "Result"
+                          },
+                          "Identifier": "ed1d5fee-3ed5-4060-800c-37505191e4ea",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "dd14d112-8acb-4528-ba9c-adc049b2f622",
+                              "Path": "animgraphs/player/clips/slide_w.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "055d51cf-635a-42c2-b95a-e017956aa9f3",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "E",
+                    "Position": "-1,0",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "59e07346-6d57-48b7-b4d7-bcdd7851330e",
+                            "Output": "Result"
+                          },
+                          "Identifier": "d58956b5-11c8-4c4a-8d5c-6a7ec8a27ed0",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "3e2395c1-b641-48ac-9a7a-5d878053cc1a",
+                              "Path": "animgraphs/player/clips/slide_e.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "59e07346-6d57-48b7-b4d7-bcdd7851330e",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "NW",
+                    "Position": "1,1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "5116282b-7a0b-4023-9914-31a11e0234e7",
+                            "Output": "Result"
+                          },
+                          "Identifier": "23831b9f-5693-4b6e-a228-52fcc287b93d",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "388ca9c1-b8e4-4ee5-93b9-0eedabd609b0",
+                              "Path": "animgraphs/player/clips/slide_nw.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "5116282b-7a0b-4023-9914-31a11e0234e7",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "NE",
+                    "Position": "-1,1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "b240a248-8f50-440e-aa7e-cdd306071b55",
+                            "Output": "Result"
+                          },
+                          "Identifier": "59b043a1-1476-49ae-9a88-61f7ac80059f",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "ac002011-8c97-4e03-a390-593f1de027da",
+                              "Path": "animgraphs/player/clips/slide_ne.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "b240a248-8f50-440e-aa7e-cdd306071b55",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "SW",
+                    "Position": "1,-1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "d6f89f01-78a4-4d43-a3a2-05a76c6996e1",
+                            "Output": "Result"
+                          },
+                          "Identifier": "ed5846ec-53d9-4d09-addc-b2917dd82063",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "2fd01b70-1e8b-47e8-99b6-4fa9f0c3183e",
+                              "Path": "animgraphs/player/clips/slide_sw.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "d6f89f01-78a4-4d43-a3a2-05a76c6996e1",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  },
+                  {
+                    "Name": "SE",
+                    "Position": "-1,-1",
+                    "Graph": {
+                      "Version": 1,
+                      "nodes": [
+                        {
+                          "_class": "PoseResultNode",
+                          "Pose": {
+                            "Identifier": "4f54bbc7-6404-4d7f-aa72-15220a61dab2",
+                            "Output": "Result"
+                          },
+                          "Identifier": "cec45722-022f-43bd-9f4a-827f895549fa",
+                          "Position": "320,0",
+                          "HandleOffsets": {}
+                        },
+                        {
+                          "_class": "AnimationClipNode",
+                          "Loop": false,
+                          "SampleRootMotion": false,
+                          "GraphEvents": [],
+                          "PlayInReverse": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "ResetTime": {
+                            "Identifier": null,
+                            "Output": null
+                          },
+                          "DefaultVariationData": {
+                            "AnimationName": {
+                              "Id": "f38a493a-50c9-4c1a-aa11-5d72e4c35bab",
+                              "Path": "animgraphs/player/clips/slide_se.anim"
+                            },
+                            "SpeedMultiplier": 1,
+                            "StartSyncEventOffset": 0
+                          },
+                          "Overrides": [],
+                          "Identifier": "4f54bbc7-6404-4d7f-aa72-15220a61dab2",
+                          "Position": "0,0",
+                          "HandleOffsets": {}
+                        }
+                      ]
+                    },
+                    "Input": {
+                      "Identifier": null,
+                      "Output": null
+                    }
+                  }
+                ],
+                "Loop": false,
+                "Identifier": "231fdba0-8bfe-4523-8bcb-28df26580467",
+                "Position": "320,0",
+                "HandleOffsets": {}
+              }
+            ]
+          },
+          "LayerGraph": {
+            "Version": 1,
+            "nodes": [
+              {
+                "_class": "StateLayerDataNode",
+                "LayerWeight": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "RootMotionWeight": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "BoneMask": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "Identifier": "6f84c77a-7fc9-4a67-be90-dd1f48c98d82",
+                "Position": "0,0",
+                "HandleOffsets": {}
+              }
+            ],
+            "Kind": "LayerData"
+          }
+        }
+      ],
+      "Conduits": [
+        {
+          "From": "Move",
+          "To": "Dash",
+          "Graph": {
+            "Version": 1,
+            "nodes": [
+              {
+                "_class": "BoolParameterNode",
+                "ParameterIdentifier": "b8bd7b54-914d-4cd8-a384-2734261aefa7",
+                "ParameterName": "Dash",
+                "Identifier": "32b50511-0e3d-4327-b240-5846dfdc27e9",
+                "Position": "0,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "TransitionNode",
+                "Condition": {
+                  "Identifier": "32b50511-0e3d-4327-b240-5846dfdc27e9",
+                  "Output": "Value"
+                },
+                "DurationOverride": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "TimeOffsetOverride": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "StartBoneMask": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "TargetSyncID": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "TransitionName": "Move to Dash",
+                "Duration": 0.1,
+                "TimeMatch": "None",
+                "TimeOffset": 0,
+                "BlendWeightEasing": "OutCubic",
+                "RootMotionBlend": "Blend",
+                "ClampDurationToSource": false,
+                "CanBeForced": true,
+                "BoneMaskBlendInTimePercentage": 0.33,
+                "Identifier": "1b0a6b86-7235-4b65-85a6-416c8907d3c3",
+                "Position": "320,0",
+                "HandleOffsets": {}
+              }
+            ],
+            "Kind": "TransitionConduit"
+          }
+        },
+        {
+          "From": "Dash",
+          "To": "Move",
+          "Graph": {
+            "Version": 1,
+            "nodes": [
+              {
+                "_class": "StateCompletedConditionNode",
+                "AtClipEnd": false,
+                "Identifier": "3c532b41-c1be-40b7-bdf3-4e48ab64edb2",
+                "Position": "0,0",
+                "HandleOffsets": {}
+              },
+              {
+                "_class": "TransitionNode",
+                "Condition": {
+                  "Identifier": "3c532b41-c1be-40b7-bdf3-4e48ab64edb2",
+                  "Output": "Result"
+                },
+                "DurationOverride": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "TimeOffsetOverride": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "StartBoneMask": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "TargetSyncID": {
+                  "Identifier": null,
+                  "Output": null
+                },
+                "TransitionName": "Dash to Move",
+                "Duration": 0.25,
+                "TimeMatch": "None",
+                "TimeOffset": 0,
+                "BlendWeightEasing": "InOutSine",
+                "RootMotionBlend": "Blend",
+                "ClampDurationToSource": false,
+                "CanBeForced": true,
+                "BoneMaskBlendInTimePercentage": 0.33,
+                "Identifier": "88fe1ab5-6983-495f-9888-a8d66d729bd7",
+                "Position": "320,0",
+                "HandleOffsets": {}
+              }
+            ],
+            "Kind": "TransitionConduit"
+          }
+        }
+      ],
+      "GlobalGraph": {
+        "Version": 1,
+        "nodes": [
+          {
+            "_class": "GlobalTransitionNode",
+            "StateName": "Move",
+            "Condition": {
+              "Identifier": null,
+              "Output": null
+            },
+            "DurationOverride": {
+              "Identifier": null,
+              "Output": null
+            },
+            "TimeOffsetOverride": {
+              "Identifier": null,
+              "Output": null
+            },
+            "StartBoneMask": {
+              "Identifier": null,
+              "Output": null
+            },
+            "TargetSyncID": {
+              "Identifier": null,
+              "Output": null
+            },
+            "TransitionName": "Transition",
+            "Duration": 0.2,
+            "TimeMatch": "None",
+            "TimeOffset": 0,
+            "BlendWeightEasing": "Linear",
+            "RootMotionBlend": "Blend",
+            "ClampDurationToSource": false,
+            "CanBeForced": false,
+            "BoneMaskBlendInTimePercentage": 0.33,
+            "Identifier": "b2384e32-0569-4bc4-b09f-de83489484c9",
+            "Position": "400,0",
+            "HandleOffsets": {}
+          },
+          {
+            "_class": "GlobalTransitionNode",
+            "StateName": "Dash",
+            "Condition": {
+              "Identifier": null,
+              "Output": null
+            },
+            "DurationOverride": {
+              "Identifier": null,
+              "Output": null
+            },
+            "TimeOffsetOverride": {
+              "Identifier": null,
+              "Output": null
+            },
+            "StartBoneMask": {
+              "Identifier": null,
+              "Output": null
+            },
+            "TargetSyncID": {
+              "Identifier": null,
+              "Output": null
+            },
+            "TransitionName": "Transition",
+            "Duration": 0.2,
+            "TimeMatch": "None",
+            "TimeOffset": 0,
+            "BlendWeightEasing": "Linear",
+            "RootMotionBlend": "Blend",
+            "ClampDurationToSource": false,
+            "CanBeForced": false,
+            "BoneMaskBlendInTimePercentage": 0.33,
+            "Identifier": "71e5888c-b1a2-4706-87fe-1e07a2dedc03",
+            "Position": "400,250",
+            "HandleOffsets": {}
+          }
+        ],
+        "Kind": "GlobalTransitions"
+      },
+      "EntryGraph": {
+        "Version": 1,
+        "nodes": [],
+        "Kind": "EntryOverrides"
+      },
+      "DefaultState": "Move",
+      "DefaultStateIndex": 0,
+      "Identifier": "a6090501-fb1f-44bf-ace6-609cb1816699",
+      "Position": "0,0",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "AnimationClipNode",
+      "Loop": true,
+      "SampleRootMotion": false,
+      "GraphEvents": [],
+      "PlayInReverse": {
+        "Identifier": null,
+        "Output": null
+      },
+      "ResetTime": {
+        "Identifier": null,
+        "Output": null
+      },
+      "DefaultVariationData": {
+        "AnimationName": {
+          "Id": "b23f75b5-8ed3-4b86-8dec-b01da23a889e",
+          "Path": "animgraphs/player/clips/shoot.anim"
+        },
+        "SpeedMultiplier": 1,
+        "StartSyncEventOffset": 0
+      },
+      "Overrides": [],
+      "Identifier": "cee0da84-ed13-45de-a783-e51e356832f9",
+      "Position": "0,400",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "FloatParameterNode",
+      "ParameterIdentifier": "86182cbc-b4a4-4df3-8a07-f24026a30094",
+      "ParameterName": "ShootSpeed",
+      "Identifier": "a619c782-6a7d-4646-bd1c-ebb15501b90f",
+      "Position": "0,530",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "SpeedScaleNode",
+      "Source": {
+        "Identifier": "cee0da84-ed13-45de-a783-e51e356832f9",
+        "Output": "Result"
+      },
+      "Speed": {
+        "Identifier": "a619c782-6a7d-4646-bd1c-ebb15501b90f",
+        "Output": "Value"
+      },
+      "DefaultSpeed": 1,
+      "Identifier": "78320951-02e9-4d28-a0b1-b655ea61970c",
+      "Position": "320,400",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "BoolParameterNode",
+      "ParameterIdentifier": "12c96a3c-eda2-4950-96e0-661c8401a2d5",
+      "ParameterName": "Shoot",
+      "Identifier": "af3eaf8c-ab54-4820-951a-503b887a5b24",
+      "Position": "0,660",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "FloatSwitchNode",
+      "Condition": {
+        "Identifier": "af3eaf8c-ab54-4820-951a-503b887a5b24",
+        "Output": "Value"
+      },
+      "TrueValue": 1,
+      "FalseValue": 0,
+      "EaseTime": 0.15,
+      "Easing": "OutSine",
+      "Identifier": "9f95dec2-4031-4d91-82a3-a98ba9edeeb3",
+      "Position": "320,660",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "BoneMaskNode",
+      "BoneName": "Shoot",
+      "DefaultWeight": 1,
+      "DefaultVariationData": {
+        "MaskOverride": ""
+      },
+      "Overrides": [],
+      "Identifier": "47191300-6e80-49da-baff-57ade02d690c",
+      "Position": "320,790",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "LocalLayerNode",
+      "Input": {
+        "Identifier": "78320951-02e9-4d28-a0b1-b655ea61970c",
+        "Output": "Result"
+      },
+      "Weight": {
+        "Identifier": "9f95dec2-4031-4d91-82a3-a98ba9edeeb3",
+        "Output": "Result"
+      },
+      "RootMotionWeight": {
+        "Identifier": null,
+        "Output": null
+      },
+      "BoneMask": {
+        "Identifier": "47191300-6e80-49da-baff-57ade02d690c",
+        "Output": "Mask"
+      },
+      "BlendMode": "Overlay",
+      "IsSynchronized": false,
+      "IgnoreEvents": true,
+      "Identifier": "a47ad9b5-bdde-42cd-82ef-0a86c6b85fd9",
+      "Position": "640,400",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "LayerBlendNode",
+      "Base": {
+        "Identifier": "a6090501-fb1f-44bf-ace6-609cb1816699",
+        "Output": "Result"
+      },
+      "Layers": [
+        {
+          "Identifier": "a47ad9b5-bdde-42cd-82ef-0a86c6b85fd9",
+          "Output": "Layer"
+        }
+      ],
+      "OnlySampleBaseRootMotion": true,
+      "Identifier": "febd46d2-ca07-4252-9ebc-9cf3b8b5add5",
+      "Position": "960,0",
+      "HandleOffsets": {}
+    }
+  ],
+  "Model": {
+    "Id": "166ffb82-a292-43d7-9662-c1aa514e8d9c",
+    "Path": "art/asset/player/player.vmdl"
+  },
+  "Skeleton": {
+    "Id": "16b2839c-f596-49e0-9123-5f8f308bb39a",
+    "Path": "animgraphs/player/player.skel"
+  },
+  "parameters": [
+    {
+      "Identifier": "3cb39b57-5c09-4456-9e2e-15f009846dcd",
+      "Type": "Float",
+      "Name": "move_x",
+      "Group": "Movement",
+      "RuntimeDefaultFloat": 0,
+      "RuntimeDefaultBool": false,
+      "RuntimeDefaultID": "",
+      "RuntimeDefaultVector": "0,0,0",
+      "DefaultFloat": 0,
+      "Min": -1,
+      "Max": 1,
+      "DefaultBool": false,
+      "DefaultID": "",
+      "EnumTypeName": "",
+      "ExpectedValues": [],
+      "ResolvedOptions": [],
+      "DefaultVector": "0,0,0",
+      "PreviewStartTargetIsSet": false,
+      "PreviewStartTargetIsBone": false,
+      "PreviewStartBone": ""
+    },
+    {
+      "Identifier": "4839b340-8506-46ab-8cdc-73fa2d78f90f",
+      "Type": "Float",
+      "Name": "move_y",
+      "Group": "Movement",
+      "RuntimeDefaultFloat": 0,
+      "RuntimeDefaultBool": false,
+      "RuntimeDefaultID": "",
+      "RuntimeDefaultVector": "0,0,0",
+      "DefaultFloat": 0,
+      "Min": -1,
+      "Max": 1,
+      "DefaultBool": false,
+      "DefaultID": "",
+      "EnumTypeName": "",
+      "ExpectedValues": [],
+      "ResolvedOptions": [],
+      "DefaultVector": "0,0,0",
+      "PreviewStartTargetIsSet": false,
+      "PreviewStartTargetIsBone": false,
+      "PreviewStartBone": ""
+    },
+    {
+      "Identifier": "b8bd7b54-914d-4cd8-a384-2734261aefa7",
+      "Type": "Bool",
+      "Name": "Dash",
+      "Group": "Movement",
+      "RuntimeDefaultFloat": 0,
+      "RuntimeDefaultBool": false,
+      "RuntimeDefaultID": "",
+      "RuntimeDefaultVector": "0,0,0",
+      "DefaultFloat": 0,
+      "Min": 0,
+      "Max": 1,
+      "DefaultBool": false,
+      "DefaultID": "",
+      "EnumTypeName": "",
+      "ExpectedValues": [],
+      "ResolvedOptions": [],
+      "DefaultVector": "0,0,0",
+      "PreviewStartTargetIsSet": false,
+      "PreviewStartTargetIsBone": false,
+      "PreviewStartBone": ""
+    },
+    {
+      "Identifier": "12c96a3c-eda2-4950-96e0-661c8401a2d5",
+      "Type": "Bool",
+      "Name": "Shoot",
+      "Group": "Combat",
+      "RuntimeDefaultFloat": 0,
+      "RuntimeDefaultBool": false,
+      "RuntimeDefaultID": "",
+      "RuntimeDefaultVector": "0,0,0",
+      "DefaultFloat": 0,
+      "Min": 0,
+      "Max": 1,
+      "DefaultBool": false,
+      "DefaultID": "",
+      "EnumTypeName": "",
+      "ExpectedValues": [],
+      "ResolvedOptions": [],
+      "DefaultVector": "0,0,0",
+      "PreviewStartTargetIsSet": false,
+      "PreviewStartTargetIsBone": false,
+      "PreviewStartBone": ""
+    },
+    {
+      "Identifier": "86182cbc-b4a4-4df3-8a07-f24026a30094",
+      "Type": "Float",
+      "Name": "ShootSpeed",
+      "Group": "Combat",
+      "RuntimeDefaultFloat": 1,
+      "RuntimeDefaultBool": false,
+      "RuntimeDefaultID": "",
+      "RuntimeDefaultVector": "0,0,0",
+      "DefaultFloat": 1,
+      "Min": 0,
+      "Max": 20,
+      "DefaultBool": false,
+      "DefaultID": "",
+      "EnumTypeName": "",
+      "ExpectedValues": [],
+      "ResolvedOptions": [],
+      "DefaultVector": "0,0,0",
+      "PreviewStartTargetIsSet": false,
+      "PreviewStartTargetIsBone": false,
+      "PreviewStartBone": ""
+    }
+  ],
+  "virtualParameters": []
+}

@@ -1,0 +1,21 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	_class = "CClipDocument"
+	m_sourceFilename = "Animation/PLayer/SlideSW.fbx"
+	m_animationSkeletonName = 
+	{
+		Id = "16b2839c-f596-49e0-9123-5f8f308bb39a"
+		Path = "animgraphs/player/player.skel"
+	}
+	m_nTake = 0
+	m_nStartFrame = -1
+	m_nEndFrame = -1
+	m_flImportScale = 1
+	m_additiveType = "None"
+	m_previewModel = 
+	{
+		Id = "166ffb82-a292-43d7-9662-c1aa514e8d9c"
+		Path = "art/asset/player/player.vmdl"
+	}
+	m_bSmoothLoop = false
+}

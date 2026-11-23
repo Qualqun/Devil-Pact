@@ -1119,58 +1119,6 @@
 	color: rgba(255, 255, 255, 0.5);
 }
 
-/* One box per power slot: the held power's icon and name, or a dashed box when nothing is held */
-.pause-slots {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	width: 100%;
-	gap: 8px;
-	margin-top: 10px;
-}
-
-.pause-slot {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	flex-grow: 1;
-	flex-basis: 0;
-	gap: 10px;
-	padding: 6px 10px;
-	background-color: rgba(0, 0, 0, 0.45);
-	border-left: 3px solid rgb(255, 60, 60);
-
-	&.empty {
-		border-left-color: rgba(255, 255, 255, 0.2);
-
-		.pause-slot-icon {
-			border: 1px dashed rgba(255, 255, 255, 0.25);
-		}
-
-		.pause-slot-name {
-			color: rgba(255, 255, 255, 0.45);
-		}
-	}
-}
-
-.pause-slot-icon {
-	width: 48px;
-	height: 48px;
-	flex-shrink: 0;
-	border: 1px solid rgba(255, 40, 40, 0.3);
-}
-
-.pause-slot-text {
-	display: flex;
-	flex-direction: column;
-}
-
-.pause-slot-name {
-	font-size: 18px;
-	font-weight: bold;
-	color: rgb(255, 235, 200);
-}
-
 .pause-buttons {
 	display: flex;
 	flex-direction: row;

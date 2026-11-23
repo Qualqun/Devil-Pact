@@ -143,6 +143,46 @@ root {
 	text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 
+/* Laser heat gauge: a thin pill under the player's feet, placed and faded from PlayerUI.UpdateLaserGauge.
+   Rounded and unskewed on purpose, so it doesn't read like the health and xp bars. */
+.laser-gauge {
+	position: absolute;
+	width: 72px;
+	height: 9px;
+	transform: translateX(-50%);
+	padding: 1px;
+	border-radius: 5px;
+	background-color: rgba(10, 10, 15, 0.7);
+	border: 1px solid rgba(255, 90, 120, 0.35);
+
+	&.low .laser-gauge-fill {
+		background: rgb(255, 150, 60);
+		box-shadow: 0 0 6px rgba(255, 130, 40, 0.8);
+	}
+
+	&.overheated {
+		border-color: rgba(255, 200, 200, 0.5);
+		animation: laser-hot-blink 0.35s ease-in-out infinite alternate;
+
+		.laser-gauge-fill {
+			background: rgba(255, 200, 200, 0.6);
+			box-shadow: none;
+		}
+	}
+}
+
+.laser-gauge-fill {
+	height: 100%;
+	border-radius: 3px;
+	background: rgb(255, 80, 120);
+	box-shadow: 0 0 6px rgba(255, 60, 100, 0.8);
+}
+
+@keyframes laser-hot-blink {
+	from { opacity: 1; }
+	to { opacity: 0.35; }
+}
+
 .teammates {
 	display: flex;
 	flex-direction: column;

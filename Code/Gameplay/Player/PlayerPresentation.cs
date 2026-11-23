@@ -1,4 +1,6 @@
 using Sandbox;
+using System;
+
 public sealed class PlayerPresentation : Component
 {
 	#region Animation
@@ -17,12 +19,24 @@ public sealed class PlayerPresentation : Component
 
 	#endregion
 
-	bool shootAnim = false;
 	bool dashAnim = false;
+
+	// The upper body stays in the shooting pose between shots of a burst, and only leaves it after a short pause.
+	// A one frame pulse made the graph flip in and out of the shooting state on every shot.
+	const float ShootPoseMinHold = 0.3f;
+	TimeSince sinceShot = float.MaxValue;
+
+	float ShootPoseHold => MathF.Max( ShootPoseMinHold, 1.2f / MathF.Max( speedShoot, 0.01f ) );
+
+	// AnimGraph 2 version of the player's animations; the legacy .vanmgrph on the prefab stays as a fallback
+	const string AnimGraphPath = "animgraphs/player/player.ag";
+	Sandbox.Animation.Graph animGraph;
 
 	protected override void OnStart()
 	{
 		base.OnStart();
+
+		UseAnimGraph2();
 
 		if ( !IsProxy )
 		{
@@ -30,20 +44,48 @@ public sealed class PlayerPresentation : Component
 		}
 
 	}
+
+	void UseAnimGraph2()
+	{
+		animGraph = Sandbox.Animation.Graph.Load( AnimGraphPath );
+
+		if ( animGraph == null || animGraph.IsError )
+		{
+			Log.Warning( $"[PlayerPresentation] Couldn't load {AnimGraphPath}, keeping the legacy animgraph" );
+			animGraph = null;
+			return;
+		}
+
+		model.Animation.Graph = animGraph;
+	}
+
 	protected override void OnUpdate()
 	{
 		AnimationUpdate();
 	}
 	void AnimationUpdate()
 	{
-		model.Set( "move_x", move.x );
-		model.Set( "move_y", move.y );
-		model.Set( "ShootSpeed", speedShoot );
+		bool shooting = sinceShot < ShootPoseHold;
 
-		model.Set( "Shoot", shootAnim );
-		model.Set( "Dash", dashAnim );
+		// Parameters can only be written while the AG2 instance runs, which isn't the case if the graph was swapped out
+		if ( animGraph != null && model.Animation.Graph == animGraph )
+		{
+			var parameters = model.Animation.Parameters;
+			parameters.Set( "move_x", move.x, false );
+			parameters.Set( "move_y", move.y, false );
+			parameters.Set( "ShootSpeed", speedShoot, false );
+			parameters.Set( "Shoot", shooting, false );
+			parameters.Set( "Dash", dashAnim, false );
+		}
+		else
+		{
+			model.Set( "move_x", move.x );
+			model.Set( "move_y", move.y );
+			model.Set( "ShootSpeed", speedShoot );
+			model.Set( "Shoot", shooting );
+			model.Set( "Dash", dashAnim );
+		}
 
-		shootAnim = false;
 		dashAnim = false;
 	}
 
@@ -57,7 +99,7 @@ public sealed class PlayerPresentation : Component
 		muzleFlash.LocalRotation = gunPoint.WorldRotation;
 
 		GameObject.PlaySound( shootSound );
-		shootAnim = true;
+		sinceShot = 0f;
 	}
 
 	[Rpc.Broadcast]

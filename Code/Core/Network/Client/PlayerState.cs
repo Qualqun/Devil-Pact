@@ -17,7 +17,8 @@ public enum BoostType
 	Percing,
 	Bounce,
 	Explosion,
-	HomingShot
+	HomingShot,
+	Laser
 }
 
 public enum ModifierType
@@ -28,7 +29,8 @@ public enum ModifierType
 	Percing,
 	Bounce,
 	Explosion,
-	HomingShot
+	HomingShot,
+	Laser
 }
 
 public sealed class PlayerState : Component
@@ -151,74 +153,100 @@ public sealed class PlayerState : Component
 		ActiveModifiers.Add( modifier );
 	}
 
-	#region Weapon slot
+	#region Laser
 
-	const float SniperBulletSpeed = 100f;
+	[Description( "Laser damage per second compared to the gun, a bit higher since taking it drops the bullet modifiers." )]
+	public const float LaserDpsFactor = 1.2f;
 
-	[Description( "Weapon held in the weapon slot, read from the active modifiers. Null when shooting the base gun." )]
-	public BoostType? CurrentWeapon
+	public bool HasLaser => ActiveModifiers.Contains( ModifierType.Laser );
+
+	public float LaserDps => BulletDamage * FireRate * LaserDpsFactor;
+
+	[Property, Group( "Debug" ), Description( "Spawns the player already holding the Laser, to test it. Remove before committing." )]
+	public bool DebugStartWithLaser { get; set; } = true;
+
+	protected override void OnStart()
 	{
-		get
-		{
-			if ( ActiveModifiers.Contains( ModifierType.Shotgun ) ) return BoostType.Shotgun;
-			if ( ActiveModifiers.Contains( ModifierType.Uzi ) ) return BoostType.Uzi;
-			if ( ActiveModifiers.Contains( ModifierType.Sniper ) ) return BoostType.Sniper;
-			return null;
-		}
+		base.OnStart();
+
+		if ( !IsProxy )
+			GiveDebugLaser();
 	}
 
-	[Description( "Power held in a slot, null when the slot is empty or doesn't hold anything." )]
-	public BoostType? GetHeldPower( PowerSlot slot )
+	void GiveDebugLaser()
 	{
-		switch ( slot )
-		{
-			case PowerSlot.Weapon:
-				return CurrentWeapon;
-			default:
-				return null;
-		}
+		if ( DebugStartWithLaser && !HasLaser )
+			AddModifier( ModifierType.Laser );
 	}
 
-	[Description( "Weapon that taking this boost would drop, null if the boost isn't a weapon or the slot is empty." )]
-	public BoostType? GetReplacedWeapon( BoostType boost )
+	[Description( "Powers that shape or change bullets, which a continuous beam has no use for. The beam never goes through enemies, so Piercing is one of them." )]
+	public static bool IsIncompatibleWithLaser( BoostType boost )
 	{
-		if ( Power.GetSlot( boost ) != PowerSlot.Weapon )
-			return null;
-
-		return CurrentWeapon;
-	}
-
-	// Only weapons touch the multipliers, so dropping one brings them back to 1
-	void UnequipWeapon()
-	{
-		switch ( CurrentWeapon )
+		switch ( boost )
 		{
+			case BoostType.Percing:
 			case BoostType.Shotgun:
-				ActiveModifiers.Remove( ModifierType.Shotgun );
-				break;
 			case BoostType.Uzi:
-				ActiveModifiers.Remove( ModifierType.Uzi );
-				break;
 			case BoostType.Sniper:
-				ActiveModifiers.Remove( ModifierType.Sniper );
-				ActiveModifiers.Remove( ModifierType.Percing );
-				BaseBulletSpeed -= SniperBulletSpeed;
-				break;
+			case BoostType.Bounce:
+			case BoostType.HomingShot:
+			case BoostType.Explosion:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	static ModifierType? ToModifier( BoostType boost )
+	{
+		switch ( boost )
+		{
+			case BoostType.Percing: return ModifierType.Percing;
+			case BoostType.Shotgun: return ModifierType.Shotgun;
+			case BoostType.Uzi: return ModifierType.Uzi;
+			case BoostType.Sniper: return ModifierType.Sniper;
+			case BoostType.Bounce: return ModifierType.Bounce;
+			case BoostType.HomingShot: return ModifierType.HomingShot;
+			case BoostType.Explosion: return ModifierType.Explosion;
+			default: return null;
+		}
+	}
+
+	[Description( "Incompatible powers the player holds right now, the ones taking the Laser would remove." )]
+	public List<BoostType> GetLaserRemovals()
+	{
+		var removals = new List<BoostType>();
+
+		foreach ( BoostType boost in System.Enum.GetValues<BoostType>() )
+		{
+			var modifier = ToModifier( boost );
+
+			if ( modifier.HasValue && IsIncompatibleWithLaser( boost ) && ActiveModifiers.Contains( modifier.Value ) )
+				removals.Add( boost );
 		}
 
+		return removals;
+	}
+
+	void RemoveLaserIncompatibles()
+	{
+		int sniperStacks = ActiveModifiers.Count( m => m == ModifierType.Sniper );
+
+		// The Sniper card also gave bullet speed, take it back with it (its Piercing goes with the others)
+		for ( int i = 0; i < sniperStacks; i++ )
+			BaseBulletSpeed -= 100f;
+
+		foreach ( BoostType boost in GetLaserRemovals() )
+		{
+			var modifier = ToModifier( boost ).Value;
+
+			while ( ActiveModifiers.Contains( modifier ) )
+				ActiveModifiers.Remove( modifier );
+		}
+
+		// Only the weapon cards touch the multipliers
 		FireRateMultiplier = 1f;
 		DamageMultiplier = 1f;
-	}
-
-	static (float FireRate, float Damage) GetWeaponMultipliers( BoostType? weapon )
-	{
-		switch ( weapon )
-		{
-			case BoostType.Shotgun: return (0.75f, 0.75f);
-			case BoostType.Uzi: return (2f, 0.6f);
-			case BoostType.Sniper: return (0.4f, 1.9f);
-			default: return (1f, 1f);
-		}
 	}
 
 	#endregion
@@ -331,6 +359,7 @@ public sealed class PlayerState : Component
 		Dead = false;
 
 		ActiveModifiers.Clear();
+		GiveDebugLaser();
 		ResetRunStats();
 	}
 
@@ -352,15 +381,6 @@ public sealed class PlayerState : Component
 
 		ClaimedBoosts.Add( boost );
 		RunAchievements.OnPowerClaimed( ClaimedBoosts );
-
-		if ( Power.GetSlot( boost ) == PowerSlot.Weapon )
-		{
-			UnequipWeapon();
-
-			var (fireRate, damage) = GetWeaponMultipliers( boost );
-			FireRateMultiplier = fireRate;
-			DamageMultiplier = damage;
-		}
 
 		switch ( boost )
 		{
@@ -386,15 +406,20 @@ public sealed class PlayerState : Component
 				BaseBulletSpeed += 100f;
 				break;
 
-			// Multipliers were set above with the weapon slot
 			case BoostType.Shotgun:
+				FireRateMultiplier *= 0.75f;
+				DamageMultiplier *= 0.75f;
 				AddModifier( ModifierType.Shotgun );
 				break;
 			case BoostType.Uzi:
+				FireRateMultiplier *= 2f;
+				DamageMultiplier *= 0.6f;
 				AddModifier( ModifierType.Uzi );
 				break;
 			case BoostType.Sniper:
-				BaseBulletSpeed += SniperBulletSpeed;
+				FireRateMultiplier *= 0.4f;
+				DamageMultiplier *= 1.9f;
+				BaseBulletSpeed += 100f;
 				AddModifier( ModifierType.Sniper );
 				AddModifier( ModifierType.Percing );
 				break;
@@ -410,6 +435,11 @@ public sealed class PlayerState : Component
 				break;
 			case BoostType.HomingShot:
 				AddModifier( ModifierType.HomingShot );
+				break;
+
+			case BoostType.Laser:
+				RemoveLaserIncompatibles();
+				AddModifier( ModifierType.Laser );
 				break;
 		}
 	}
@@ -449,23 +479,19 @@ public sealed class PlayerState : Component
 				Add( "Bullet Speed", BulletSpeed, BulletSpeed + 100f );
 				break;
 
-			// A weapon replaces the held one, so the new values start from the base gun
 			case BoostType.Shotgun:
-			case BoostType.Uzi:
-			case BoostType.Sniper:
-			{
-				var replaced = CurrentWeapon;
-				var (fireRate, damage) = GetWeaponMultipliers( boost );
-				Add( "Fire Rate", FireRate, BaseFireRate * fireRate );
-				Add( "Damage", BulletDamage, BaseBulletDamage * damage );
-
-				float baseSpeed = BulletSpeed - (replaced == BoostType.Sniper ? SniperBulletSpeed : 0f);
-				if ( boost == BoostType.Sniper )
-					Add( "Bullet Speed", BulletSpeed, baseSpeed + SniperBulletSpeed );
-				else if ( replaced == BoostType.Sniper )
-					Add( "Bullet Speed", BulletSpeed, baseSpeed );
+				Add( "Fire Rate", FireRate, FireRate * 0.75f );
+				Add( "Damage", BulletDamage, BulletDamage * 0.75f );
 				break;
-			}
+			case BoostType.Uzi:
+				Add( "Fire Rate", FireRate, FireRate * 2f );
+				Add( "Damage", BulletDamage, BulletDamage * 0.6f );
+				break;
+			case BoostType.Sniper:
+				Add( "Fire Rate", FireRate, FireRate * 0.4f );
+				Add( "Damage", BulletDamage, BulletDamage * 1.9f );
+				Add( "Bullet Speed", BulletSpeed, BulletSpeed + 100f );
+				break;
 
 			case BoostType.Percing:
 				AddStacks( ModifierType.Percing );
@@ -479,6 +505,16 @@ public sealed class PlayerState : Component
 			case BoostType.HomingShot:
 				AddStacks( ModifierType.HomingShot );
 				break;
+
+			// Damage per second against the current gun, with the weapon multipliers the Laser resets
+			case BoostType.Laser:
+			{
+				float gunDps = BulletDamage * FireRate;
+				float laserDps = BaseBulletDamage * BaseFireRate * LaserDpsFactor;
+
+				Add( "DPS", gunDps, laserDps );
+				break;
+			}
 		}
 
 		return lines;

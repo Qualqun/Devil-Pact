@@ -99,8 +99,14 @@
 						{
 							_class = "CBlend2DItem"
 							m_tagSpans = [  ]
-							m_sequenceName = "SlideS"
-							m_blendValue = [ 0.0, 0.0 ]
+							m_sequenceName = "SlideNW"
+							m_blendValue = [ 1.0, 1.0 ]
+						},
+						{
+							_class = "CBlend2DItem"
+							m_tagSpans = [  ]
+							m_sequenceName = "SlideNE"
+							m_blendValue = [ -1.0, 1.0 ]
 						},
 						{
 							_class = "CBlend2DItem"
@@ -180,7 +186,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.1
 									m_destState = 
 									{
 										m_id = 2097383236
@@ -241,7 +247,7 @@
 											m_bIsFinished = true
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.25
 									m_destState = 
 									{
 										m_id = 2095654739
@@ -461,25 +467,25 @@
 							_class = "CBlend2DItem"
 							m_tagSpans = [  ]
 							m_sequenceName = "Back"
-							m_blendValue = [ 0.0, -0.5 ]
+							m_blendValue = [ 0.0, -1.0 ]
 						},
 						{
 							_class = "CBlend2DItem"
 							m_tagSpans = [  ]
 							m_sequenceName = "Front"
-							m_blendValue = [ 0.0, 0.5 ]
+							m_blendValue = [ 0.0, 1.0 ]
 						},
 						{
 							_class = "CBlend2DItem"
 							m_tagSpans = [  ]
 							m_sequenceName = "Left"
-							m_blendValue = [ -0.5, 0.0 ]
+							m_blendValue = [ -1.0, 0.0 ]
 						},
 						{
 							_class = "CBlend2DItem"
 							m_tagSpans = [  ]
 							m_sequenceName = "Right"
-							m_blendValue = [ 0.5, 0.0 ]
+							m_blendValue = [ 1.0, 0.0 ]
 						},
 						{
 							_class = "CBlend2DItem"
@@ -505,12 +511,12 @@
 					m_damping = 
 					{
 						_class = "CAnimInputDamping"
-						m_speedFunction = "NoDamping"
+						m_speedFunction = "Spring"
 						m_fSpeedScale = 1.0
-						m_fMinSpeed = 10.0
+						m_fMinSpeed = 0.0
 						m_fMaxTension = 1000.0
 						m_fTension = 100.0
-						m_fDamping = 5.0
+						m_fDamping = 20.0
 					}
 				}
 			},
@@ -553,7 +559,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.1
 									m_destState = 
 									{
 										m_id = 1363891101
@@ -621,7 +627,7 @@
 											}
 										},
 									]
-									m_blendDuration = 0.2
+									m_blendDuration = 0.25
 									m_destState = 
 									{
 										m_id = 511805973

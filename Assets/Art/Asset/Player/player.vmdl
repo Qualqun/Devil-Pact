@@ -387,6 +387,13 @@
 				default_root_bone_name = ""
 			},
 			{
+				_class = "BoneMarkupList"
+				children = 
+				[
+				]
+				bone_cull_type = "None"
+			},
+			{
 				_class = "ModelModifierList"
 				children = 
 				[
