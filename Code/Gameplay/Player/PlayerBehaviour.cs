@@ -27,50 +27,14 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 	bool canShoot = true;
 	CancellationTokenSource cancellation;
 
-	#region Laser state
+	// The Laser power has its own component, fed from Fire() once the player holds it
+	PlayerLaser laser;
 
-	// Written by the owner, read by every machine to draw the beam
-	[Sync] public bool LaserFiring { get; set; }
-	[Sync] public Vector3 LaserEnd { get; set; }
+	[Description( "Whether the gun may fire right now: not dead and not locked by a pending fire rate timer." )]
+	public bool CanShoot => canShoot && !isDead;
 
-	const float LaserRange = 3000f;
-	const float LaserRadius = 12f;
-	const float LaserTicksPerSecond = 15f;
-	const float LaserShootFxInterval = 0.25f;
-	const string LaserHitFxPrefab = "art/fx/prefab/gunhit.prefab";
-
-	// Many small ticks would flood the screen with numbers, so each enemy's ticks are summed and shown this often
-	const float LaserNumberInterval = 0.25f;
-
-	static readonly string[] LaserIgnoredTags = { "player", "ground", "bullet" };
-
-	bool laserTriggerHeld;
-	TimeUntil nextLaserTick;
-	TimeSince sinceLaserTick;
-	TimeUntil nextLaserShootFx;
-
-	class LaserHitNumber
-	{
-		public float Damage;
-		public Vector3 Position;
-		public TimeSince SinceShown;
-	}
-
-	readonly Dictionary<GameObject, LaserHitNumber> laserHitNumbers = new();
-
-	// Heat gauge: firing drains it, releasing refills it after a short delay.
-	// Draining it completely overheats the laser, which then stays locked until the gauge is full again.
-	const float LaserDrainTime = 3f;
-	const float LaserRefillTime = 2f;
-	const float LaserRefillDelay = 0.3f;
-
-	[Description( "Laser charge left, 1 is full. Local to the owner, read by its HUD." )]
-	public float LaserCharge { get; private set; } = 1f;
-	public bool LaserOverheated { get; private set; }
-
-	TimeSince sinceLaserFired;
-
-	#endregion
+	[Description( "Flat direction the player is aiming in, from the body's yaw." )]
+	public Vector3 AimDirection => (Rotation.FromYaw( body.WorldRotation.Yaw() ) * Vector3.Forward).WithZ( 0 ).Normal;
 
 	protected override void OnStart()
 	{
@@ -78,6 +42,10 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 			State = Components.Get<PlayerState>();
 
 		droneInteraction = GetComponentInChildren<DroneInteraction>();
+		laser = Components.Get<PlayerLaser>();
+
+		if ( laser == null )
+			Log.Warning( "[PlayerBehaviour] No PlayerLaser on the player prefab, the Laser power won't fire" );
 
 		if ( IsProxy )
 		{
@@ -95,9 +63,6 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 
 		}
 
-		// Every machine draws this player's beam
-		PlayerLaserBeam.Create( this, gunPoint );
-
 		base.OnStart();
 	}
 
@@ -109,152 +74,11 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 		{
 			playerUI?.HideWorldArrow();
 		}
-
-		if ( !IsProxy )
-			UpdateLaser();
 	}
-
-	#region Laser
-
-	// Fire() is called every frame the button is down, so the trigger counts as released when a frame skips it
-	void UpdateLaser()
-	{
-		bool firing = laserTriggerHeld && State.HasLaser && canShoot && !isDead && !LaserOverheated;
-		laserTriggerHeld = false;
-
-		if ( firing )
-		{
-			sinceLaserFired = 0f;
-			LaserCharge = MathF.Max( 0f, LaserCharge - Time.Delta / LaserDrainTime );
-
-			if ( LaserCharge <= 0f )
-			{
-				LaserOverheated = true;
-				firing = false;
-			}
-		}
-		else if ( sinceLaserFired > LaserRefillDelay )
-		{
-			LaserCharge = MathF.Min( 1f, LaserCharge + Time.Delta / LaserRefillTime );
-
-			if ( LaserCharge >= 1f )
-				LaserOverheated = false;
-		}
-
-		LaserFiring = firing;
-
-		if ( !firing )
-		{
-			FlushLaserHitNumbers( Vector3.Zero, true );
-			return;
-		}
-
-		Vector3 start = gunPoint.WorldPosition;
-		Vector3 direction = (Rotation.FromYaw( body.WorldRotation.Yaw() ) * Vector3.Forward).WithZ( 0 ).Normal;
-		Vector3 end = start + direction * LaserRange;
-
-		var hits = Scene.Trace.Sphere( LaserRadius, start, end )
-			.WithoutTags( LaserIgnoredTags )
-			.RunAll()
-			.OrderBy( hit => hit.Distance )
-			.ToList();
-
-		// The beam stops on the first thing it meets, enemy or wall, and only an enemy takes damage
-		GameObject target = null;
-		Vector3 targetPosition = default;
-
-		foreach ( SceneTraceResult hit in hits )
-		{
-			GameObject hitObj = hit.Collider?.GameObject;
-
-			if ( hitObj == null )
-				continue;
-
-			end = hit.HitPosition;
-
-			if ( hit.HasTag( "enemy" ) )
-			{
-				target = hitObj;
-				targetPosition = hit.HitPosition;
-			}
-
-			break;
-		}
-
-		LaserEnd = end;
-
-		if ( nextLaserShootFx <= 0f )
-		{
-			nextLaserShootFx = LaserShootFxInterval;
-			playerPresentation.speedShoot = State.FireRate;
-			playerPresentation.Shoot( gunPoint );
-		}
-
-		if ( nextLaserTick > 0f )
-		{
-			FlushLaserHitNumbers( direction, false );
-			return;
-		}
-
-		// Damage follows the time really spent since the last tick, so frame timing never eats into the DPS
-		float tickTime = MathF.Min( sinceLaserTick, 1f / LaserTicksPerSecond );
-		float tickDamage = State.LaserDps * tickTime;
-
-		nextLaserTick = 1f / LaserTicksPerSecond;
-		sinceLaserTick = 0f;
-
-		if ( target != null )
-		{
-			gameManager.EnemyTakeDamage( target, tickDamage );
-			State.AddDamageDealt( tickDamage );
-
-			if ( !laserHitNumbers.TryGetValue( target, out var number ) )
-			{
-				// A new target shows its first number right away
-				number = new LaserHitNumber { SinceShown = LaserNumberInterval };
-				laserHitNumbers[target] = number;
-			}
-
-			number.Damage += tickDamage;
-			number.Position = targetPosition;
-		}
-
-		FlushLaserHitNumbers( direction, false );
-	}
-
-	// Shows each enemy's summed laser damage as one number, with the impact FX, every LaserNumberInterval
-	void FlushLaserHitNumbers( Vector3 direction, bool all )
-	{
-		if ( laserHitNumbers.Count == 0 )
-			return;
-
-		foreach ( var enemy in laserHitNumbers.Keys.ToList() )
-		{
-			var number = laserHitNumbers[enemy];
-			bool valid = enemy.IsValid();
-
-			if ( valid && number.Damage > 0f && (all || number.SinceShown >= LaserNumberInterval) )
-			{
-				gameManager.UiManager.HitNumbers.ShowNumberForEnemy( number.Damage, number.Position, enemy );
-
-				if ( !all )
-					GameObject.GetPrefab( LaserHitFxPrefab )?.Clone( number.Position, Rotation.LookAt( -direction ) );
-
-				number.Damage = 0f;
-				number.SinceShown = 0f;
-			}
-
-			// Forget enemies that died or left the beam once their last number is out
-			if ( !valid || all || (number.Damage <= 0f && number.SinceShown > LaserNumberInterval * 2f) )
-				laserHitNumbers.Remove( enemy );
-		}
-	}
-
-	#endregion
 
 	BulletInfo InitBaseBullet()
 	{
-		Vector3 direction = (Rotation.FromYaw( body.WorldRotation.Yaw() ) * Vector3.Forward).WithZ( 0 ).Normal;
+		Vector3 direction = AimDirection;
 
 		BulletInfo newBulletInfo = new BulletInfo
 		{
@@ -319,10 +143,10 @@ public sealed class PlayerBehaviour : Component, Component.ICollisionListener
 
 	public void Fire()
 	{
-		// The laser fires continuously from UpdateLaser while the button is held
-		if ( State.HasLaser )
+		// The laser fires continuously from its own component while the button is held
+		if ( State.HasLaser && laser.IsValid() )
 		{
-			laserTriggerHeld = true;
+			laser.Fire();
 			return;
 		}
 

@@ -164,6 +164,24 @@
         }
       },
       {
+        "__type": "PlayerLaser",
+        "__guid": "09f9529e-3eb9-46cc-9b3f-d46422117807",
+        "__enabled": true,
+        "Flags": 0,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "Player": {
+          "_type": "component",
+          "component_id": "ac55f1d4-64b7-49be-a7a3-c6e812aa6931",
+          "go": "30f4e803-7638-466b-8c25-308351d241f7",
+          "component_type": "PlayerBehaviour"
+        }
+      },
+      {
         "__type": "PlayerState",
         "__guid": "28a22751-d9f3-44e3-b3e2-af68d1912b50",
         "__enabled": true,
