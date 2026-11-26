@@ -109,43 +109,26 @@ public class BaseEnemyBehaviour : Component
 
 	protected virtual void CheckTarget()
 	{
-		if ( players.Count > 0 )
+		target = null;
+		targetDist = float.MaxValue;
+
+		foreach ( var player in gameManager.GameState.Players )
 		{
-			for ( int i = 0; i < players.Count; i++ )
-			{
-				if ( players[i] == null || !players[i].IsValid || players[i].isDead )
-				{
-					players.RemoveAt( i );
-					i--;
+			float distance;
 
-					noTarget = true;
-					target = null;
-					targetDist = float.MaxValue;
+			if ( !player.IsValid() || player.isDead )
+				continue;
 
-					continue;
-				}
-				else
-				{
-					float dist = Vector3.DistanceBetween( WorldPosition, players[i].WorldPosition );
+			distance = WorldPosition.Distance( player.WorldPosition );
 
-					if ( dist < targetDist )
-					{
-						noTarget = false;
-						targetDist = dist;
-						target = players[i];
+			if ( distance >= targetDist )
+				continue;
 
-					}
-					else if ( target == players[i] )
-					{
-						targetDist = dist;
-					}
-				}
-			}
+			target = player;
+			targetDist = distance;
 		}
-		else
-		{
-			noTarget = true;
-		}
+
+		noTarget = target is null;
 	}
 
 	#endregion

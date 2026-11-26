@@ -23,8 +23,8 @@ public class DronePresentation : BaseEnemyPresentation
 	[Property, Group( "Hovering" )] Vector3 hoverOffset { get; set; }
 
 	//[Property, Group( "Refs" ), Order( 50 )] new protected SkinnedModelRenderer model { get; set; }
-	[Property, Group( "Refs" )] ThrusterFlame leftFlame { get; set; } = null;
-	[Property, Group( "Refs" )] ThrusterFlame rightFlame { get; set; } = null;
+	[Property, Group( "Refs" )] ThrusterControl leftFlame { get; set; } = null;
+	[Property, Group( "Refs" )] ThrusterControl rightFlame { get; set; } = null;
 
 
 	[Property, Group( "Debug" ), Order( 100 )] bool showGizmo { get; set; } = true;
@@ -45,8 +45,8 @@ public class DronePresentation : BaseEnemyPresentation
 
 	protected override void OnUpdate()
 	{
-		leftFlame.ThrustPower = leftFlamePower;
-		rightFlame.ThrustPower = rightFlamePower;
+		leftFlame.SetThrusterPower( leftFlamePower );
+		rightFlame.SetThrusterPower( rightFlamePower );
 
 		model.LocalRotation = visualModelAngles.ToRotation();
 		model.LocalPosition = visualModelPosition;
@@ -118,8 +118,8 @@ public class DronePresentation : BaseEnemyPresentation
 	{
 		float timer = 0.01f;
 
-		float startPercentLeft = leftFlame.ThrustPower;
-		float startPercentRight = rightFlame.ThrustPower;
+		float startPercentLeft = leftFlame.thrusterPower;
+		float startPercentRight = rightFlame.thrusterPower;
 
 		Angles angles = model.LocalRotation.Angles();
 		float startPitch = angles.pitch;
@@ -149,8 +149,8 @@ public class DronePresentation : BaseEnemyPresentation
 
 		float halfFlyDuration = duration / 2f;
 
-		float startPercentLeft = leftFlame.ThrustPower;
-		float startPercentRight = rightFlame.ThrustPower;
+		float startPercentLeft = leftFlame.thrusterPower;
+		float startPercentRight = rightFlame.thrusterPower;
 
 		Angles angles = visualModelAngles;
 		float startPitch = angles.pitch;

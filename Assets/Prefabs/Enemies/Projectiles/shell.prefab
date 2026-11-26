@@ -20,14 +20,18 @@
         "__guid": "bee7613b-fbe2-456c-aee5-2bf5539fae12",
         "__enabled": true,
         "Flags": 0,
-        "damage": 0,
+        "explosionFX": {
+          "_type": "gameobject",
+          "prefab": "art/fx/ai/explosion/ki_blast_rouge_100.prefab"
+        },
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
-        "radiusExplosion": 0
+        "radiusReference": 100,
+        "shellTargetOffset": "0,50,0"
       }
     ],
     "Children": [
@@ -57,7 +61,14 @@
             "LodOverride": null,
             "MaterialGroup": null,
             "MaterialOverride": null,
-            "Materials": null,
+            "Materials": {
+              "indexed": {
+                "0": {
+                  "Id": "048dc914-4200-47f0-8a88-397894e9da94",
+                  "Path": "art/material/emmisivered.vmat"
+                }
+              }
+            },
             "Model": {
               "Id": "00000000-0000-0000-f09f-a6f0fe7f0000",
               "Path": "models/dev/sphere.vmdl"
@@ -96,6 +107,10 @@
         "AgentRadius": 16,
         "AgentStepSize": 18,
         "AgentMaxSlope": 40,
+        "GenerateLinks": false,
+        "AgentMaxDrop": 192,
+        "AgentMaxJumpDistance": 250,
+        "AgentMaxJumpHeight": 80,
         "ExcludedBodies": "",
         "IncludedBodies": "",
         "DeferGeneration": false,

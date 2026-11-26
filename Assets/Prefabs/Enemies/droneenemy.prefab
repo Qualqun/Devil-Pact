@@ -76,7 +76,6 @@
           "go": "550d6052-1a2e-4f07-8865-e53e4716cea7",
           "component_type": "NavMeshAgent"
         },
-        "projectileType": "PISTOL",
         "bulletDamage": 6,
         "bulletSpeed": 500,
         "burstDuration": 1,
@@ -104,6 +103,7 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
+        "projectileType": "PISTOL",
         "repathDistance": 64,
         "rotationSpeed": 250,
         "showGizmo": true,
@@ -120,9 +120,9 @@
         "hoverOffset": "0,0,25",
         "leftFlame": {
           "_type": "component",
-          "component_id": "9c998d74-431e-4163-800d-6992e60f9e24",
-          "go": "4a0460cc-37ca-4c1e-9283-1066dbd7a9b2",
-          "component_type": "ThrusterFlame"
+          "component_id": "f5e1cc1f-bae2-4dca-b400-099c0b378a78",
+          "go": "800f0db3-c8f1-446f-bba5-628e40867e37",
+          "component_type": "ThrusterControl"
         },
         "maxMovePowerFlame": 75,
         "minMovePowerFlame": 25,
@@ -143,9 +143,9 @@
         "OnComponentUpdate": null,
         "rightFlame": {
           "_type": "component",
-          "component_id": "4c556936-3ee6-4a5d-92ec-7a35dcc5207b",
+          "component_id": "bb929481-95ff-4f3e-abba-b9941a596203",
           "go": "d8191de9-2a82-47d7-8582-c39b80c3a7fd",
-          "component_type": "ThrusterFlame"
+          "component_type": "ThrusterControl"
         },
         "showGizmo": true,
         "startFallPowerFlame": 0,
@@ -812,76 +812,162 @@
                 ]
               },
               {
-                "__guid": "4a0460cc-37ca-4c1e-9283-1066dbd7a9b2",
-                "__version": 2,
-                "Flags": 0,
-                "Name": "LeftFlame",
-                "Position": "-13.2000008,-1.79999971,33.3000031",
-                "Rotation": "-0.400509298,0.582744539,0.582746029,0.400510222",
-                "Scale": "1,1,1",
-                "Tags": "",
-                "Enabled": true,
-                "NetworkMode": 2,
-                "NetworkFlags": 0,
-                "NetworkOrphaned": 0,
-                "NetworkTransmit": true,
-                "OwnerTransfer": 1,
-                "Components": [
-                  {
-                    "__type": "ThrusterFlame",
-                    "__guid": "9c998d74-431e-4163-800d-6992e60f9e24",
-                    "__enabled": true,
-                    "Flags": 0,
-                    "FlameMaterial": {
-                      "Id": "3eebcfa1-377c-48ee-891a-666dd83e0fae",
-                      "Path": "art/fx/ai/thruster_flame.vmat"
-                    },
-                    "OnComponentDestroy": null,
-                    "OnComponentDisabled": null,
-                    "OnComponentEnabled": null,
-                    "OnComponentFixedUpdate": null,
-                    "OnComponentStart": null,
-                    "OnComponentUpdate": null,
-                    "ThrustPower": 50
-                  }
-                ],
-                "Children": []
-              },
-              {
                 "__guid": "d8191de9-2a82-47d7-8582-c39b80c3a7fd",
                 "__version": 2,
-                "Flags": 0,
-                "Name": "RightFlame",
-                "Position": "13.2000008,-1.79999971,33.3000031",
-                "Rotation": "-0.58274591,0.400510132,0.400509268,0.582744598",
-                "Scale": "1,1,1",
-                "Tags": "",
-                "Enabled": true,
-                "NetworkMode": 2,
-                "NetworkFlags": 0,
-                "NetworkOrphaned": 0,
-                "NetworkTransmit": true,
-                "OwnerTransfer": 1,
-                "Components": [
-                  {
-                    "__type": "ThrusterFlame",
-                    "__guid": "4c556936-3ee6-4a5d-92ec-7a35dcc5207b",
-                    "__enabled": true,
-                    "Flags": 0,
-                    "FlameMaterial": {
-                      "Id": "3eebcfa1-377c-48ee-891a-666dd83e0fae",
-                      "Path": "art/fx/ai/thruster_flame.vmat"
+                "__Prefab": {
+                  "Id": "1c718b1f-02b2-4786-b69b-34516e46cf44",
+                  "Path": "art/fx/ai/thrusterflame/thruster_jet.prefab"
+                },
+                "__PrefabInstancePatch": {
+                  "AddedObjects": [],
+                  "RemovedObjects": [],
+                  "PropertyOverrides": [
+                    {
+                      "Target": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "Property": "Name",
+                      "Value": "RightFlamme"
                     },
-                    "OnComponentDestroy": null,
-                    "OnComponentDisabled": null,
-                    "OnComponentEnabled": null,
-                    "OnComponentFixedUpdate": null,
-                    "OnComponentStart": null,
-                    "OnComponentUpdate": null,
-                    "ThrustPower": 50
-                  }
-                ],
-                "Children": []
+                    {
+                      "Target": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "Property": "Position",
+                      "Value": "13.2000027,-1.79999924,33.3000069"
+                    },
+                    {
+                      "Target": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "Property": "Rotation",
+                      "Value": "-0.58274591,0.400510132,0.400509298,0.582744598"
+                    }
+                  ],
+                  "MovedObjects": []
+                },
+                "__PrefabIdToInstanceId": {
+                  "9c514863-be76-4d25-a4c1-524acaab6f9c": "d8191de9-2a82-47d7-8582-c39b80c3a7fd",
+                  "c9dfd8d5-e8ae-4f4a-b155-5c5ee38db079": "20ef3577-2178-4af9-b920-a631f8404709",
+                  "7c669a2c-97d3-4e2a-bfa3-ef2d645cb296": "4b043df9-338b-4cac-9ead-d148ad0f00cd",
+                  "15498141-88fa-4d5d-abe3-999b79efe835": "71411974-0736-4817-9df0-b5e815102531",
+                  "477a057f-a6e9-4cc0-86ce-9f9ef6b7f218": "ef045808-4c1c-4931-8fe0-62ce845f60b6",
+                  "742ddcc1-4cc2-46be-858b-75ef8275a46c": "7025b1d7-3883-4085-b3bf-8b5c1ac6ccfe",
+                  "bc870840-96bf-4507-ba52-d50a858cd4d2": "15903abf-3606-4545-b3be-46095bed8f0d",
+                  "1e323bfa-e680-454d-aa0d-02298c58449e": "4e794102-e62e-47a9-ba69-6805e1538af6",
+                  "adc1ed78-f1a1-4b9f-a150-415f8ce3bdd4": "37738d11-50a1-41ec-962b-8b0895c68cf2",
+                  "b3b9c1d2-34fe-8189-a8b6-dcb33a6ee904": "bb929481-95ff-4f3e-abba-b9941a596203"
+                }
+              },
+              {
+                "__guid": "800f0db3-c8f1-446f-bba5-628e40867e37",
+                "__version": 2,
+                "__Prefab": {
+                  "Id": "1c718b1f-02b2-4786-b69b-34516e46cf44",
+                  "Path": "art/fx/ai/thrusterflame/thruster_jet.prefab"
+                },
+                "__PrefabInstancePatch": {
+                  "AddedObjects": [
+                    {
+                      "Id": {
+                        "Type": "Component",
+                        "IdValue": "f5e1cc1f-bae2-4dca-b400-099c0b378a78"
+                      },
+                      "Parent": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "PreviousElement": null,
+                      "ContainerProperty": "Components",
+                      "IsContainerArray": true,
+                      "Data": {
+                        "__type": "ThrusterControl",
+                        "__guid": "f5e1cc1f-bae2-4dca-b400-099c0b378a78",
+                        "__enabled": true,
+                        "Flags": 0,
+                        "coreParticle": {
+                          "_type": "component",
+                          "component_id": "15498141-88fa-4d5d-abe3-999b79efe835",
+                          "go": "c9dfd8d5-e8ae-4f4a-b155-5c5ee38db079",
+                          "component_type": "ParticleEffect"
+                        },
+                        "OnComponentDestroy": null,
+                        "OnComponentDisabled": null,
+                        "OnComponentEnabled": null,
+                        "OnComponentFixedUpdate": null,
+                        "OnComponentStart": null,
+                        "OnComponentUpdate": null,
+                        "plumeParticle": {
+                          "_type": "component",
+                          "component_id": "bc870840-96bf-4507-ba52-d50a858cd4d2",
+                          "go": "7c669a2c-97d3-4e2a-bfa3-ef2d645cb296",
+                          "component_type": "ParticleEffect"
+                        },
+                        "thrusterPower": 100
+                      }
+                    }
+                  ],
+                  "RemovedObjects": [],
+                  "PropertyOverrides": [
+                    {
+                      "Target": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "Property": "Name",
+                      "Value": "LeftFlame"
+                    },
+                    {
+                      "Target": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "Property": "Position",
+                      "Value": "-13.2000027,-1.79999924,33.3000069"
+                    },
+                    {
+                      "Target": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "Property": "Rotation",
+                      "Value": "-0.400509298,0.582744539,0.582746029,0.400510222"
+                    }
+                  ],
+                  "MovedObjects": [
+                    {
+                      "Id": {
+                        "Type": "Component",
+                        "IdValue": "b3b9c1d2-34fe-8189-a8b6-dcb33a6ee904"
+                      },
+                      "NewParent": {
+                        "Type": "GameObject",
+                        "IdValue": "9c514863-be76-4d25-a4c1-524acaab6f9c"
+                      },
+                      "NewContainerProperty": "Components",
+                      "IsNewContainerArray": true,
+                      "NewPreviousElement": {
+                        "Type": "Component",
+                        "IdValue": "f5e1cc1f-bae2-4dca-b400-099c0b378a78"
+                      }
+                    }
+                  ]
+                },
+                "__PrefabIdToInstanceId": {
+                  "9c514863-be76-4d25-a4c1-524acaab6f9c": "800f0db3-c8f1-446f-bba5-628e40867e37",
+                  "c9dfd8d5-e8ae-4f4a-b155-5c5ee38db079": "4b9b4d5e-0cd8-4335-923a-4a0bd27936e8",
+                  "7c669a2c-97d3-4e2a-bfa3-ef2d645cb296": "d6f9eca5-2a04-4629-97d2-6ea02bdafb40",
+                  "15498141-88fa-4d5d-abe3-999b79efe835": "8b206a51-93f9-437e-820f-582909894393",
+                  "477a057f-a6e9-4cc0-86ce-9f9ef6b7f218": "cf08c372-d3b1-4546-8c22-b28f5943470e",
+                  "742ddcc1-4cc2-46be-858b-75ef8275a46c": "db265a83-e079-488c-aa5b-61bb22b794ca",
+                  "bc870840-96bf-4507-ba52-d50a858cd4d2": "e0d08169-cd67-49d4-bcc5-36eda69c1ca7",
+                  "1e323bfa-e680-454d-aa0d-02298c58449e": "304a74d3-41df-4b6a-8006-3399b0ab61e2",
+                  "adc1ed78-f1a1-4b9f-a150-415f8ce3bdd4": "a898c1d0-cd2d-4d69-9899-bf46bbdbe5d9",
+                  "b3b9c1d2-34fe-8189-a8b6-dcb33a6ee904": "844fb549-d958-8c07-9b0a-aab2cbf72b40"
+                }
               },
               {
                 "__guid": "cad6d1e8-8a64-4022-aa07-2d709ef97ad2",

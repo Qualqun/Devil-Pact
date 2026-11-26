@@ -78,7 +78,6 @@ public class PoolManager : Component
 {
 	[Property] public ItemPool playerBullet { get; set; }
 	[Property] public ItemPool[] enemyProjectile { get; set; } = new ItemPool[(int)EnemyProjectile.NB_PROJECTILE];
-	[Property] public ItemPool pistolEnemyBullet { get; set; }
 
 	protected override void OnStart()
 	{
