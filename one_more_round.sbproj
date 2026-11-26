@@ -2,6 +2,7 @@
   "Title": "Devil Pact",
   "Type": "game",
   "Org": "ratnation",
+  "OrgTitle": null,
   "Ident": "one_more_round",
   "Schema": 1,
   "IncludeSourceFiles": false,

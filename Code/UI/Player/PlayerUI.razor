@@ -84,7 +84,7 @@
 	@if (laserGaugeVisible)
 	{
 		<div class="laser-gauge @LaserGaugeClass" style="@laserGaugeStyle">
-			<div class="laser-gauge-fill" style="width: @((LocalBehaviour.LaserCharge * 100f).ToString("0.##", CultureInfo.InvariantCulture))%"></div>
+			<div class="laser-gauge-fill" style="width: @((LocalLaser.Charge * 100f).ToString("0.##", CultureInfo.InvariantCulture))%"></div>
 		</div>
 	}
 
@@ -143,7 +143,7 @@
 		}
 	}
 
-	PlayerBehaviour LocalBehaviour => PlayerState?.Components.Get<PlayerBehaviour>();
+	PlayerLaser LocalLaser => PlayerState?.Components.Get<PlayerLaser>();
 
 	// Laser gauge: a small pill under the player's feet, only shown while the laser isn't full
 	const float LaserGaugeOffset = 34f;
@@ -154,18 +154,18 @@
 	string laserGaugeStyle;
 
 	string LaserGaugeClass =>
-		LocalBehaviour == null ? "" :
-		LocalBehaviour.LaserOverheated ? "overheated" :
-		LocalBehaviour.LaserCharge < LaserGaugeLowCharge ? "low" : "";
+		LocalLaser == null ? "" :
+		LocalLaser.Overheated ? "overheated" :
+		LocalLaser.Charge < LaserGaugeLowCharge ? "low" : "";
 
 	void UpdateLaserGauge()
 	{
 		bool wasVisible = laserGaugeVisible;
-		var behaviour = LocalBehaviour;
+		var laser = LocalLaser;
 		CameraComponent camera = Scene.Camera;
 
-		bool hasLaser = PlayerState?.HasLaser == true && behaviour != null;
-		bool needed = hasLaser && (behaviour.LaserFiring || behaviour.LaserOverheated || behaviour.LaserCharge < 0.999f);
+		bool hasLaser = PlayerState?.HasLaser == true && laser != null;
+		bool needed = hasLaser && (laser.IsFiring || laser.Overheated || laser.Charge < 0.999f);
 
 		// Pops in quickly when firing, fades out slowly once the gauge is full again
 		laserGaugeAlpha = laserGaugeAlpha.Approach(needed ? 1f : 0f, Time.Delta * (needed ? 8f : 2.5f));
@@ -173,7 +173,7 @@
 
 		if (laserGaugeVisible)
 		{
-			Vector2 screen = camera.PointToScreenNormal(behaviour.WorldPosition);
+			Vector2 screen = camera.PointToScreenNormal(laser.WorldPosition);
 
 			if (!float.IsFinite(screen.x) || !float.IsFinite(screen.y))
 			{
@@ -193,12 +193,12 @@
 	// Charge in whole percents, so the gauge redraws as it moves without rebuilding every frame
 	int LaserHash()
 	{
-		var behaviour = LocalBehaviour;
+		var laser = LocalLaser;
 
-		if (PlayerState?.HasLaser != true || behaviour == null)
+		if (PlayerState?.HasLaser != true || laser == null)
 			return 0;
 
-		return HashCode.Combine((int)(behaviour.LaserCharge * 100f), behaviour.LaserOverheated);
+		return HashCode.Combine((int)(laser.Charge * 100f), laser.Overheated);
 	}
 
 	List<PlayerBehaviour> Teammates =>

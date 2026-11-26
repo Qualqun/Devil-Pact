@@ -2,7 +2,7 @@ using Sandbox;
 using System;
 
 /// <summary>
-/// Draws a player's laser on every machine from the beam state the owner syncs on PlayerBehaviour.
+/// Draws a player's laser on every machine from the beam state the owner syncs on PlayerLaser.
 /// The look lives in three prefabs under art/fx/ai (beam, impact, muzzle), cloned locally and never networked.
 /// </summary>
 public sealed class PlayerLaserBeam : Component
@@ -11,7 +11,7 @@ public sealed class PlayerLaserBeam : Component
 	const string ImpactPrefab = "art/fx/ai/laser_impact.prefab";
 	const string MuzzlePrefab = "art/fx/ai/laser_muzzle.prefab";
 
-	public PlayerBehaviour Player { get; set; }
+	public PlayerLaser Laser { get; set; }
 	public GameObject GunPoint { get; set; }
 
 	GameObject beam;
@@ -25,13 +25,13 @@ public sealed class PlayerLaserBeam : Component
 	float strength;
 	bool visible = true;
 
-	public static PlayerLaserBeam Create( PlayerBehaviour player, GameObject gunPoint )
+	public static PlayerLaserBeam Create( PlayerLaser source, GameObject gunPoint )
 	{
-		var go = new GameObject( player.GameObject, true, "Laser Beam" );
+		var go = new GameObject( source.GameObject, true, "Laser Beam" );
 		go.NetworkMode = NetworkMode.Never;
 
 		var laser = go.Components.Create<PlayerLaserBeam>();
-		laser.Player = player;
+		laser.Laser = source;
 		laser.GunPoint = gunPoint;
 		laser.Build();
 
@@ -72,10 +72,10 @@ public sealed class PlayerLaserBeam : Component
 
 	protected override void OnUpdate()
 	{
-		if ( Player == null || !Player.IsValid() || GunPoint == null || !GunPoint.IsValid() )
+		if ( Laser == null || !Laser.IsValid() || GunPoint == null || !GunPoint.IsValid() )
 			return;
 
-		bool firing = Player.LaserFiring;
+		bool firing = Laser.IsFiring;
 		strength = strength.Approach( firing ? 1f : 0f, Time.Delta * (firing ? 12f : 8f) );
 
 		if ( strength <= 0.05f )
@@ -87,7 +87,7 @@ public sealed class PlayerLaserBeam : Component
 		SetVisible( true );
 
 		Vector3 start = GunPoint.WorldPosition;
-		Vector3 end = Player.LaserEnd;
+		Vector3 end = Laser.BeamEnd;
 
 		if ( beam != null )
 		{
